@@ -113,11 +113,12 @@ var loop = ()=>{
 
 setInterval(()=>{
 	loop()
-}, 10000)
+}, 8000)
 
 var drawAxis = (view, origin)=>{
     var xticks = 6
 
+    // X axis
 	view
 	.transform({
 		position:[0, origin.y, origin.z]
@@ -150,6 +151,7 @@ var drawAxis = (view, origin)=>{
     	// offset: [1,1]
     })
 
+    // Y axis
 	view.transform({
 		position:[origin.x, 0, origin.z]
 	})
@@ -161,6 +163,8 @@ var drawAxis = (view, origin)=>{
 	  color: colors.y,
 	  opacity: .5,
 	})
+
+	// Z axis
 	view.transform({
 		position: [origin.x, origin.y, ]
 	})
@@ -173,6 +177,7 @@ var drawAxis = (view, origin)=>{
 	  opacity: .5,
 	});
 
+	// XyZ labela
     view.array({
       id: "colors",
       live: false,
@@ -195,11 +200,14 @@ var drawAxis = (view, origin)=>{
 }
 
 var drawGrid = (view, origin)=>{
+	const lineWidth = 5
 	view.grid({
 		axes: "xy",
 		divideX: 3,
-		divideY: 3
+		divideY: 3,
+		width: lineWidth
 	})
+
 	view
 	.transform({
 		position:[0, origin.y, origin.z]
@@ -207,7 +215,19 @@ var drawGrid = (view, origin)=>{
 	.grid({
 		axes: "zx",
 		divideX: 3,
-		divideY: 3
+		divideY: 3,
+		width: lineWidth
+	})
+
+	view
+	.transform({
+		position:[2300, 0, origin.z]
+	})
+	.grid({
+		axes: "yz",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth
 	})
 }
 
@@ -215,11 +235,11 @@ var draw=(datas)=>{
 	var data = datas.active
 	// debugger
 	var mathbox = mathBox({
-	  // plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
-	  plugins: ['VR', 'ui', 'controls'],
+	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
+	  // plugins: ['VR', 'ui', 'controls'],
 	  controls: {
-	    // klass: THREE.OrbitControls
-	    klass: THREE.VRControls
+	    klass: THREE.OrbitControls
+	    // klass: THREE.VRControls
 	  },
 	});
 	var three = mathbox.three;
@@ -234,14 +254,14 @@ var draw=(datas)=>{
 	  scale: [1.5, 1, 1],
 	});
 
-    var camera = view.camera({
-      lookAt: [0, 0, 0],
-    }, {
-      position: function (t) { 
-      	var _t = 0.1*t
-      	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
-      },
-    });
+    // var camera = view.camera({
+    //   lookAt: [0, 0, 0],
+    // }, {
+    //   position: function (t) { 
+    //   	var _t = 0.1*t
+    //   	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
+    //   },
+    // });
 
 	var origin = {x: 1800, y: 12, z: 0}
 
