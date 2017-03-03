@@ -6,13 +6,10 @@ window.__ = _.noConflict();
 
 const numData = 451
 
-var loadData=()=>{
+var loadData=(file)=>{
 	var deferred = Q.defer()
-	$.get('data/rcp8p5.csv', d=>{
+	$.get(file, d=>{
 		var res = Papa.parse(d, {header : true, skipEmptyLines: true, dynamicTyping: true})
-		// var formated = res.data.map(d=>{
-		// 	return[d.year, d.CO2Concentration, d.Temperature, d.Precipitation, d.SeaIceFraction]
-		// })
 		var formated = res.data
 		window._d = formated
 		deferred.resolve(formated)
@@ -27,8 +24,19 @@ var colors = {
   z: new THREE.Color(0x0074D9)
 };
 
-loadData()
-.then(d=>{return draw(d)})
+// loadData('data/rcp8p5.csv')
+let dataFiles = ['data/rcp8p5.csv', 'data/rcp2p6.csv']
+Q.all(dataFiles.map(f=>{return loadData(f)}))
+	.then(data=>{
+		return {
+			'rcp8p5': processData(data[0], numData),
+			'rcp2p6': processData(data[1], numData)
+		}
+	})
+	.then(d=>{return draw(d)})
+	.fail(err=>{
+		console.log(err)
+	})
 
 var interpolate = (lo, hi, n) => {
   n--; // go to end of range
@@ -40,8 +48,31 @@ var interpolate = (lo, hi, n) => {
 }
 
 
-var draw=(_d)=>{
+var processData = (_d, numData)=>{
+	var res={
+		temperature: [],
+		co2: [],
+		ice: [],
+		balance: [],
+		precipitation: []
+	}
 
+	for (var i = 0; i < numData; i++) {
+		res.temperature.push([_d[i].year, _d[i].Temperature, 0])
+		res.co2.push([_d[i].year, _d[i].CO2Concentration, 2])
+		res.ice.push([_d[i].year, _d[i].SeaIceFraction, 4])
+		res.balance.push([_d[i].year, _d[i].EnergyBalance, 6])
+		res.precipitation.push([_d[i].year, _d[i].Precipitation, 8])
+	}	
+
+	// debugger
+	return(res)
+}
+
+var draw=(datas)=>{
+	var data = datas.rcp8p5
+	data = datas.rcp2p6
+	// debugger
 	var mathbox = mathBox({
 	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
 	  controls: {
@@ -52,24 +83,6 @@ var draw=(_d)=>{
 
 	three.camera.position.set(-3.5, .4, 1.3);
 	three.renderer.setClearColor(new THREE.Color(0xa0a0ff), 1.0);
-	// three.renderer.setClearColor(new THREE.Color(0x000000), 1.0);
-
-	// Prepare test data
-	var temperature = []
-	var co2 = []
-	var ice = []
-	var balance = []
-	var precipitation = []
-	var drawColors = []
-	for (var i = 0; i < numData; ++i) {
-		temperature.push([_d[i].year, _d[i].Temperature, 0])
-		co2.push([_d[i].year, _d[i].CO2Concentration, 2])
-		ice.push([_d[i].year, _d[i].SeaIceFraction, 4])
-		balance.push([_d[i].year, _d[i].EnergyBalance, 6])
-		precipitation.push([_d[i].year, _d[i].Precipitation, 8])
-		// drawColors.push(0xFFFFFF * (i/numData))
-		drawColors.push([i/numData, i/numData, i/numData, 1])
-	}
 
 	// Mathbox view
 	var view = mathbox.cartesian({
@@ -178,6 +191,7 @@ var draw=(_d)=>{
 	drawAxis(view, origin)
 	drawGrid(view, origin)
 
+	// color gradient for temperature curve
 	view.interval({
 		id:'tColor',
 		width: numData,
@@ -196,23 +210,23 @@ var draw=(_d)=>{
 	})
 
 
-	view.array({
-	  id: 'temperature',
-	  width: numData,
-	  data: temperature,
-	  items: 1,
-	  channels: 3,
-	  live: true
-	});
+	// view.array({
+	//   id: 'temperature',
+	//   width: numData,
+	//   data: data.temperature,
+	//   items: 1,
+	//   channels: 3,
+	//   live: true
+	// });
 
-	view.line({
-		points: "#temperature",
-		color: 0xffffff,
-		colors: "#tColor",
-		width: 5
-	})
+	// view.line({
+	// 	points: "#temperature",
+	// 	color: 0xffffff,
+	// 	colors: "#tColor",
+	// 	width: 5
+	// })
 
-	var plotLine=(id, data, yRange, color)=>{
+	var plotLine=(id, data, yRange, color, colors)=>{
 		var view = mathbox.cartesian({
 		  range: [[1800, 2300], yRange, [0, 10]],
 		  scale: [2, 1, 1],
@@ -227,14 +241,16 @@ var draw=(_d)=>{
 		  live: false
 		}).line({
 			color: color,
+			colors: colors || null,
 			width: 5
 		})
 	}
 
-	plotLine('co2', co2, [0, 4000], 0xffff00)
-	plotLine('ice', ice, [0, 30], 0xffffff)
-	plotLine('balance', balance, [0, 10], 0x00ffff)
-	plotLine('precipitation', precipitation, [0.00003, 0.00005], 0x00ff00)
+	plotLine('temperature', data.temperature, [12, 25], 0xffffff, "#tColor")
+	plotLine('co2', data.co2, [0, 4000], 0xffff00)
+	plotLine('ice', data.ice, [0, 30], 0xffffff)
+	plotLine('balance', data.balance, [0, 10], 0x00ffff)
+	plotLine('precipitation', data.precipitation, [0.00003, 0.00005], 0x00ff00)
 
 
 
