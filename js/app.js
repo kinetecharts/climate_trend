@@ -1,5 +1,6 @@
 "use strict";
 
+
 var mouseX = 0, mouseY = 0;
 
 window.__ = _.noConflict();
@@ -28,10 +29,13 @@ var colors = {
 let dataFiles = ['data/rcp8p5.csv', 'data/rcp2p6.csv']
 Q.all(dataFiles.map(f=>{return loadData(f)}))
 	.then(data=>{
-		return {
+		var _data = {
 			'rcp8p5': processData(data[0], numData),
-			'rcp2p6': processData(data[1], numData)
+			'rcp2p6': processData(data[1], numData),
+			'active': processData(data[0], numData)
 		}
+		window._data = _data
+		return _data
 	})
 	.then(d=>{return draw(d)})
 	.fail(err=>{
@@ -46,7 +50,6 @@ var interpolate = (lo, hi, n) => {
   }
   return vals;
 }
-
 
 var processData = (_d, numData)=>{
 	var res={
@@ -64,14 +67,42 @@ var processData = (_d, numData)=>{
 		res.balance.push([_d[i].year, _d[i].EnergyBalance, 6])
 		res.precipitation.push([_d[i].year, _d[i].Precipitation, 8])
 	}	
-
-	// debugger
 	return(res)
 }
 
+// set active = r*rcp8.5 + (1-r)*rcp2.6
+var setActiveData = (data, r) =>{
+	var params = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
+	for(var i=0; i<numData; i++){
+		params.forEach(p=>{
+			for(var j=0; j<3; j++){
+				data.active[p][i][j] = data.rcp8p5[p][i][j] * r + data.rcp2p6[p][i][j] * (1.0-r)
+			}
+		})
+	}
+}
+
+var morph = (r0, r1)=>{
+	var param = {r: r0}
+	var t = new TWEEN.Tween(param)
+	.to({r: r1}, 2000)
+	.onUpdate(()=>{
+		setActiveData(_data, param.r)
+	})
+	.easing(TWEEN.Easing.Quadratic.InOut)
+	.start()
+}
+
+var best = ()=>{
+	morph(1, 0)
+}
+
+var worst = ()=>{
+	morph(0, 1)
+}
+
 var draw=(datas)=>{
-	var data = datas.rcp8p5
-	data = datas.rcp2p6
+	var data = datas.active
 	// debugger
 	var mathbox = mathBox({
 	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
@@ -82,7 +113,8 @@ var draw=(datas)=>{
 	var three = mathbox.three;
 
 	three.camera.position.set(-3.5, .4, 1.3);
-	three.renderer.setClearColor(new THREE.Color(0xa0a0ff), 1.0);
+	// three.renderer.setClearColor(new THREE.Color(0xa0a0ff), 1.0);
+	three.renderer.setClearColor(new THREE.Color(0x000), 1.0);
 
 	// Mathbox view
 	var view = mathbox.cartesian({
@@ -209,23 +241,6 @@ var draw=(datas)=>{
 		}
 	})
 
-
-	// view.array({
-	//   id: 'temperature',
-	//   width: numData,
-	//   data: data.temperature,
-	//   items: 1,
-	//   channels: 3,
-	//   live: true
-	// });
-
-	// view.line({
-	// 	points: "#temperature",
-	// 	color: 0xffffff,
-	// 	colors: "#tColor",
-	// 	width: 5
-	// })
-
 	var plotLine=(id, data, yRange, color, colors)=>{
 		var view = mathbox.cartesian({
 		  range: [[1800, 2300], yRange, [0, 10]],
@@ -238,7 +253,7 @@ var draw=(datas)=>{
 		  data: data,
 		  items: 1,
 		  channels: 3,
-		  live: false
+		  live: true
 		}).line({
 			color: color,
 			colors: colors || null,
@@ -252,59 +267,57 @@ var draw=(datas)=>{
 	plotLine('balance', data.balance, [0, 10], 0x00ffff)
 	plotLine('precipitation', data.precipitation, [0.00003, 0.00005], 0x00ff00)
 
+	three.on('update', ()=>{
+		TWEEN.update()
+	})
+
+	var notUsed = ()=>{
+		var lineTemperature = mathbox.select('temperature')
+
+		three.on('update', ()=>{
+			var time = three.Time.frames / 200
+			for(var i=0; i<numData; i++){
+				data.temperature[i][2] += 0.01*Math.sin(i/20 + time)
+			}
+			lineTemperature.set('data', data.temperature)
+
+		})
 
 
 
+		view.array({
+		  id: 'sampler1',
+		  width: numData,
+		  data: [[]],
+		  items: 2,
+		  channels: 3,
+		});
+		view.vector({
+		  color: 0x3090FF,
+		  width: 4,
+		  depth: 1,
+		  end: true,
+		  zWrite: false,
+		  blending: THREE.AdditiveBlending,
+		});
 
-	// var lineTemperature = mathbox.select('temperature')
+		view.array({
+		  id: 'sampler2',
+		  width: numData,
+		  data: [[]],
+		  items: 2,
+		  channels: 3,
+		});
+		view.vector({
+		  color: 0x903000,
+		  width: 4,
+		  depth: 1,
+		  end: true,
+		  zWrite: false,
+		  blending: THREE.AdditiveBlending,
+		});
 
-	// three.on('update', ()=>{
-	// 	var time = three.Time.frames / 200
-	// 	for(i=0; i<numData; i++){
-	// 		temperature[i][2] = Math.sin(i/20 + time)
-	// 	}
-	// 	lineTemperature.set('data', temperature)
-
-	// })
-
-
-
-
-
-
-
-	view.array({
-	  id: 'sampler1',
-	  width: numData,
-	  data: [[]],
-	  items: 2,
-	  channels: 3,
-	});
-	view.vector({
-	  color: 0x3090FF,
-	  width: 4,
-	  depth: 1,
-	  end: true,
-	  zWrite: false,
-	  blending: THREE.AdditiveBlending,
-	});
-
-	view.array({
-	  id: 'sampler2',
-	  width: numData,
-	  data: [[]],
-	  items: 2,
-	  channels: 3,
-	});
-	view.vector({
-	  color: 0x903000,
-	  width: 4,
-	  depth: 1,
-	  end: true,
-	  zWrite: false,
-	  blending: THREE.AdditiveBlending,
-	});
-
-	var sampler1 = mathbox.select('#sampler1')
-	var sampler2 = mathbox.select('#sampler2')
+		var sampler1 = mathbox.select('#sampler1')
+		var sampler2 = mathbox.select('#sampler2')
+	}
 }
