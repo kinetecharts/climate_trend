@@ -1,5 +1,6 @@
 "use strict";
 
+let backgroundColor = 0x101025
 
 var mouseX = 0, mouseY = 0;
 
@@ -93,28 +94,139 @@ var morph = (r0, r1)=>{
 	.start()
 }
 
-var best = ()=>{
+var good = ()=>{
 	morph(1, 0)
 }
 
-var worst = ()=>{
+var bad = ()=>{
 	morph(0, 1)
+}
+
+var loop = ()=>{
+	setTimeout(()=>{
+		good()
+	}, 2000)
+	setTimeout(()=>{
+		bad()
+	}, 6000)
+}
+
+setInterval(()=>{
+	loop()
+}, 10000)
+
+var drawAxis = (view, origin)=>{
+    var xticks = 6
+
+	view
+	.transform({
+		position:[0, origin.y, origin.z]
+	})
+	.axis({
+	  axis: "x", // year
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: colors.x,
+	  opacity: 1.0,
+	})
+	
+	view.scale({
+      divide: 4,
+      origin: [1800, 12, 0, 0],
+      axis: "x"
+    })
+    .ticks({
+      classes: ['foo', 'bar'],
+      width: 2
+    })
+    .text({
+    	live: false,
+    	data: interpolate(1800, 2300, xticks)
+    })
+    .label({
+    	color: colors.x,
+    	background: backgroundColor
+    	// offset: [1,1]
+    })
+
+	view.transform({
+		position:[origin.x, 0, origin.z]
+	})
+	.axis({
+	  axis: "y",
+	  end: true,
+	  width: 3,
+	  depth: 1,
+	  color: colors.y,
+	  opacity: .5,
+	})
+	view.transform({
+		position: [origin.x, origin.y, ]
+	})
+	.axis({
+	  axis: "z",
+	  end: true,
+	  width: 3,
+	  depth: 1,
+	  color: colors.z,
+	  opacity: .5,
+	});
+
+    view.array({
+      id: "colors",
+      live: false,
+      data: [colors.x, colors.y, colors.z].map(function (color){
+        return [color.r, color.g, color.b, 1];
+      }),
+    });
+
+    view.array({
+      data: [[2400,origin.y,origin.z], [1800,25,0], [1800,12,10]],
+      channels: 3, // necessary
+      live: false,
+    }).text({
+      data: ["year", "y", "z"],
+    }).label({
+      color: colors.x,
+      background: backgroundColor
+    });		
+
+}
+
+var drawGrid = (view, origin)=>{
+	view.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3
+	})
+	view
+	.transform({
+		position:[0, origin.y, origin.z]
+	})
+	.grid({
+		axes: "zx",
+		divideX: 3,
+		divideY: 3
+	})
 }
 
 var draw=(datas)=>{
 	var data = datas.active
 	// debugger
 	var mathbox = mathBox({
-	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
+	  // plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
+	  plugins: ['VR', 'ui', 'controls'],
 	  controls: {
-	    klass: THREE.OrbitControls
+	    // klass: THREE.OrbitControls
+	    klass: THREE.VRControls
 	  },
 	});
 	var three = mathbox.three;
 
 	three.camera.position.set(-3.5, .4, 1.3);
-	// three.renderer.setClearColor(new THREE.Color(0xa0a0ff), 1.0);
-	three.renderer.setClearColor(new THREE.Color(0x000), 1.0);
+
+	three.renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
 
 	// Mathbox view
 	var view = mathbox.cartesian({
@@ -122,103 +234,16 @@ var draw=(datas)=>{
 	  scale: [1.5, 1, 1],
 	});
 
+    var camera = view.camera({
+      lookAt: [0, 0, 0],
+    }, {
+      position: function (t) { 
+      	var _t = 0.1*t
+      	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
+      },
+    });
+
 	var origin = {x: 1800, y: 12, z: 0}
-
-
-	var drawAxis = (view, origin)=>{
-	    var xticks = 6
-
-		view
-		.transform({
-			position:[0, origin.y, origin.z]
-		})
-		.axis({
-		  axis: "x", // year
-		  end: true,
-		  width: 6,
-		  depth: 1,
-		  color: 0xff0000,
-		  opacity: 1.0,
-		})
-		
-		view.scale({
-	      divide: 4,
-	      origin: [1800, 12, 0, 0],
-	      axis: "x"
-	    })
-	    .ticks({
-	      classes: ['foo', 'bar'],
-	      width: 2
-	    })
-	    .text({
-	    	live: false,
-	    	data: interpolate(1800, 2300, xticks)
-	    })
-	    .label({
-	    	color: 0xff0000,
-	    	// offset: [1,1]
-	    })
-
-		view.transform({
-			position:[origin.x, 0, origin.z]
-		})
-		.axis({
-		  axis: "y",
-		  end: true,
-		  width: 3,
-		  depth: 1,
-		  color: 0x00ff00,
-		  opacity: .5,
-		})
-		view.transform({
-			position: [origin.x, origin.y, ]
-		})
-		.axis({
-		  axis: "z",
-		  end: true,
-		  width: 3,
-		  depth: 1,
-		  color: 0x0000ff,
-		  opacity: .5,
-		});
-
-	    view.array({
-	      id: "colors",
-	      live: false,
-	      data: [colors.x, colors.y, colors.z].map(function (color){
-	        return [color.r, color.g, color.b, 1];
-	      }),
-	    });
-
-	    view.array({
-	      data: [[2300,11,2], [1800,25,0], [1800,12,10]],
-	      channels: 3, // necessary
-	      live: false,
-	    }).text({
-	      data: ["year", "y", "z"],
-	    }).label({
-	      color: 0x000000,
-	      colors: "#colors",
-	    });		
-
-	}
-
-	var drawGrid = (view, origin)=>{
-		view.grid({
-			axes: "xy",
-			divideX: 3,
-			divideY: 3
-		})
-		view
-		.transform({
-			position:[0, origin.y, origin.z]
-		})
-		.grid({
-			axes: "zx",
-			divideX: 3,
-			divideY: 3
-		})
-	}
 
 	drawAxis(view, origin)
 	drawGrid(view, origin)
@@ -244,7 +269,7 @@ var draw=(datas)=>{
 	var plotLine=(id, data, yRange, color, colors)=>{
 		var view = mathbox.cartesian({
 		  range: [[1800, 2300], yRange, [0, 10]],
-		  scale: [2, 1, 1],
+		  scale: [1.5, 1, 1],
 		});
 
 		view.array({
