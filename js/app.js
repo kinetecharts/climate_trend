@@ -63,10 +63,10 @@ var processData = (_d, numData)=>{
 
 	for (var i = 0; i < numData; i++) {
 		res.temperature.push([_d[i].year, _d[i].Temperature, 0])
-		res.co2.push([_d[i].year, _d[i].CO2Concentration, 2])
-		res.ice.push([_d[i].year, _d[i].SeaIceFraction, 4])
-		res.balance.push([_d[i].year, _d[i].EnergyBalance, 6])
-		res.precipitation.push([_d[i].year, _d[i].Precipitation, 8])
+		res.co2.push([_d[i].year, _d[i].CO2Concentration, 2.5])
+		res.ice.push([_d[i].year, _d[i].SeaIceFraction, 5])
+		res.balance.push([_d[i].year, _d[i].EnergyBalance, 7.5])
+		res.precipitation.push([_d[i].year, _d[i].Precipitation, 10])
 	}	
 	return(res)
 }
@@ -164,6 +164,58 @@ var drawAxis = (view, origin)=>{
 	  opacity: .5,
 	})
 
+	view.transform({
+		position:[2300, 0, origin.z ]
+	}).axis({
+	  axis: "y",
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: 0xffaa44,
+	  opacity: .5,
+	})
+	view.transform({
+		position:[2300, 0, 2.5 ]
+	}).axis({
+	  axis: "y",
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: 0xffff00,
+	  opacity: .5,
+	})
+	view.transform({
+		position:[2300, 0, 5 ]
+	}).axis({
+	  axis: "y",
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: 0xffffff,
+	  opacity: .5,
+	})
+	view.transform({
+		position:[2300, 0, 7.5 ]
+	}).axis({
+	  axis: "y",
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: 0x00ffff,
+	  opacity: .5,
+	})
+	view.transform({
+		position:[2300, 0, 10 ]
+	}).axis({
+	  axis: "y",
+	  end: true,
+	  width: 6,
+	  depth: 1,
+	  color: 0x00ff00,
+	  opacity: .5,
+	})
+
+
 	// Z axis
 	view.transform({
 		position: [origin.x, origin.y, ]
@@ -200,13 +252,59 @@ var drawAxis = (view, origin)=>{
 }
 
 var drawGrid = (view, origin)=>{
-	const lineWidth = 5
+	const lineWidth = 1
+	const alpha = 0.3
 	view.grid({
 		axes: "xy",
 		divideX: 3,
 		divideY: 3,
-		width: lineWidth
+		width: lineWidth,
+		opacity: alpha,
+		color: 0xffaa44
 	})
+
+	view.transform({position:[0, 0, 2.5]})
+	.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth,
+		opacity: alpha,
+		color: 0xffff00
+	})
+
+	view.transform({position:[0, 0, 5]})
+	.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth,
+		opacity: alpha,
+		color: 0xffffff
+	})
+
+	view.transform({position:[0, 0, 7.5]})
+	.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth,
+		opacity: alpha,
+		color: 0xffff00
+	})
+
+	view.transform({position:[0, 0, 10]})
+	.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth,
+		opacity: alpha,
+		color: 0x00ff00
+	})
+
+
+
 
 	view
 	.transform({
@@ -254,14 +352,14 @@ var draw=(datas)=>{
 	  scale: [1.5, 1, 1],
 	});
 
-    // var camera = view.camera({
-    //   lookAt: [0, 0, 0],
-    // }, {
-    //   position: function (t) { 
-    //   	var _t = 0.1*t
-    //   	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
-    //   },
-    // });
+    var camera = view.camera({
+      lookAt: [0, 0, 0],
+    }, {
+      position: function (t) { 
+      	var _t = 0.1*t
+      	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
+      },
+    });
 
 	var origin = {x: 1800, y: 12, z: 0}
 
