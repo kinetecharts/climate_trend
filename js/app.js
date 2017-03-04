@@ -54,6 +54,7 @@ var interpolate = (lo, hi, n) => {
 
 var processData = (_d, numData)=>{
 	var res={
+		year: [],
 		temperature: [],
 		co2: [],
 		ice: [],
@@ -62,11 +63,12 @@ var processData = (_d, numData)=>{
 	}
 
 	for (var i = 0; i < numData; i++) {
-		res.temperature.push([_d[i].year, _d[i].Temperature, 0])
-		res.co2.push([_d[i].year, _d[i].CO2Concentration, 2.5])
-		res.ice.push([_d[i].year, _d[i].SeaIceFraction, 5])
-		res.balance.push([_d[i].year, _d[i].EnergyBalance, 7.5])
-		res.precipitation.push([_d[i].year, _d[i].Precipitation, 10])
+		res.year.push(_d[i].year)
+		res.temperature.push(_d[i].Temperature)
+		res.co2.push(_d[i].CO2Concentration)
+		res.ice.push(_d[i].SeaIceFraction)
+		res.balance.push(_d[i].EnergyBalance)
+		res.precipitation.push(_d[i].Precipitation)
 	}	
 	return(res)
 }
@@ -76,9 +78,7 @@ var setActiveData = (data, r) =>{
 	var params = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
 	for(var i=0; i<numData; i++){
 		params.forEach(p=>{
-			for(var j=0; j<3; j++){
-				data.active[p][i][j] = data.rcp8p5[p][i][j] * r + data.rcp2p6[p][i][j] * (1.0-r)
-			}
+			data.active[p][i] = data.rcp8p5[p][i] * r + data.rcp2p6[p][i] * (1.0-r)
 		})
 	}
 }
@@ -384,7 +384,8 @@ var draw=(datas)=>{
 		}
 	})
 
-	var plotLine=(id, data, yRange, color, colors)=>{
+	var plotLine=(id, _data, yRange, color, colors)=>{
+		var data = _.zip(_data.year, _data[id], _data.year.map(()=>{return 0}))
 		var view = mathbox.cartesian({
 		  range: [[1800, 2300], yRange, [0, 10]],
 		  scale: [1.5, 1, 1],
@@ -404,18 +405,24 @@ var draw=(datas)=>{
 		})
 	}
 
-	plotLine('temperature', data.temperature, [12, 25], 0xffffff, "#tColor")
-	plotLine('co2', data.co2, [0, 4000], 0xffff00)
-	plotLine('ice', data.ice, [0, 30], 0xffffff)
-	plotLine('balance', data.balance, [0, 10], 0x00ffff)
-	plotLine('precipitation', data.precipitation, [0.00003, 0.00005], 0x00ff00)
+	plotLine('temperature', data, [12, 25], 0xffffff, "#tColor")
+	// plotLine('co2', data, [0, 4000], 0xffff00)
+	// plotLine('ice', data, [0, 30], 0xffffff)
+	// plotLine('balance', data, [0, 10], 0x00ffff)
+	// plotLine('precipitation', data, [0.00003, 0.00005], 0x00ff00)
 
 	three.on('update', ()=>{
 		TWEEN.update()
+
+		var newData = _.zip(data.year, data.temperature, data.year.map(()=>{
+				return 0}))
+		console.log(newData[450][1])
+		mathbox.select('#temperature')
+			.set('data', newData)
 	})
 
 	var notUsed = ()=>{
-		var lineTemperature = mathbox.select('temperature')
+		var lineTemperature = mathbox.select('#temperature')
 
 		three.on('update', ()=>{
 			var time = three.Time.frames / 200
