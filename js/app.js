@@ -156,7 +156,7 @@ var drawAxis = (view, origin)=>{
     	data: interpolate(1800, 2300, xticks)
     })
     .label({
-    	color: colors.x,
+    	color: 0xaaaaaa,
     	background: backgroundColor
     	// offset: [1,1]
     })
@@ -197,13 +197,13 @@ var drawAxis = (view, origin)=>{
     });
 
     view.array({
-      data: [[2330,origin.y,origin.z], [1800,25,0], [1800,12,10]],
+      data: [[2350,origin.y,origin.z], [1800,25,0], [1800,12,10]],
       channels: 3, // necessary
       live: false,
     }).text({
       data: ["year", "y", "z"],
     }).label({
-      color: colors.x,
+      color: 0xaaaaaa,
       background: backgroundColor
     });		
 
