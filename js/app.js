@@ -381,16 +381,16 @@ var draw=(datas)=>{
 		items: 1,
 		live: true,
 		expr: (emit, x, i, t)=>{
-			var min = 12
-			var max = 25
+			var min = 13
+			var max = 23
 			var val = _data.active.temperature[i]
 
 			var r0 = 1 - (val-min) / (max-min)
 			var r1 = 1 - r0
 			// var r0 = 1-i/numData
 			// var r1 = i/numData
-			var c0 = [0.2, 0.9, 0.2]
-			var c1 = [0.9, 0.2, 0.2]
+			var c0 = [0.2, 1, 0.2] // Green
+			var c1 = [1, 0.2, 0.2] // Red
 			emit(r0*c0[0]+r1*c1[0], 
 				r0*c0[1]+r1*c1[1],
 				r0*c0[2]+r1*c1[2], Math.sin(t)*Math.sin(t/1) + 0.3)
