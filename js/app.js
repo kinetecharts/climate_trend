@@ -309,14 +309,14 @@ var draw=(datas)=>{
 			var max = 23
 			var val = _data.active.temperature[i]
 
-			var r0 = 1 - (val-min) / (max-min)
+			var r0 = 1 - (val-min) / (max-min) // Green percentage
 			var r1 = 1 - r0
 
 			var c0 = [0.2, 1, 0.2] // Green
 			var c1 = [1, 0.2, 0.2] // Red
 			emit(r0*c0[0]+r1*c1[0], 
 				r0*c0[1]+r1*c1[1],
-				r0*c0[2]+r1*c1[2], 1.0-Math.pow(Math.sin(t), 16))
+				r0*c0[2]+r1*c1[2], 1.0-Math.pow(Math.sin(t*3), 16) + r0+0.2) // make it blink alarm at high temperature
 		}
 	})
 
