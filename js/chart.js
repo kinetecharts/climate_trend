@@ -51,8 +51,9 @@ class Chart{
 		view.transform({position:[0, 0, this.z_offset]})
 		.grid({
 			axes: "xy",
-			divideX: 3,
-			divideY: 3,
+			divideX: 4,
+			divideY: 4,
+			niceY: false,
 			width: 1,
 			opacity: 0.3,
 			color: this.color
@@ -84,9 +85,10 @@ class Chart{
 
 		// Draw Y axis labels and ticks
 		view.scale({
-	      divide: 3,
+	      divide: 4,
 	      origin: [this.xRange[1], this.yRange[0], this.z_offset],
-	      axis: "y"
+	      axis: "y",
+	      nice: false
 	    })
 	    .ticks({
 	      classes: ['foo', 'bar'],
@@ -94,7 +96,7 @@ class Chart{
 	    })
 	    .text({
 	    	live: false,
-	    	data: interpolate(this.yRange[0], this.yRange[1], 3)
+	    	data: interpolate(this.yRange[0], this.yRange[1], 5)
 	    })
 	    .label({
 	    	color: this.color,

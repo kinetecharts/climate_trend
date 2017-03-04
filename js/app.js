@@ -12,7 +12,7 @@ const numData = 451
 
 const chartRange={
 	x:[1800, 2300],
-	y:[12, 25],
+	y:[12, 24],
 	z:[0, 10]
 }
 
@@ -143,17 +143,18 @@ var drawAxis = (view, origin)=>{
 	})
 	
 	view.scale({
-      divide: 4,
+      divide: 5,
+      nice: false,
       origin: [1800, 12, 0, 0],
       axis: "x"
     })
     .ticks({
       classes: ['foo', 'bar'],
-      width: 2
+      width: 20
     })
     .text({
     	live: false,
-    	data: interpolate(1800, 2300, xticks)
+    	data: interpolate(chartRange.x[0], chartRange.x[1], 6)
     })
     .label({
     	color: 0xaaaaaa,
@@ -212,24 +213,24 @@ var drawAxis = (view, origin)=>{
 var drawGrid = (view, origin)=>{
 	const lineWidth = 1
 	const alpha = 0.3
-	view.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0xffaa44
-	})
+	// view.grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0xffaa44
+	// })
 
-	view.transform({position:[0, 0, 10]})
-	.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0x00ff00
-	})
+	// view.transform({position:[0, 0, 10]})
+	// .grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0x00ff00
+	// })
 
 
 	view
@@ -238,8 +239,10 @@ var drawGrid = (view, origin)=>{
 	})
 	.grid({
 		axes: "zx",
-		divideX: 3,
-		divideY: 3,
+		divideX: 4,
+		divideY: 5,
+		niceX: false,
+		niceY: false,
 		width: lineWidth
 	})
 
@@ -249,8 +252,10 @@ var drawGrid = (view, origin)=>{
 	})
 	.grid({
 		axes: "yz",
-		divideX: 3,
-		divideY: 3,
+		divideX: 4,
+		divideY: 4,
+		niceX: false,
+		niceY: false,
 		width: lineWidth
 	})
 }
@@ -337,11 +342,11 @@ var draw=(datas)=>{
 	}
 
 	var charts={}
-	charts['temperature'] = plotLine('temperature', [12, 25],  0, 0xffcc44, '#tColor')
-	charts['co2'] 		 = plotLine('co2', 			[0, 4000], 2.5,  0xffff00, null)
-	charts['ice'] 		 = plotLine('ice', [0, 30], 5, 0xffffff, null)
-	charts['balance']		= plotLine('balance', [0, 10], 7.5, 0x00ffff, null)
-	charts['precipitation'] = plotLine('precipitation', [0.00003, 0.00005], 10,  0x00ff00, null)
+	charts['temperature'] = plotLine('temperature', [12, 24],  0, 0xffcc44, '#tColor')
+	charts['co2'] 		 = plotLine('co2', 			[0, 2200], 2.5,  0xffff00, null)
+	charts['ice'] 		 = plotLine('ice', [0, 10], 5, 0xffffff, null)
+	charts['balance']		= plotLine('balance', [0, 5], 7.5, 0x00ffff, null)
+	charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
 
 	three.on('update', ()=>{
 		TWEEN.update()
