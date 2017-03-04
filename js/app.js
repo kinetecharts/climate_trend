@@ -165,58 +165,6 @@ var drawAxis = (view, origin)=>{
 	  opacity: .5,
 	})
 
-	view.transform({
-		position:[2300, 0, origin.z ]
-	}).axis({
-	  axis: "y",
-	  end: true,
-	  width: 6,
-	  depth: 1,
-	  color: 0xffaa44,
-	  opacity: .5,
-	})
-	view.transform({
-		position:[2300, 0, 2.5 ]
-	}).axis({
-	  axis: "y",
-	  end: true,
-	  width: 6,
-	  depth: 1,
-	  color: 0xffff00,
-	  opacity: .5,
-	})
-	view.transform({
-		position:[2300, 0, 5 ]
-	}).axis({
-	  axis: "y",
-	  end: true,
-	  width: 6,
-	  depth: 1,
-	  color: 0xffffff,
-	  opacity: .5,
-	})
-	view.transform({
-		position:[2300, 0, 7.5 ]
-	}).axis({
-	  axis: "y",
-	  end: true,
-	  width: 6,
-	  depth: 1,
-	  color: 0x00ffff,
-	  opacity: .5,
-	})
-	view.transform({
-		position:[2300, 0, 10 ]
-	}).axis({
-	  axis: "y",
-	  end: true,
-	  width: 6,
-	  depth: 1,
-	  color: 0x00ff00,
-	  opacity: .5,
-	})
-
-
 	// Z axis
 	view.transform({
 		position: [origin.x, origin.y, ]
@@ -240,7 +188,7 @@ var drawAxis = (view, origin)=>{
     });
 
     view.array({
-      data: [[2400,origin.y,origin.z], [1800,25,0], [1800,12,10]],
+      data: [[2330,origin.y,origin.z], [1800,25,0], [1800,12,10]],
       channels: 3, // necessary
       live: false,
     }).text({
@@ -255,44 +203,44 @@ var drawAxis = (view, origin)=>{
 var drawGrid = (view, origin)=>{
 	const lineWidth = 1
 	const alpha = 0.3
-	view.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0xffaa44
-	})
+	// view.grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0xffaa44
+	// })
 
-	view.transform({position:[0, 0, 2.5]})
-	.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0xffff00
-	})
+	// view.transform({position:[0, 0, 2.5]})
+	// .grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0xffff00
+	// })
 
-	view.transform({position:[0, 0, 5]})
-	.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0xffffff
-	})
+	// view.transform({position:[0, 0, 5]})
+	// .grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0xffffff
+	// })
 
-	view.transform({position:[0, 0, 7.5]})
-	.grid({
-		axes: "xy",
-		divideX: 3,
-		divideY: 3,
-		width: lineWidth,
-		opacity: alpha,
-		color: 0xffff00
-	})
+	// view.transform({position:[0, 0, 7.5]})
+	// .grid({
+	// 	axes: "xy",
+	// 	divideX: 3,
+	// 	divideY: 3,
+	// 	width: lineWidth,
+	// 	opacity: alpha,
+	// 	color: 0xffff00
+	// })
 
 	view.transform({position:[0, 0, 10]})
 	.grid({
@@ -364,7 +312,8 @@ var draw=(datas)=>{
     }, {
       position: function (t) { 
       	var _t = 0.1*t
-      	return [-3 * Math.cos(_t) + 1, .4 * Math.cos(_t * .381) + 1, -3 * Math.sin(_t) + 1] 
+      	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
+      	.map(x=>{return 1.5*x + 1}) 
       },
     });
 
@@ -424,7 +373,7 @@ var draw=(datas)=>{
 	var temperatureChart = new Chart(mathbox, {
 		x : data.year,
 		y : data[id],
-		z_offset : 0,
+		z_offset : 1,
 		id : id,
 		xRange : [1800, 2300],
 		yRange : [12,25],
