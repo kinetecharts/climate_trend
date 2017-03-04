@@ -16,7 +16,7 @@ const chartRange={
 	z:[0, 10]
 }
 
-const chartScale=[1.5,1,1]
+const chartScale=[1.5,1,1.5]
 
 var loadData=(file)=>{
 	var deferred = Q.defer()
@@ -256,8 +256,6 @@ var drawGrid = (view, origin)=>{
 }
 
 
-
-
 var draw=(datas)=>{
 	var data = datas.active
 	// debugger
@@ -313,38 +311,14 @@ var draw=(datas)=>{
 
 			var r0 = 1 - (val-min) / (max-min)
 			var r1 = 1 - r0
-			// var r0 = 1-i/numData
-			// var r1 = i/numData
+
 			var c0 = [0.2, 1, 0.2] // Green
 			var c1 = [1, 0.2, 0.2] // Red
 			emit(r0*c0[0]+r1*c1[0], 
 				r0*c0[1]+r1*c1[1],
-				r0*c0[2]+r1*c1[2], Math.sin(t)*Math.sin(t/1) + 0.3)
+				r0*c0[2]+r1*c1[2], 1.0-Math.pow(Math.sin(t), 16))
 		}
 	})
-
-	// depreciated
-	var plotLineDepreciated=(id, _data, yRange, color, colors)=>{
-		var data = _.zip(_data.year, _data[id], _data.year.map(()=>{return 0}))
-		var view = mathbox.cartesian({
-		  range: [[1800, 2300], yRange, [0, 10]],
-		  scale: [1.5, 1, 1],
-		});
-
-		view.array({
-		  id: id,
-		  width: numData,
-		  data: data,
-		  items: 1,
-		  channels: 3,
-		  live: true
-		}).line({
-			color: color,
-			colors: colors || null,
-			width: 5
-		})
-	}
-
 
 	var plotLine = (id, yRange, z_offset, color, colors)=>{
 		var chart = new Chart(mathbox, {
