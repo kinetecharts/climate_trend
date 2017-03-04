@@ -44,6 +44,7 @@ class Chart{
 			colors: this.colors,
 			width: 10
 		})
+
 		this.chart =this.mathbox.select("#"+this.id)
 
 		// draw XY grid
@@ -103,9 +104,9 @@ class Chart{
 
 	    // Y axis id
         view.array({
-	      data: [[this.xRange[1], 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
-	      channels: 3, // necessary
-	      live: false,
+			data: [[this.xRange[1], 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
+			channels: 3, // necessary
+			live: false,
 	    }).text({
 	      data: [this.id],
 	    }).label({
@@ -113,6 +114,22 @@ class Chart{
 	      background: backgroundColor
 	    });		
 
+	    // projection at 2300
+        view.array({
+        	id: this.id+'-label-position',
+			data: [[this.xRange[1], 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
+			channels: 3, // necessary
+			live: false,
+	    }).text({
+	    	id: this.id+'-label-text',
+	      data: [0],
+	    }).label({
+	      color: this.color,
+	      background: backgroundColor
+	    });		
+
+	    this.labelPosition = this.mathbox.select('#'+this.id+'-label-position')
+	    this.labelText = this.mathbox.select('#'+this.id+'-label-text')
 
 	}
 
@@ -120,5 +137,7 @@ class Chart{
 		var newData=_.zip(this.x, y, this.z)
 		// this.chart =this.mathbox.select("#"+this.id)
 		this.chart.set('data', newData)
+		this.labelPosition.set('data', [[this.xRange[1], y[numData-1], this.z_offset]])
+		this.labelText.set('data', [y[numData-1].toPrecision(3)])
 	}
 }
