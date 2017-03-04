@@ -42,7 +42,7 @@ class Chart{
 			id: this.id+'-line',
 			color: this.color,
 			colors: this.colors,
-			width: 5
+			width: 10
 		})
 		this.chart =this.mathbox.select("#"+this.id)
 
@@ -83,17 +83,17 @@ class Chart{
 
 		// Draw Y axis labels and ticks
 		view.scale({
-	      divide: 4,
+	      divide: 3,
 	      origin: [this.xRange[1], this.yRange[0], this.z_offset],
 	      axis: "y"
 	    })
 	    .ticks({
 	      classes: ['foo', 'bar'],
-	      width: 2
+	      width: 10
 	    })
 	    .text({
 	    	live: false,
-	    	data: interpolate(this.yRange[0], this.yRange[1], 4)
+	    	data: interpolate(this.yRange[0], this.yRange[1], 3)
 	    })
 	    .label({
 	    	color: this.color,
@@ -103,7 +103,7 @@ class Chart{
 
 	    // Y axis id
         view.array({
-	      data: [[this.xRange[1], this.yRange[1]+1, this.z_offset]],
+	      data: [[this.xRange[1], 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
 	      channels: 3, // necessary
 	      live: false,
 	    }).text({

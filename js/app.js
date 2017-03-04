@@ -1,5 +1,7 @@
 "use strict";
 
+const Parameters = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
+
 let backgroundColor = 0x101025
 
 var mouseX = 0, mouseY = 0;
@@ -7,6 +9,14 @@ var mouseX = 0, mouseY = 0;
 window.__ = _.noConflict();
 
 const numData = 451
+
+const chartRange={
+	x:[1800, 2300],
+	y:[12, 25],
+	z:[0, 10]
+}
+
+const chartScale=[1.5,1,1]
 
 var loadData=(file)=>{
 	var deferred = Q.defer()
@@ -76,9 +86,8 @@ var processData = (_d, numData)=>{
 
 // set active = r*rcp8.5 + (1-r)*rcp2.6
 var setActiveData = (data, r) =>{
-	var params = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
 	for(var i=0; i<numData; i++){
-		params.forEach(p=>{
+		Parameters.forEach(p=>{
 			data.active[p][i] = data.rcp8p5[p][i] * r + data.rcp2p6[p][i] * (1.0-r)
 		})
 	}
@@ -203,44 +212,14 @@ var drawAxis = (view, origin)=>{
 var drawGrid = (view, origin)=>{
 	const lineWidth = 1
 	const alpha = 0.3
-	// view.grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0xffaa44
-	// })
-
-	// view.transform({position:[0, 0, 2.5]})
-	// .grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0xffff00
-	// })
-
-	// view.transform({position:[0, 0, 5]})
-	// .grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0xffffff
-	// })
-
-	// view.transform({position:[0, 0, 7.5]})
-	// .grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0xffff00
-	// })
+	view.grid({
+		axes: "xy",
+		divideX: 3,
+		divideY: 3,
+		width: lineWidth,
+		opacity: alpha,
+		color: 0xffaa44
+	})
 
 	view.transform({position:[0, 0, 10]})
 	.grid({
@@ -251,8 +230,6 @@ var drawGrid = (view, origin)=>{
 		opacity: alpha,
 		color: 0x00ff00
 	})
-
-
 
 
 	view
@@ -303,8 +280,8 @@ var draw=(datas)=>{
 
 	// Mathbox view
 	var view = mathbox.cartesian({
-	  range: [[1800, 2300], [12, 25], [0, 10]],
-	  scale: [1.5, 1, 1],
+	  range: [chartRange.x, chartRange.y, chartRange.z],
+	  scale: chartScale,
 	});
 
     var camera = view.camera({
@@ -317,7 +294,7 @@ var draw=(datas)=>{
       },
     });
 
-	var origin = {x: 1800, y: 12, z: 0}
+	var origin = {x: chartRange.x[0], y: chartRange.y[0], z: chartRange.z[0]}
 
 	drawAxis(view, origin)
 	drawGrid(view, origin)
@@ -346,7 +323,8 @@ var draw=(datas)=>{
 		}
 	})
 
-	var plotLine=(id, _data, yRange, color, colors)=>{
+	// depreciated
+	var plotLineDepreciated=(id, _data, yRange, color, colors)=>{
 		var data = _.zip(_data.year, _data[id], _data.year.map(()=>{return 0}))
 		var view = mathbox.cartesian({
 		  range: [[1800, 2300], yRange, [0, 10]],
@@ -367,86 +345,36 @@ var draw=(datas)=>{
 		})
 	}
 
-	var id = 'temperature'
 
+	var plotLine = (id, yRange, z_offset, color, colors)=>{
+		var chart = new Chart(mathbox, {
+			x : data.year,
+			y : data[id],
+			z_offset : z_offset,
+			id : id,
+			xRange : chartRange.x,
+			yRange : yRange,
+			zRrange : chartRange.z,
+			scale : chartScale,
+			color : color,
+			colors : colors
+		})
+		return chart
+	}
 
-	var temperatureChart = new Chart(mathbox, {
-		x : data.year,
-		y : data[id],
-		z_offset : 1,
-		id : id,
-		xRange : [1800, 2300],
-		yRange : [12,25],
-		zRrange : [0, 10],
-		scale : [1.5,1,1],
-		color : 0xffaa44,
-		colors : "#tColor"
-	})
-
-	// plotLine('temperature', data, [12, 25], 0xffffff, "#tColor")
-	// plotLine('co2', data, [0, 4000], 0xffff00)
-	// plotLine('ice', data, [0, 30], 0xffffff)
-	// plotLine('balance', data, [0, 10], 0x00ffff)
-	// plotLine('precipitation', data, [0.00003, 0.00005], 0x00ff00)
+	var charts={}
+	charts['temperature'] = plotLine('temperature', [12, 25],  0, 0xffcc44, '#tColor')
+	charts['co2'] 		 = plotLine('co2', 			[0, 4000], 2.5,  0xffff00, null)
+	charts['ice'] 		 = plotLine('ice', [0, 30], 5, 0xffffff, null)
+	charts['balance']		= plotLine('balance', [0, 10], 7.5, 0x00ffff, null)
+	charts['precipitation'] = plotLine('precipitation', [0.00003, 0.00005], 10,  0x00ff00, null)
 
 	three.on('update', ()=>{
 		TWEEN.update()
 
-		var newData = _.zip(data.year, data.temperature, data.year.map(()=>{
-				return 0}))
-		// console.log(newData[450][1])
-		// debugger
-		temperatureChart.update(data.temperature)
-
-		// mathbox.select('#temperature')
-		// 	.set('data', newData)
-	})
-
-	var notUsed = ()=>{
-		var lineTemperature = mathbox.select('#temperature')
-
-		three.on('update', ()=>{
-			var time = three.Time.frames / 200
-			for(var i=0; i<numData; i++){
-				data.temperature[i][2] += 0.01*Math.sin(i/20 + time)
-			}
-			lineTemperature.set('data', data.temperature)
-
+		Object.keys(charts).forEach(id=>{
+			charts[id].update(data[id])
 		})
 
-		view.array({
-		  id: 'sampler1',
-		  width: numData,
-		  data: [[]],
-		  items: 2,
-		  channels: 3,
-		});
-		view.vector({
-		  color: 0x3090FF,
-		  width: 4,
-		  depth: 1,
-		  end: true,
-		  zWrite: false,
-		  blending: THREE.AdditiveBlending,
-		});
-
-		view.array({
-		  id: 'sampler2',
-		  width: numData,
-		  data: [[]],
-		  items: 2,
-		  channels: 3,
-		});
-		view.vector({
-		  color: 0x903000,
-		  width: 4,
-		  depth: 1,
-		  end: true,
-		  zWrite: false,
-		  blending: THREE.AdditiveBlending,
-		});
-
-		var sampler1 = mathbox.select('#sampler1')
-		var sampler2 = mathbox.select('#sampler2')
-	}
+	})
 }
