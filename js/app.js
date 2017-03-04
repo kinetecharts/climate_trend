@@ -30,6 +30,7 @@ var colors = {
 let dataFiles = ['data/rcp8p5.csv', 'data/rcp2p6.csv']
 Q.all(dataFiles.map(f=>{return loadData(f)}))
 	.then(data=>{
+		console.log("done data loading")
 		var _data = {
 			'rcp8p5': processData(data[0], numData),
 			'rcp2p6': processData(data[1], numData),
@@ -86,7 +87,7 @@ var setActiveData = (data, r) =>{
 var morph = (r0, r1)=>{
 	var param = {r: r0}
 	var t = new TWEEN.Tween(param)
-	.to({r: r1}, 2000)
+	.to({r: r1}, 4000)
 	.onUpdate(()=>{
 		setActiveData(_data, param.r)
 	})
@@ -105,7 +106,7 @@ var bad = ()=>{
 var loop = ()=>{
 	setTimeout(()=>{
 		good()
-	}, 2000)
+	}, 1000)
 	setTimeout(()=>{
 		bad()
 	}, 6000)
@@ -113,7 +114,7 @@ var loop = ()=>{
 
 setInterval(()=>{
 	loop()
-}, 8000)
+}, 10000)
 
 var drawAxis = (view, origin)=>{
     var xticks = 6
@@ -329,6 +330,9 @@ var drawGrid = (view, origin)=>{
 	})
 }
 
+
+
+
 var draw=(datas)=>{
 	var data = datas.active
 	// debugger
@@ -340,6 +344,9 @@ var draw=(datas)=>{
 	    // klass: THREE.VRControls
 	  },
 	});
+
+	window._m = mathbox
+
 	var three = mathbox.three;
 
 	three.camera.position.set(-3.5, .4, 1.3);
@@ -372,15 +379,21 @@ var draw=(datas)=>{
 		width: numData,
 		channels: 4,
 		items: 1,
-		live: false,
+		live: true,
 		expr: (emit, x, i, t)=>{
-			var r0 = 1-i/numData
-			var r1 = i/numData
+			var min = 12
+			var max = 25
+			var val = _data.active.temperature[i]
+
+			var r0 = 1 - (val-min) / (max-min)
+			var r1 = 1 - r0
+			// var r0 = 1-i/numData
+			// var r1 = i/numData
 			var c0 = [0.2, 0.9, 0.2]
 			var c1 = [0.9, 0.2, 0.2]
 			emit(r0*c0[0]+r1*c1[0], 
 				r0*c0[1]+r1*c1[1],
-				r0*c0[2]+r1*c1[2], 1)
+				r0*c0[2]+r1*c1[2], Math.sin(t)*Math.sin(t/1) + 0.3)
 		}
 	})
 
@@ -405,7 +418,23 @@ var draw=(datas)=>{
 		})
 	}
 
-	plotLine('temperature', data, [12, 25], 0xffffff, "#tColor")
+	var id = 'temperature'
+
+
+	var temperatureChart = new Chart(mathbox, {
+		x : data.year,
+		y : data[id],
+		z_offset : 0,
+		id : id,
+		xRange : [1800, 2300],
+		yRange : [12,25],
+		zRrange : [0, 10],
+		scale : [1.5,1,1],
+		color : 0xffaa44,
+		colors : "#tColor"
+	})
+
+	// plotLine('temperature', data, [12, 25], 0xffffff, "#tColor")
 	// plotLine('co2', data, [0, 4000], 0xffff00)
 	// plotLine('ice', data, [0, 30], 0xffffff)
 	// plotLine('balance', data, [0, 10], 0x00ffff)
@@ -416,9 +445,12 @@ var draw=(datas)=>{
 
 		var newData = _.zip(data.year, data.temperature, data.year.map(()=>{
 				return 0}))
-		console.log(newData[450][1])
-		mathbox.select('#temperature')
-			.set('data', newData)
+		// console.log(newData[450][1])
+		// debugger
+		temperatureChart.update(data.temperature)
+
+		// mathbox.select('#temperature')
+		// 	.set('data', newData)
 	})
 
 	var notUsed = ()=>{
@@ -432,8 +464,6 @@ var draw=(datas)=>{
 			lineTemperature.set('data', data.temperature)
 
 		})
-
-
 
 		view.array({
 		  id: 'sampler1',
