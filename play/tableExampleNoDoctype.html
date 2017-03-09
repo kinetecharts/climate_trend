@@ -1,0 +1,47 @@
+<html lang="en">
+<head>
+	<title>Photo sphere with three.js</title>
+</head>
+<body>
+  <table style="width:100%;height:100%">
+    <tr>
+      <td id="sphere"
+	  style="background-color:green; width:50%; height:100%">
+      </td>
+      <td style="background-color:blue; width: 50%">
+      </td>
+    </tr>
+  </table>
+<script src="https://webrtc.github.io/adapter/adapter-2.1.0.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/wrtc.js"></script>
+<script src="js/three.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/DeviceOrientationControls.js"></script>	
+<script src="js/ImageSource.js"></script>	
+<script src="js/Pano.js"></script>	
+<script src="js/PanoParams.js"></script>	
+<script>
+
+var spec = getImageSpec();
+report("spec: "+JSON.stringify(spec));
+spec.type = ImageSource.TYPE.VIDEO;
+spec.url = "http://dvr4.paldeploy.com/video/stearman.mp4";
+report("------------------------------");
+report("spec: "+JSON.stringify(spec));
+var imageSrc = new ImageSource(spec);
+
+// if we set this to 0 there is no Pano and the table resizes
+// as expected.
+// if we set 1 the Pano is created and resizing behavior seems
+// buggy.
+if (1) {
+    pano = new Pano(document.getElementById('sphere'), imageSrc);
+    pano.updateStyle = true; // with this it keeps getting bigger
+    //pano.updateStyle = false; // with this it doesn't resize
+    pano.start();
+}
+
+	</script>
+</body>
+</html>
