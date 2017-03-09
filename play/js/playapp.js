@@ -1,7 +1,91 @@
 "use strict";
 
+//var MODEL_PATH = null;
 var MB = null;
 var SP = null;
+var ORIGIN = null;
+var VIEW = null;
+var loader = null;
+var SCENE = null;
+var DAE = null;
+
+function loadFBXModel(mb, path)
+{
+    report("loadFBXModel "+mb+" "+path);
+    var three = mb.three;
+    report("three: "+three);
+    var scene = three.scene;
+    SCENE = scene;
+    //var path = './DomeSpace.fbx';
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function( item, loaded, total ) {
+	console.log( item, loaded, total );
+    };
+    var loader = new THREE.FBXLoader( manager );
+    loader.load( path,
+        function( object ) {
+           /*
+	     object.mixer = new THREE.AnimationMixer( object );
+	     mixers.push( object.mixer );
+	     var action = object.mixer.clipAction( object.animations[ 0 ] );
+	     action.play();
+	   */
+	    scene.add( object );
+	},
+        function() {
+	},
+	function (e) {
+	    report("Error loading FBX file "+path+"\n"+e);
+	}
+	);
+}
+
+function loadColladaModel(mb, path)
+{
+    report("loadColladaModel "+mb+" "+path);
+    var three = mb.three;
+    report("three: "+three);
+    var imageSource = imageSrc;
+    var scene = three.scene;
+    SCENE = scene;
+    loader = new THREE.ColladaLoader();
+    loader.options.convertUpAxis = true;
+    //loader.load( './DomeSpace.dae', function ( collada ) {
+    loader.load( path, function ( collada ) {
+	report("***** Got Collada *****");
+	var dae = collada.scene;
+	DAE = dae;
+	dae.traverse( function ( child ) {
+	    if ( child instanceof THREE.SkinnedMesh ) {
+		var animation = new THREE.Animation( child, child.geometry.animation );
+		animation.play();
+	    }
+	} );
+	var s = 0.002 * 2.5;
+	dae.scale.x = dae.scale.y = dae.scale.z = s;
+	dae.position.x = 2;
+	dae.position.z = -5.5;
+	dae.position.y = -2;
+	dae.rotation.y = toRadians(-90);
+	dae.updateMatrix();
+	scene.add(dae);
+//	init();
+//	animate();
+    } );
+}
+
+function loadModel(mb, path)
+{
+    if (path.endsWith(".fbx")) {
+	loadFBXModel(mb, path);
+    }
+    else if (path.endsWith(".dae")) {
+	loadColladaModel(mb, path);
+    }
+    else {
+	report("Unknown model type "+path);
+    }
+}
 
 function addMovie(mb)
 {
@@ -34,7 +118,40 @@ function addMovie(mb)
     sphere.position.y = 0;
     sphere.name = "sphere";
     SP = sphere;
-    scene.add(sphere);
+    SP.rotation.y = toRadians(90);
+    SP.position.x = -2;
+    SP.position.y = -1.0;
+    var obj = new THREE.Object3D();
+    obj.add(SP);
+    obj.rotation.z = toRadians(25);
+    //scene.add(sphere);
+    scene.add(obj);
+}
+
+function loadPlayStuff(mb)
+{
+    addMovie(mb);
+    report("***************************** MODEL_PATH: "+MODEL_PATH);
+    if (MODEL_PATH) {
+	loadModel(mb, MODEL_PATH);
+    }
+    var three = mb.three;
+    var scene = three.scene;
+
+    var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
+
+    var color1 = 0xffaaaa;
+    var light1 = new THREE.PointLight( color1, 2, 50 );
+    light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color1 } ) ) );
+    light1.position.y = 40;
+    scene.add( light1 );
+		
+    var color2 = 0xaaffaa;
+    var light2 = new THREE.PointLight( color2, 2, 50 );
+    light2.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color2 } ) ) );
+    light2.position.y = 40;
+    light2.position.x = 40;
+    scene.add( light2 );
 }
 
 const Parameters = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
@@ -162,13 +279,14 @@ setInterval(()=>{
 	loop()
 }, 10000)
 
+
 var drawAxis = (view, origin)=>{
     var xticks = 6
-
+    ORIGIN = origin;
     // X axis
-	view
+    view
 	.transform({
-		position:[0, origin.y, origin.z]
+	    position:[0, origin.y, origin.z]
 	})
 	.axis({
 	  axis: "x", // year
@@ -179,25 +297,25 @@ var drawAxis = (view, origin)=>{
 	  opacity: 1.0,
 	})
 	
-	view.scale({
-      divide: 5,
-      nice: false,
-      origin: [1800, 12, 0, 0],
-      axis: "x"
+    view.scale({
+	divide: 5,
+	nice: false,
+	origin: [1800, 12, 0, 0],
+	axis: "x"
     })
-    .ticks({
-      classes: ['foo', 'bar'],
-      width: 20
-    })
-    .text({
-    	live: false,
-    	data: interpolate(chartRange.x[0], chartRange.x[1], 6)
-    })
-    .label({
-    	color: 0xaaaaaa,
-    	background: backgroundColor
-    	// offset: [1,1]
-    })
+	.ticks({
+	    classes: ['foo', 'bar'],
+	    width: 20
+	})
+	.text({
+    	    live: false,
+    	    data: interpolate(chartRange.x[0], chartRange.x[1], 6)
+	})
+	.label({
+    	    color: 0xaaaaaa,
+    	    background: backgroundColor
+    	    // offset: [1,1]
+	})
 
     // Y axis
 	view.transform({
@@ -298,6 +416,7 @@ var drawGrid = (view, origin)=>{
 }
 
 var draw=(datas)=>{
+    report("----- draw");
 	var data = datas.active
 	// debugger
 	var mathbox = mathBox({
@@ -309,7 +428,8 @@ var draw=(datas)=>{
 	  },
 	});
     MB = mathbox;
-    addMovie(MB);
+    loadPlayStuff(MB);
+    
 	window._m = mathbox
 
 	var three = mathbox.three;
@@ -323,18 +443,19 @@ var draw=(datas)=>{
 	  range: [chartRange.x, chartRange.y, chartRange.z],
 	  scale: chartScale,
 	});
-
+    VIEW = view;
+    /*
     var camera = view.camera({
       lookAt: [0, 0, 0],
     }, {
       position: function (t) { 
-      	var _t = 0.1*t
-      	//var _t = 0.0*t
+      	//var _t = 0.1*t
+      	var _t = 0.0*t
       	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
       	.map(x=>{return 1.5*x + 1}) 
       },
     });
-
+    */
 	var origin = {x: chartRange.x[0], y: chartRange.y[0], z: chartRange.z[0]}
 
 	drawAxis(view, origin)
