@@ -343,10 +343,10 @@ var draw=(datas)=>{
 
 	var charts={}
 	charts['temperature'] = plotLine('temperature', [12, 24],  0, 0xffcc44, '#tColor')
-	charts['co2'] 		 = plotLine('co2', 			[0, 2200], 2.5,  0xffff00, null)
-	charts['ice'] 		 = plotLine('ice', [0, 10], 5, 0xffffff, null)
-	charts['balance']		= plotLine('balance', [0, 5], 7.5, 0x00ffff, null)
-	charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
+	charts['co2'] 		 = plotLine('co2', 			[0, 2200], 3.3,  0xffff00, null)
+	charts['ice'] 		 = plotLine('ice', [0, 10], 6.6, 0xffffff, null)
+	charts['balance']		= plotLine('balance', [0, 5], 10, 0x00ffff, null)
+	// charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
 
 	three.on('update', ()=>{
 		TWEEN.update()
