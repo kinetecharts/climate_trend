@@ -1,4 +1,5 @@
 *~
+video/*
 node_modules/*
 play/models/*
 .ipynb_checkpoints/*
