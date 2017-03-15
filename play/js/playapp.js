@@ -20,7 +20,9 @@ const chartRange={
 	z:[0, 10]
 }
 
-const chartScale=[1.5,1,1.5]
+//const chartScale=[1.5,1,1.5]
+var sf = .5;
+const chartScale=[1.5*sf,1*sf,1.5*sf]
 
 var loadData=(file)=>{
 	var deferred = Q.defer()
@@ -274,7 +276,7 @@ var draw=(datas)=>{
 	  // plugins: ['VR', 'ui', 'controls'],
 	  controls: {
 	    klass: THREE.OrbitControls
-	    // klass: THREE.VRControls
+	    //klass: THREE.VRControls
 	  },
 	});
     
@@ -290,7 +292,10 @@ var draw=(datas)=>{
 	// Mathbox view
 	var view = mathbox.cartesian({
 	  range: [chartRange.x, chartRange.y, chartRange.z],
-	  scale: chartScale,
+	    scale: chartScale,
+	    //rotation: [0,0,toRadians(45)
+	    rotation: [0,0,toRadians(0)
+		      ]
 	});
     VIEW = view;
     var rotateCam = false;
@@ -358,6 +363,7 @@ var draw=(datas)=>{
 	charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
 
 	three.on('update', ()=>{
+	    //report("three.update.....");
 		TWEEN.update()
 
 		Object.keys(charts).forEach(id=>{
