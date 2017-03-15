@@ -1,6 +1,8 @@
 "use strict";
 
+var PL = {};
 var duration = 1920.042667;
+var playing = true;
 
 //var MODEL_PATH = null;
 var SP = null;
@@ -167,6 +169,31 @@ function timerFun_(e)
     $("#textLine").html(str);
 }
 
+PL.isPlaying = function() { return playing; }
+
+PL.play = function()
+{
+    playing = true;
+    imageSrc.play();
+}
+
+PL.pause = function()
+{
+    playing = false;
+    imageSrc.pause();
+}
+
+function togglePlayStop(e)
+{
+    report("togglePlayStop");
+    if (PL.isPlaying()) {
+	PL.pause();
+    }
+    else {
+	PL.play();
+    }
+}
+
 function timerFun(e)
 {
     try {
@@ -184,6 +211,7 @@ $(document).ready(function() {
 	    slide: tourSliderChanged,
 		min: 0, max: 1, step: 0.001
     });
+    $("#playStop").click(togglePlayStop);
     timerFun();
 });
 
