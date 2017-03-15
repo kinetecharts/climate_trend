@@ -1,5 +1,7 @@
 "use strict";
 
+var duration = 1920.042667;
+
 //var MODEL_PATH = null;
 var SP = null;
 var MB = null;
@@ -144,4 +146,44 @@ function loadPlayStuff(three, mathbox)
     light2.position.z = 5;
     scene.add( light2 );
 }
+
+function tourSliderChanged(e, ui)
+{
+    report("**** tourSliderChanged ****");
+    var v = ui.value;
+    var t = v*duration;
+    report("v: "+v+"   t: "+t);
+    imageSrc.setPlayTime(t);
+}
+
+function timerFun_(e)
+{
+    report("*** tick... ");
+    var d = imageSrc.video.duration;
+    var t = imageSrc.video.currentTime;
+    //report("d: "+d+"  t: "+t);
+    report("dur: "+d);
+    var str = "t: "+t;
+    $("#textLine").html(str);
+}
+
+function timerFun(e)
+{
+    try {
+	timerFun_(e);
+    }
+    catch (e) {
+	report("error: "+e);
+    }
+    setTimeout(timerFun, 100);
+}
+
+$(document).ready(function() {
+    report("**** setting up slider ****");
+    $("#timeLine").slider({
+	    slide: tourSliderChanged,
+		min: 0, max: 1, step: 0.001
+    });
+    timerFun();
+});
 

@@ -24,7 +24,6 @@
 				font-family:Monospace;
 				font-size:13px;
 				text-align:center;
-				text-align:center;
 				cursor: pointer;
 			}
 
@@ -90,7 +89,7 @@ var spec = getImageSpec();
 report("spec: "+JSON.stringify(spec));
 spec.type = ImageSource.TYPE.VIDEO;
 //spec.url = "http://dvr4.paldeploy.com/video/stearman.mp4";
-//spec.url = "http://dvr4.paldeploy.com/video/Climate-Music-v2.mp4";
+spec.url = "http://dvr4.paldeploy.com/video/Climate-Music-v2.mp4";
 spec.url = "../video/Climate-Music-V3-Distortion_HD.mp4";
 report("------------------------------");
 report("spec: "+JSON.stringify(spec));
@@ -101,25 +100,6 @@ var MODEL_PATH = null;
 MODEL_PATH = "./DomeSpace.dae"
 //MODEL_PATH = "./models/Nara0.dae";
 //MODEL_PATH = "./box.dae"
-
-var duration = 1920.042667;
-
-function tourSliderChanged(e, ui)
-{
-    report("**** tourSliderChanged ****");
-    var v = ui.value;
-    var t = v*duration;
-    report("v: "+v+"   t: "+t);
-    imageSrc.setPlayTime(t);
-}
-
-$(document).ready(function() {
-    report("**** setting up slider ****");
-    $("#timeLine").slider({
-	    slide: tourSliderChanged,
-		min: 0, max: 1, step: 0.001
-    });
-});
 
 </script>
 <script src = "../js/chart.js"></script>
