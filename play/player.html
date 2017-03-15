@@ -90,7 +90,8 @@ var spec = getImageSpec();
 report("spec: "+JSON.stringify(spec));
 spec.type = ImageSource.TYPE.VIDEO;
 //spec.url = "http://dvr4.paldeploy.com/video/stearman.mp4";
-spec.url = "http://dvr4.paldeploy.com/video/Climate-Music-v2.mp4";
+//spec.url = "http://dvr4.paldeploy.com/video/Climate-Music-v2.mp4";
+spec.url = "../video/Climate-Music-V3-Distortion_HD.mp4";
 report("------------------------------");
 report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
@@ -101,10 +102,11 @@ MODEL_PATH = "./DomeSpace.dae"
 //MODEL_PATH = "./models/Nara0.dae";
 //MODEL_PATH = "./box.dae"
 
+var duration = 1920.042667;
+
 function tourSliderChanged(e, ui)
 {
     report("**** tourSliderChanged ****");
-    var duration = 500;
     var v = ui.value;
     var t = v*duration;
     report("v: "+v+"   t: "+t);
