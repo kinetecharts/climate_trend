@@ -40,10 +40,11 @@ function loadFBXModel(scene, path)
 	);
 }
 
-function loadColladaModel(scene, path)
+function loadColladaModel(scene, path, opts)
 {
     report("loadColladaModel "+scene+" "+path);
     var imageSource = imageSrc;
+    opts = opts || {};
     loader = new THREE.ColladaLoader();
     loader.options.convertUpAxis = true;
     //loader.load( './DomeSpace.dae', function ( collada ) {
@@ -58,11 +59,24 @@ function loadColladaModel(scene, path)
 	    }
 	} );
 	var s = 0.002 * 2.5;
-	dae.scale.x = dae.scale.y = dae.scale.z = s;
+	if (opts.scale) {
+	    dae.scale.x = opts.scale[0];
+	    dae.scale.y = opts.scale[1];
+	    dae.scale.z = opts.scale[2];
+	}
 	dae.position.x = 2;
 	dae.position.z = -5.5;
 	dae.position.y = -2;
-	dae.rotation.y = toRadians(-90);
+	if (opts.position) {
+	    dae.position.x = opts.position[0];
+	    dae.position.y = opts.position[1];
+	    dae.position.z = opts.position[2];
+	}
+	if (opts.rotation) {
+	    dae.rotation.x = toRadians(opts.rotation[0]);
+	    dae.rotation.y = toRadians(opts.rotation[1]);
+	    dae.rotation.z = toRadians(opts.rotation[2]);
+	}
 	dae.updateMatrix();
 	scene.add(dae);
 //	init();
@@ -70,13 +84,13 @@ function loadColladaModel(scene, path)
     } );
 }
 
-function loadModel(scene, path)
+function loadModel(scene, path, opts)
 {
     if (path.endsWith(".fbx")) {
-	loadFBXModel(scene, path);
+	loadFBXModel(scene, path, opts);
     }
     else if (path.endsWith(".dae")) {
-	loadColladaModel(scene, path);
+	loadColladaModel(scene, path, opts);
     }
     else {
 	report("Unknown model type "+path);
@@ -116,7 +130,8 @@ function addMovie(scene)
     SP.position.y = -1.0;
     var obj = new THREE.Object3D();
     obj.add(SP);
-    obj.rotation.z = toRadians(25);
+    //obj.rotation.z = toRadians(25);
+    obj.rotation.z = toRadians(0);
     //scene.add(sphere);
     scene.add(obj);
 }
@@ -128,7 +143,7 @@ function loadPlayStuff(three, mathbox)
     addMovie(scene);
     report("***************************** MODEL_PATH: "+MODEL_PATH);
     if (MODEL_PATH) {
-	loadModel(scene, MODEL_PATH);
+	loadModel(scene, MODEL_PATH, MODEL_OPTS);
     }
 
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
@@ -160,11 +175,11 @@ function tourSliderChanged(e, ui)
 
 function timerFun_(e)
 {
-    report("*** tick... ");
+    //report("*** tick... ");
     var d = imageSrc.video.duration;
     var t = imageSrc.video.currentTime;
     //report("d: "+d+"  t: "+t);
-    report("dur: "+d);
+    //report("dur: "+d);
     var str = "t: "+t;
     $("#textLine").html(str);
 }

@@ -1,4 +1,5 @@
 *~
+*.skb
 video/*
 node_modules/*
 play/models/*
