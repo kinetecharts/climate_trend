@@ -107,7 +107,7 @@ var setActiveData = (data, r) =>{
 var morph = (r0, r1)=>{
 	var param = {r: r0}
 	var t = new TWEEN.Tween(param)
-	.to({r: r1}, 4000)
+	.to({r: r1}, 20000)
 	.onUpdate(()=>{
 		setActiveData(_data, param.r)
 	})
@@ -129,12 +129,13 @@ var loop = ()=>{
 	}, 1000)
 	setTimeout(()=>{
 		bad()
-	}, 6000)
+	}, 22000)
 }
 
+loop()
 setInterval(()=>{
 	loop()
-}, 10000)
+}, 42000)
 
 var drawAxis = (view, origin)=>{
     var xticks = 6
@@ -365,7 +366,7 @@ var draw=(datas)=>{
 	var sands = new Sands(mathbox, {
 			x : data.year,
 			y : data['temperature'],
-			z_offset : -0.4,
+			z_offset : 0,
 			id : 'sands',
 			xRange : chartRange.x,
 			yRange : [12, 24],

@@ -1,7 +1,7 @@
 "use strict"
 
 var temperatureColorMap = function(val){
-	var min = 13
+	var min = 13.36
 	var max = 23
 
 	var r0 = 1 - (val-min) / (max-min) // Green percentage
@@ -40,9 +40,11 @@ class Sand{
 		this.moving = true
 		this.x = Year
 
-		var param = {y: 13}
+		var target = _data.active.temperature[Year - 1849]
+
+		var param = {y: 13.36}
 		var t = new TWEEN.Tween(param)
-			.to({y: 23}, 4000)
+			.to({y: target}, 4000)
 			.onUpdate(()=>{
 				this.y = param.y
 				var newColor = temperatureColorMap(this.y)
