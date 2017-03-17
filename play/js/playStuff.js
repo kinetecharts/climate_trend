@@ -12,6 +12,7 @@ var loader = null;
 var SCENE = null;
 var DAE = null;
 var SCREEN = null;
+var SOBJ = null;
 var SK_SCREEN = null;
 var ANCHOR = null;
 var light1 = null;
@@ -149,6 +150,11 @@ function addSphereMovie(scene)
 
 function addMovie(scene)
 {
+    var x = 4.7;
+    var y = 0.3;
+    var z = .2;
+    var w = 6.0;
+    var h = 4.0;
     report("addMovie "+scene);
     var imageSource = imageSrc;
     var texture = imageSource.createTexture();
@@ -157,8 +163,6 @@ function addMovie(scene)
 	    map: texture,
 	    side: THREE.DoubleSide,
     });
-    var w = 5.0;
-    var h = 3.0;
     var pts = [new THREE.Vector2(0, 0),
 	       new THREE.Vector2(0, 1),
 	       new THREE.Vector2(1, 1),
@@ -169,20 +173,18 @@ function addMovie(scene)
 	    material
 	);
     SCREEN = screen;
+    screen.name = "screen";
     screen.scale.x *= -w;
     screen.scale.y *= h;
     screen.scale.z *= 1;
-    //screen.position.y = -2.5;
-    screen.position.x = 0;
-    screen.position.z = -w/2.0;
-    screen.position.y = -h/2.0;
-    screen.name = "screen";
-    SP = screen;
-    SP.rotation.y = toRadians(90);
-    SP.position.x = -2;
-    SP.position.y = -1.0;
+    screen.position.z = z - w/2.0;
+    screen.position.y = y - h/2.0;
+    screen.rotation.y = toRadians(90);
+    screen.position.x = x;
+//    screen.position.y = -1.0;
     var obj = new THREE.Object3D();
-    obj.add(SP);
+    SOBJ = obj;
+    obj.add(screen);
     //obj.rotation.z = toRadians(25);
     obj.rotation.z = toRadians(0);
     scene.add(obj);
@@ -203,6 +205,7 @@ function findAnchor(obj)
 function findScreen(obj)
 {
     var screen = obj.getObjectByName("Screen");
+    return;
     SK_SCREEN = screen;
     report("SCREEN: "+SCREEN);
     if (!screen)
@@ -230,6 +233,7 @@ function loadPlayStuff(three, mathbox)
 {
     MB = mathbox;
     var scene = three.scene;
+    SCENE = scene;
     addMovie(scene);
     report("***************************** MODEL_PATH: "+MODEL_PATH);
     if (MODEL_PATH) {
