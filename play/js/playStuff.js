@@ -6,14 +6,18 @@ var playing = true;
 
 //var MODEL_PATH = null;
 var SP = null;
+var VIDEO_TEX = null;
 var MB = null;
 var loader = null;
 var SCENE = null;
 var DAE = null;
+var SCREEN = null;
+var SK_SCREEN = null;
+var ANCHOR = null;
 var light1 = null;
 var light2 = null;
 
-function loadFBXModel(scene, path)
+function loadFBXModel(scene, path, opts, afterFun)
 {
     report("loadFBXModel "+scene+" "+path);
     //var path = './DomeSpace.fbx';
@@ -31,6 +35,9 @@ function loadFBXModel(scene, path)
 	     action.play();
 	   */
 	    scene.add( object );
+	    if (afterFun) {
+		afterFun(object);
+	    }
 	},
         function() {
 	},
@@ -40,7 +47,7 @@ function loadFBXModel(scene, path)
 	);
 }
 
-function loadColladaModel(scene, path, opts)
+function loadColladaModel(scene, path, opts, afterFun)
 {
     report("loadColladaModel "+scene+" "+path);
     var imageSource = imageSrc;
@@ -79,29 +86,33 @@ function loadColladaModel(scene, path, opts)
 	}
 	dae.updateMatrix();
 	scene.add(dae);
+	if (afterFun) {
+	    afterFun(dae);
+	}
 //	init();
 //	animate();
     } );
 }
 
-function loadModel(scene, path, opts)
+function loadModel(scene, path, opts, afterFun)
 {
     if (path.endsWith(".fbx")) {
-	loadFBXModel(scene, path, opts);
+	loadFBXModel(scene, path, opts, afterFun);
     }
     else if (path.endsWith(".dae")) {
-	loadColladaModel(scene, path, opts);
+	loadColladaModel(scene, path, opts, afterFun);
     }
     else {
 	report("Unknown model type "+path);
     }
 }
 
-function addMovie(scene)
+function addSphereMovie(scene)
 {
     report("addMovie "+scene);
     var imageSource = imageSrc;
     var texture = imageSource.createTexture();
+    VIDEO_TEX = texture;
     var material = new THREE.MeshBasicMaterial({
 	    map: texture,
 	    side: THREE.DoubleSide,
@@ -136,6 +147,85 @@ function addMovie(scene)
     scene.add(obj);
 }
 
+function addMovie(scene)
+{
+    report("addMovie "+scene);
+    var imageSource = imageSrc;
+    var texture = imageSource.createTexture();
+    VIDEO_TEX = texture;
+    var material = new THREE.MeshBasicMaterial({
+	    map: texture,
+	    side: THREE.DoubleSide,
+    });
+    var w = 5.0;
+    var h = 3.0;
+    var pts = [new THREE.Vector2(0, 0),
+	       new THREE.Vector2(0, 1),
+	       new THREE.Vector2(1, 1),
+	       new THREE.Vector2(1, 0)]
+    var shape = new THREE.Shape(pts);
+    var screen = new THREE.Mesh(
+	new THREE.ShapeGeometry(shape),
+	    material
+	);
+    SCREEN = screen;
+    screen.scale.x *= -w;
+    screen.scale.y *= h;
+    screen.scale.z *= 1;
+    //screen.position.y = -2.5;
+    screen.position.x = 0;
+    screen.position.z = -w/2.0;
+    screen.position.y = -h/2.0;
+    screen.name = "screen";
+    SP = screen;
+    SP.rotation.y = toRadians(90);
+    SP.position.x = -2;
+    SP.position.y = -1.0;
+    var obj = new THREE.Object3D();
+    obj.add(SP);
+    //obj.rotation.z = toRadians(25);
+    obj.rotation.z = toRadians(0);
+    scene.add(obj);
+}
+
+function findAnchor(obj)
+{
+    var anchor = obj.getObjectByName("VizAnchor");
+    if (!anchor)
+	return;
+    ANCHOR = anchor;
+    var mesh = anchor.children[0];
+    var geo = mesh.geometry;
+    geo.mergeVertices();
+    anchor.visible = false;
+}
+
+function findScreen(obj)
+{
+    var screen = obj.getObjectByName("Screen");
+    SK_SCREEN = screen;
+    report("SCREEN: "+SCREEN);
+    if (!screen)
+	return;
+    var mesh = screen.children[0];
+    mesh.geometry.mergeVertices();
+    var mat = new THREE.MeshBasicMaterial({
+	    map: VIDEO_TEX,
+	    side: THREE.DoubleSide,
+    });
+    mesh.material = mat;
+}
+
+/*
+This goes through the loaded model and finds objects that were put there
+to help us locate positions or assign some behaviors.
+*/
+function processHooks(obj)
+{
+    findAnchor(obj);
+    findScreen(obj);
+}
+
 function loadPlayStuff(three, mathbox)
 {
     MB = mathbox;
@@ -143,7 +233,7 @@ function loadPlayStuff(three, mathbox)
     addMovie(scene);
     report("***************************** MODEL_PATH: "+MODEL_PATH);
     if (MODEL_PATH) {
-	loadModel(scene, MODEL_PATH, MODEL_OPTS);
+	loadModel(scene, MODEL_PATH, MODEL_OPTS, processHooks);
     }
 
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
