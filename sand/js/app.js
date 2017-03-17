@@ -19,13 +19,14 @@ window.__ = _.noConflict();
 const numData = 451
 
 const chartRange={
-	x:[1800, 2300],
+	x:[1850, 2300],
 	y:[12, 24],
 	z:[0, 10]
 }
 
 
-var Year = 2000
+var Year = 1850
+var SandYear = 1850
 
 const chartScale=[1.5,1,1.5]
 
@@ -104,39 +105,6 @@ var setActiveData = (data, r) =>{
 	}
 }
 
-var morph = (r0, r1)=>{
-	var param = {r: r0}
-	var t = new TWEEN.Tween(param)
-	.to({r: r1}, 20000)
-	.onUpdate(()=>{
-		setActiveData(_data, param.r)
-	})
-	.easing(TWEEN.Easing.Quadratic.InOut)
-	.start()
-}
-
-var good = ()=>{
-	morph(1, 0)
-}
-
-var bad = ()=>{
-	morph(0, 1)
-}
-
-var loop = ()=>{
-	setTimeout(()=>{
-		good()
-	}, 1000)
-	setTimeout(()=>{
-		bad()
-	}, 22000)
-}
-
-loop()
-setInterval(()=>{
-	loop()
-}, 42000)
-
 var drawAxis = (view, origin)=>{
     var xticks = 6
 
@@ -157,7 +125,7 @@ var drawAxis = (view, origin)=>{
 	view.scale({
       divide: 5,
       nice: false,
-      origin: [1800, 12, 0, 0],
+      origin: [1850, 12, 0, 0],
       axis: "x"
     })
     .ticks({
@@ -210,7 +178,7 @@ var drawAxis = (view, origin)=>{
     });
 
     view.array({
-      data: [[2350,origin.y,origin.z], [1800,25,0], [1800,12,10]],
+      data: [[2350,origin.y,origin.z], [1850,25,0], [1850,12,10]],
       channels: 3, // necessary
       live: false,
     }).text({
@@ -299,15 +267,15 @@ var draw=(datas)=>{
 	  scale: chartScale,
 	});
 
-    // var camera = view.camera({
-    //   lookAt: [0, 0, 0],
-    // }, {
-    //   position: function (t) { 
-    //   	var _t = 0.1*t
-    //   	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
-    //   	.map(x=>{return 1.5*x + 1}) 
-    //   },
-    // });
+    var camera = view.camera({
+      lookAt: [0, 0, 0],
+    }, {
+      position: function (t) { 
+      	var _t = 0.1*t
+      	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
+      	.map(x=>{return 1.5*x + 1}) 
+      },
+    });
 
 	var origin = {x: chartRange.x[0], y: chartRange.y[0], z: chartRange.z[0]}
 
@@ -334,8 +302,8 @@ var draw=(datas)=>{
 			var r = r0*c0[0]+r1*c1[0]
 			var g = r0*c0[1]+r1*c1[1]
 			var b = r0*c0[2]+r1*c1[2]
-			var a = 1.0-Math.pow(Math.sin(t*3), 16) + r0+0.2
-			if (x > Year) a *= 0.2
+			var a = 1.0-Math.pow(Math.sin(t*3), 16) + r0 + 0.2
+			if (x > Year) a *= 0.1
 			emit(r, g, b, a) // make it blink alarm at high temperature
 		}
 	})

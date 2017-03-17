@@ -44,7 +44,7 @@ class Chart{
 		  live: false
 		}).line({
 			id: this.id+'-line',
-			opacity: 0.5,
+			opacity: 1.0,
 			color: this.color,
 			colors: this.colors,
 			width: 10
@@ -74,6 +74,7 @@ class Chart{
 			axes: "xy",
 			divideX: 4,
 			divideY: 4,
+			niceX: false,
 			niceY: false,
 			width: 1,
 			opacity: 0.3,

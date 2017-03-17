@@ -26,7 +26,7 @@ class Sand{
 		this.g = 1
 		this.b = 0
 
-		this.a = 1
+		this.a = 0
 
 		this.moving = false
 	}
@@ -38,9 +38,10 @@ class Sand{
 	}
 	move(){
 		this.moving = true
-		this.x = Year
+		this.x = SandYear
+		this.a = 0
 
-		var target = _data.active.temperature[Year - 1849]
+		var target = _data.active.temperature[SandYear - 1850]
 
 		var param = {y: 13.36}
 		var t = new TWEEN.Tween(param)
@@ -51,11 +52,12 @@ class Sand{
 				this.r = newColor.r
 				this.g = newColor.g
 				this.b = newColor.b
+				this.a = 1
 			})
 			.easing(TWEEN.Easing.Quadratic.InOut)
 			.onComplete(()=>{
 				this.moving = false
-				this.y = 13
+				// this.y = 13
 			})
 			.start()
 	}
@@ -65,7 +67,7 @@ class Sands{
 	constructor(mathbox, options){
 		this.mathbox = mathbox
 
-		this.numSands = 100
+		this.numSands = 200
 		this.sands = []
 		this.sandsColor=[]
 
@@ -90,7 +92,7 @@ class Sands{
 		// trun z_offset into array
 
 		for(var i=0; i<this.numSands; i++){
-			this.sands.push(new Sand(Year, 0, this.z_offset))
+			this.sands.push(new Sand(SandYear, 0, this.z_offset))
 		}
 
 		var data=this.sands.map(d=>{return d.pos()})
@@ -126,10 +128,10 @@ class Sands{
 		  live: true
 		}).point({
 			id: this.id+'-sand',
-			opacity: 0.5,
+			opacity: 1.0,
 			color: this.color,
 			colors: '#sandsColor',
-			size: 10
+			size: 5
 			// width: 10
 		})
 
