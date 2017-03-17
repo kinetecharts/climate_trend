@@ -38,6 +38,8 @@ class Sand{
 	}
 	move(){
 		this.moving = true
+		this.x = Year
+
 		var param = {y: 13}
 		var t = new TWEEN.Tween(param)
 			.to({y: 23}, 4000)
@@ -86,16 +88,11 @@ class Sands{
 		// trun z_offset into array
 
 		for(var i=0; i<this.numSands; i++){
-			this.sands.push(new Sand(2000, 10 + 10 * Math.random(), this.z_offset))
+			this.sands.push(new Sand(Year, 0, this.z_offset))
 		}
 
 		var data=this.sands.map(d=>{return d.pos()})
 		this.sandsColor = this.sands.map(d=>{return d.color()})
-
-		// for(var i=0; i<this.numSands; i++){
-		// 	this.sandsColor.push([
-		// 		Math.random(), Math.random(), Math.random(), 1])
-		// }
 
 
 		var reference = [[this.x[0], this.y[0], this.z_offset],

@@ -24,6 +24,9 @@ const chartRange={
 	z:[0, 10]
 }
 
+
+var Year = 2000
+
 const chartScale=[1.5,1,1.5]
 
 var loadData=(file)=>{
@@ -327,9 +330,12 @@ var draw=(datas)=>{
 
 			var c0 = [0.2, 1, 0.2] // Green
 			var c1 = [1, 0.2, 0.2] // Red
-			emit(r0*c0[0]+r1*c1[0], 
-				r0*c0[1]+r1*c1[1],
-				r0*c0[2]+r1*c1[2], 1.0-Math.pow(Math.sin(t*3), 16) + r0+0.2) // make it blink alarm at high temperature
+			var r = r0*c0[0]+r1*c1[0]
+			var g = r0*c0[1]+r1*c1[1]
+			var b = r0*c0[2]+r1*c1[2]
+			var a = 1.0-Math.pow(Math.sin(t*3), 16) + r0+0.2
+			if (x > Year) a *= 0.2
+			emit(r, g, b, a) // make it blink alarm at high temperature
 		}
 	})
 
