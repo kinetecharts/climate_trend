@@ -18,9 +18,6 @@ CLOTH.DRAG = 1 - CLOTH.DAMPING;
 CLOTH.MASS = .1;
 CLOTH.restDistance = 25;
 
-CLOTH.pinsFormation = [];
-CLOTH.pins = [6];
-
 CLOTH.xSegs = 10; //
 CLOTH.ySegs = 10; //
 
@@ -265,7 +262,7 @@ Cloth.prototype.update = function( time )
 
     // Aerodynamics forces
     if ( CLOTH.wind ) {
-	var face, faces = clothGeometry.faces, normal;
+	var face, faces = this.clothGeometry.faces, normal;
 	particles = cloth.particles;
 	var tmpForce = CLOTH.tmpForce;
 	for ( i = 0, il = faces.length; i < il; i ++ ) {
@@ -340,8 +337,9 @@ Cloth.prototype.update = function( time )
 
 Cloth.prototype.setupPins = function()
 {
-    pins = CLOTH.pins;
-    pinsFormation = CLOTH.pinsFormation;
+    var pinsFormation = [];
+    var pins = [6];
+
     pinsFormation.push( pins );
     pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
     pinsFormation.push( pins );
@@ -381,7 +379,7 @@ Cloth.prototype.setupCloth = function(scene)
     CLOTH_MAT = clothMaterial;
     this.clothMaterial = clothMaterial;
     // cloth geometry
-    clothGeometry = new THREE.ParametricGeometry( CLOTH.clothFunction, cloth.w, cloth.h );
+    var clothGeometry = new THREE.ParametricGeometry( CLOTH.clothFunction, cloth.w, cloth.h );
     clothGeometry.dynamic = true;
     clothGeometry.computeFaceNormals();
     this.clothGeometry = clothGeometry;
@@ -392,7 +390,7 @@ Cloth.prototype.setupCloth = function(scene)
 
     // cloth mesh
 
-    object = new THREE.Mesh( clothGeometry, clothMaterial );
+    object = new THREE.Mesh( this.clothGeometry, this.clothMaterial );
     object.position.set( 0, 0, 0 );
     object.castShadow = true;
     object.receiveShadow = true;
