@@ -12,6 +12,7 @@
 
 CLOTH = {};
 
+CLOTH.cloths = [];
 CLOTH.DAMPING = 0.03;
 CLOTH.DRAG = 1 - CLOTH.DAMPING;
 CLOTH.MASS = .1;
@@ -20,60 +21,33 @@ CLOTH.restDistance = 25;
 CLOTH.pinsFormation = [];
 CLOTH.pins = [6];
 
-//function setupPins()
-//{
-/*
-			pinsFormation.push( pins );
-			pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
-			pinsFormation.push( pins );
-			pins = [ 0 ];
-			pinsFormation.push( pins );
-			pins = []; // cut the rope ;)
-			pinsFormation.push( pins );
-//			pins = [ 0, cloth.w ]; // classic 2 pins
-//			pinsFormation.push( pins );
-			pins = pinsFormation[ 1 ];
-//}
-*/
-//setupPins();
+CLOTH.xSegs = 10; //
+CLOTH.ySegs = 10; //
 
-function togglePins() {
-	CLOTH.pins = CLOTH.pinsFormation[ ~~( Math.random() * CLOTH.pinsFormation.length ) ];
+CLOTH.GRAVITY = 981 * 1.4; // 
+CLOTH.TIMESTEP = 18 / 1000;
+CLOTH.TIMESTEP_SQ = CLOTH.TIMESTEP * CLOTH.TIMESTEP;
+
+CLOTH.wind = true;
+CLOTH.windStrength = 2;
+CLOTH.windForce = new THREE.Vector3( 0, 0, 0 );
+CLOTH.ballPosition = new THREE.Vector3( 0, - 45, 0 );
+CLOTH.ballSize = 60; //40
+CLOTH.tmpForce = new THREE.Vector3();
+
+var CLOTH_MAT;
+//var clothGeometry;
+
+CLOTH.update = function(time)
+{
+    for (var i=0; i<CLOTH.cloths.length; i++) {
+	var cloth = CLOTH.cloths[i];
+	cloth.update(time);
+	cloth.updateCloth(time);
+    }
 }
 
-
-
-var xSegs = 10; //
-var ySegs = 10; //
-
-var clothFunction = plane( CLOTH.restDistance * xSegs, CLOTH.restDistance * ySegs );
-
-var cloth = new Cloth( xSegs, ySegs );
-//setupPins(cloth);
-
-var GRAVITY = 981 * 1.4; // 
-var gravity = new THREE.Vector3( 0, - GRAVITY, 0 ).multiplyScalar( CLOTH.MASS );
-
-
-var TIMESTEP = 18 / 1000;
-var TIMESTEP_SQ = TIMESTEP * TIMESTEP;
-
-var pins = [];
-
-
-var wind = true;
-var windStrength = 2;
-var windForce = new THREE.Vector3( 0, 0, 0 );
-
-var ballPosition = new THREE.Vector3( 0, - 45, 0 );
-var ballSize = 60; //40
-
-var tmpForce = new THREE.Vector3();
-
-var lastTime;
-
-
-function plane( width, height ) {
+CLOTH.plane = function( width, height ) {
 
 	return function( u, v ) {
 
@@ -87,11 +61,13 @@ function plane( width, height ) {
 
 }
 
+CLOTH.clothFunction = CLOTH.plane( CLOTH.restDistance * CLOTH.xSegs, CLOTH.restDistance * CLOTH.ySegs );
+
 function Particle( x, y, z, mass ) {
 
-	this.position = clothFunction( x, y ); // position
-	this.previous = clothFunction( x, y ); // previous
-	this.original = clothFunction( x, y ); 
+	this.position = CLOTH.clothFunction( x, y ); // position
+	this.previous = CLOTH.clothFunction( x, y ); // previous
+	this.original = CLOTH.clothFunction( x, y ); 
 	this.a = new THREE.Vector3( 0, 0, 0 ); // acceleration
 	this.mass = mass;
 	this.invMass = 1 / mass;
@@ -126,23 +102,26 @@ Particle.prototype.integrate = function( timesq ) {
 };
 
 
-var diff = new THREE.Vector3();
+CLOTH.diff = new THREE.Vector3();
 
-function satisifyConstrains( p1, p2, distance ) {
-
-	diff.subVectors( p2.position, p1.position );
-	var currentDist = diff.length();
-	if ( currentDist == 0 ) return; // prevents division by 0
-	var correction = diff.multiplyScalar( 1 - distance / currentDist );
-	var correctionHalf = correction.multiplyScalar( 0.5 );
-	p1.position.add( correctionHalf );
-	p2.position.sub( correctionHalf );
-
+function satisifyConstrains( p1, p2, distance )
+{
+    var diff = CLOTH.diff;
+    diff.subVectors( p2.position, p1.position );
+    var currentDist = diff.length();
+    if ( currentDist == 0 ) return; // prevents division by 0
+    var correction = diff.multiplyScalar( 1 - distance / currentDist );
+    var correctionHalf = correction.multiplyScalar( 0.5 );
+    p1.position.add( correctionHalf );
+    p2.position.sub( correctionHalf );
 }
 
 
 function Cloth( w, h ) {
 
+        this.gravity = new THREE.Vector3( 0, - CLOTH.GRAVITY, 0 ).multiplyScalar( CLOTH.MASS );
+        this.lastTime = null;
+    CLOTH.cloths.push(this);
 	w = w || 10;
 	h = h || 10;
 	this.w = w;
@@ -238,7 +217,7 @@ function Cloth( w, h ) {
 
 	this.particles = particles;
 	this.constrains = constrains;
-
+        this.setupPins();
 	function index( u, v ) {
 
 		return u + v * ( w + 1 );
@@ -251,6 +230,7 @@ function Cloth( w, h ) {
         {
 	    var cloth = this;
 	    var p = cloth.particles;
+	    var clothGeometry = this.clothGeometry;
 
 	    for ( var i = 0, il = p.length; i < il; i ++ ) {
 		clothGeometry.vertices[ i ].copy( p[ i ].position );
@@ -269,28 +249,29 @@ Cloth.prototype.update = function( time )
     if (time == null)
 	time = Date.now();
 
-    windStrength = Math.cos( time / 7000 ) * 20 + 40;
-    windForce.set( Math.sin( time / 2000 ),
-                   Math.cos( time / 3000 ),
-                   Math.sin( time / 1000 ) ).normalize().multiplyScalar( windStrength );
+    CLOTH.windStrength = Math.cos( time / 7000 ) * 20 + 40;
+    CLOTH.windForce.set( Math.sin( time / 2000 ),
+			 Math.cos( time / 3000 ),
+			 Math.sin( time / 1000 ) ).normalize().multiplyScalar( CLOTH.windStrength );
     //arrow.setLength( windStrength );
     //arrow.setDirection( windForce );
     
-    if ( ! lastTime ) {
-	lastTime = time;
+    if ( ! this.lastTime ) {
+	this.lastTime = time;
 	return;
     }
 	
     var i, il, particles, particle, pt, constrains, constrain;
 
     // Aerodynamics forces
-    if ( wind ) {
+    if ( CLOTH.wind ) {
 	var face, faces = clothGeometry.faces, normal;
 	particles = cloth.particles;
+	var tmpForce = CLOTH.tmpForce;
 	for ( i = 0, il = faces.length; i < il; i ++ ) {
 	    face = faces[ i ];
 	    normal = face.normal;
-	    tmpForce.copy( normal ).normalize().multiplyScalar( normal.dot( windForce ) );
+	    tmpForce.copy( normal ).normalize().multiplyScalar( normal.dot( CLOTH.windForce ) );
 	    particles[ face.a ].addForce( tmpForce );
 	    particles[ face.b ].addForce( tmpForce );
 	    particles[ face.c ].addForce( tmpForce );
@@ -300,8 +281,8 @@ Cloth.prototype.update = function( time )
     for ( particles = cloth.particles, i = 0, il = particles.length
 	  ; i < il; i ++ ) {
 	particle = particles[ i ];
-	particle.addForce( gravity );
-	particle.integrate( TIMESTEP_SQ );
+	particle.addForce( this.gravity );
+	particle.integrate( CLOTH.TIMESTEP_SQ );
     }
 
 	// Start Constrains
@@ -314,8 +295,8 @@ Cloth.prototype.update = function( time )
     }
 
     // Ball Constrains
-    ballPosition.z = - Math.sin( Date.now() / 600 ) * 90 ; //+ 40;
-    ballPosition.x = Math.cos( Date.now() / 400 ) * 70;
+    CLOTH.ballPosition.z = - Math.sin( Date.now() / 600 ) * 90 ; //+ 40;
+    CLOTH.ballPosition.x = Math.cos( Date.now() / 400 ) * 70;
 
 /*
 	if ( sphere && sphere.visible )
@@ -346,7 +327,8 @@ Cloth.prototype.update = function( time )
 	}
     }
 
-	// Pin Constrains
+    // Pin Constrains
+    var pins = this.pins;
     for ( i = 0, il = pins.length; i < il; i ++ ) {
 	var xy = pins[ i ];
 	var p = particles[ xy ];
@@ -369,6 +351,53 @@ Cloth.prototype.setupPins = function()
     pinsFormation.push( pins );
 //			pins = [ 0, cloth.w ]; // classic 2 pins
 //			pinsFormation.push( pins );
-    pins = pinsFormation[ 1 ];
+    this.pinsFormation = pinsFormation;
+    this.pins = pinsFormation[ 1 ];
 }
-cloth.setupPins();
+
+Cloth.prototype.togglePins = function() {
+    report("togglePins");
+    this.pins = this.pinsFormation[ ~~( Math.random() * this.pinsFormation.length ) ];
+}
+
+Cloth.prototype.toggleWind = function() {
+    report("toggleWind");
+    CLOTH.wind = !CLOTH.wind;
+}
+
+Cloth.prototype.setupCloth = function(scene)
+{
+    // cloth material
+
+    //var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/circuit_pattern.png' );
+    //var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/lace1.png' );
+    var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/paisley1.jpg' );
+    clothTexture = videoTexture;
+    //clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping;
+    clothTexture.wrapS = clothTexture.wrapT = THREE.ClampToEdgeWrapping;
+    //clothTexture.anisotropy = 16;
+
+    var clothMaterial = new THREE.MeshPhongMaterial( { alphaTest: 0.5, color: 0xffffff, specular: 0x030303, emissive: 0x111111, shiness: 10, map: clothTexture, side: THREE.DoubleSide } );
+    CLOTH_MAT = clothMaterial;
+    this.clothMaterial = clothMaterial;
+    // cloth geometry
+    clothGeometry = new THREE.ParametricGeometry( CLOTH.clothFunction, cloth.w, cloth.h );
+    clothGeometry.dynamic = true;
+    clothGeometry.computeFaceNormals();
+    this.clothGeometry = clothGeometry;
+    
+    var uniforms = { texture:  { type: "t", value: clothTexture } };
+    var vertexShader = document.getElementById( 'vertexShaderDepth' ).textContent;
+    var fragmentShader = document.getElementById( 'fragmentShaderDepth' ).textContent;
+
+    // cloth mesh
+
+    object = new THREE.Mesh( clothGeometry, clothMaterial );
+    object.position.set( 0, 0, 0 );
+    object.castShadow = true;
+    object.receiveShadow = true;
+    scene.add( object );
+    //object.customDepthMaterial = new THREE.ShaderMaterial( { uniforms: uniforms, vertexShader: vertexShader, fragmentShader: fragmentShader } );
+    return object;
+}
+
