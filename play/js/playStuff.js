@@ -314,6 +314,23 @@ function timerFun(e)
     setTimeout(timerFun, 100);
 }
 
+function addClothScreen()
+{
+      videoTexture = VIDEO_TEX;
+      CLOTH.wind = 0.05;
+      //cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
+      cloth = new Cloth();
+      cloth.setupCloth(SCENE);
+      cloth.obj.scale.z=.02;
+      cloth.obj.scale.x=.025;
+      cloth.obj.scale.y=.015;
+      cloth.obj.rotation.y=toRadians(90);
+      cloth.obj.position.x = 2;
+      cloth.obj.position.y = -0;
+      cloth.invertTex();
+      UPDATE_FUN = CLOTH.update;
+}
+
 $(document).ready(function() {
     report("**** setting up slider ****");
     $("#timeLine").slider({

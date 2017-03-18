@@ -25,7 +25,7 @@ CLOTH.GRAVITY = 981 * 1.4; //
 CLOTH.TIMESTEP = 18 / 1000;
 CLOTH.TIMESTEP_SQ = CLOTH.TIMESTEP * CLOTH.TIMESTEP;
 
-CLOTH.wind = true;
+CLOTH.wind = .2;
 CLOTH.windStrength = 2;
 CLOTH.windForce = new THREE.Vector3( 0, 0, 0 );
 CLOTH.ballPosition = new THREE.Vector3( 0, - 45, 0 );
@@ -114,13 +114,14 @@ function satisifyConstrains( p1, p2, distance )
 }
 
 
-function Cloth( w, h ) {
-
+function Cloth( w, h )
+{
+    report("**** Cloth "+w+" "+h);
         this.gravity = new THREE.Vector3( 0, - CLOTH.GRAVITY, 0 ).multiplyScalar( CLOTH.MASS );
         this.lastTime = null;
     CLOTH.cloths.push(this);
-	w = w || 10;
-	h = h || 10;
+	w = w || CLOTH.xSegs;
+	h = h || CLOTH.ySegs;
 	this.w = w;
 	this.h = h;
 
@@ -246,7 +247,7 @@ Cloth.prototype.update = function( time )
     if (time == null)
 	time = Date.now();
 
-    CLOTH.windStrength = Math.cos( time / 7000 ) * 20 + 40;
+    CLOTH.windStrength = CLOTH.wind * (Math.cos( time / 7000 ) * 20 + 40);
     CLOTH.windForce.set( Math.sin( time / 2000 ),
 			 Math.cos( time / 3000 ),
 			 Math.sin( time / 1000 ) ).normalize().multiplyScalar( CLOTH.windStrength );
@@ -341,7 +342,10 @@ Cloth.prototype.setupPins = function()
     var pins = [6];
 
     pinsFormation.push( pins );
-    pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+    pins = [];
+    for (var i=0; i<=this.w; i++)
+	pins.push(i);
+    //pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
     pinsFormation.push( pins );
     pins = [ 0 ];
     pinsFormation.push( pins );
@@ -371,11 +375,12 @@ Cloth.prototype.setupCloth = function(scene)
     //var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/lace1.png' );
     var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/paisley1.jpg' );
     clothTexture = videoTexture;
+    report("clothTexture: "+clothTexture);
     //clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping;
     clothTexture.wrapS = clothTexture.wrapT = THREE.ClampToEdgeWrapping;
     //clothTexture.anisotropy = 16;
 
-    var clothMaterial = new THREE.MeshPhongMaterial( { alphaTest: 0.5, color: 0xffffff, specular: 0x030303, emissive: 0x111111, shiness: 10, map: clothTexture, side: THREE.DoubleSide } );
+    var clothMaterial = new THREE.MeshPhongMaterial( { alphaTest: 0.5, color: 0xffffff, specular: 0x030303, emissive: 0x111111, shininess: 10, map: clothTexture, side: THREE.DoubleSide } );
     CLOTH_MAT = clothMaterial;
     this.clothMaterial = clothMaterial;
     // cloth geometry
@@ -396,6 +401,36 @@ Cloth.prototype.setupCloth = function(scene)
     object.receiveShadow = true;
     scene.add( object );
     //object.customDepthMaterial = new THREE.ShaderMaterial( { uniforms: uniforms, vertexShader: vertexShader, fragmentShader: fragmentShader } );
+    this.obj = object;
     return object;
 }
 
+Cloth.prototype.invertTex = function()
+{
+    var geo = this.clothGeometry;
+    var fuvs = geo.faceVertexUvs[0];
+    var mat = this.clothMaterial;
+    var flipX = true;
+    var flipY = true;
+   if (this.fuvs0 == null) {
+        report("Copying initial UV's");
+        this.fuvs0 = JSON.parse(JSON.stringify(fuvs));
+        report("done");
+    }
+    var n = 0;
+    for (var i=0; i<fuvs.length; i++) {
+        var f = fuvs[i];
+        var f0 = this.fuvs0[i];
+        for (var j=0; j<3; j++) {
+            if (flipX)
+                f[j].x = 1.0 - f0[j].x;
+            if (flipY)
+                f[j].y = 1.0 - f0[j].y;
+            n++;
+        }
+    }
+    report("updated uv vals: "+n);
+    mat.needsUpdate = true;
+    geo.uvsNeedUpdate = true;
+    geo.buffersNeedUpdate = true;
+};

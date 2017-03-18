@@ -3,6 +3,7 @@
 // useful for debugging
 var VIEW;
 var ORIGIN;
+var UPDATE_FUN = null;
 
 const Parameters = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
 
@@ -364,11 +365,12 @@ var draw=(datas)=>{
 
 	three.on('update', ()=>{
 	    //report("three.update.....");
-		TWEEN.update()
+	    TWEEN.update()
 
-		Object.keys(charts).forEach(id=>{
-			charts[id].update(data[id])
-		})
-
+	    Object.keys(charts).forEach(id=>{
+		charts[id].update(data[id])
+	    })
+	    if (UPDATE_FUN)
+		UPDATE_FUN();
 	})
 }

@@ -157,8 +157,11 @@ MODEL_PATH = "./NOHSpace.dae"
 <!--<script src = "./js/addCloth.js"></script> -->
 <script src = "./js/playStuff.js"></script>
 <script>
-var cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
-cloth.setupCloth(SCENE);
+  var videoTexture = null;
+  var cloth = null;
+  setTimeout(function() {
+      addClothScreen();
+    }, 500);
 </script>
 
 </body>
