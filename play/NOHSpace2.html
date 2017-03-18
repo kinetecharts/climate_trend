@@ -154,7 +154,12 @@ MODEL_PATH = "./NOHSpace.dae"
 </script>
 <script src = "../js/chart.js"></script>
 <script src = "./js/playapp.js"></script>
-<script src = "./js/addCloth.js"></script>
+<!--<script src = "./js/addCloth.js"></script> -->
 <script src = "./js/playStuff.js"></script>
-	</body>
+<script>
+var cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
+cloth.setupCloth(SCENE);
+</script>
+
+</body>
 </html>
