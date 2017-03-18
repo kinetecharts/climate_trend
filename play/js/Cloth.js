@@ -10,21 +10,49 @@
 // http://cg.alexandra.dk/tag/spring-mass-system/
 // Real-time Cloth Animation http://www.darwin3d.com/gamedev/articles/col0599.pdf
 
-var DAMPING = 0.03;
-var DRAG = 1 - DAMPING;
-var MASS = .1;
-var restDistance = 25;
+CLOTH = {};
+
+CLOTH.DAMPING = 0.03;
+CLOTH.DRAG = 1 - CLOTH.DAMPING;
+CLOTH.MASS = .1;
+CLOTH.restDistance = 25;
+
+CLOTH.pinsFormation = [];
+CLOTH.pins = [6];
+
+//function setupPins()
+//{
+/*
+			pinsFormation.push( pins );
+			pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+			pinsFormation.push( pins );
+			pins = [ 0 ];
+			pinsFormation.push( pins );
+			pins = []; // cut the rope ;)
+			pinsFormation.push( pins );
+//			pins = [ 0, cloth.w ]; // classic 2 pins
+//			pinsFormation.push( pins );
+			pins = pinsFormation[ 1 ];
+//}
+*/
+//setupPins();
+
+function togglePins() {
+	CLOTH.pins = CLOTH.pinsFormation[ ~~( Math.random() * CLOTH.pinsFormation.length ) ];
+}
+
 
 
 var xSegs = 10; //
 var ySegs = 10; //
 
-var clothFunction = plane( restDistance * xSegs, restDistance * ySegs );
+var clothFunction = plane( CLOTH.restDistance * xSegs, CLOTH.restDistance * ySegs );
 
 var cloth = new Cloth( xSegs, ySegs );
+//setupPins(cloth);
 
 var GRAVITY = 981 * 1.4; // 
-var gravity = new THREE.Vector3( 0, - GRAVITY, 0 ).multiplyScalar( MASS );
+var gravity = new THREE.Vector3( 0, - GRAVITY, 0 ).multiplyScalar( CLOTH.MASS );
 
 
 var TIMESTEP = 18 / 1000;
@@ -86,7 +114,7 @@ Particle.prototype.addForce = function( force ) {
 Particle.prototype.integrate = function( timesq ) {
 
 	var newPos = this.tmp.subVectors( this.position, this.previous );
-	newPos.multiplyScalar( DRAG ).add( this.position );
+	newPos.multiplyScalar( CLOTH.DRAG ).add( this.position );
 	newPos.add( this.a.multiplyScalar( timesq ) );
 
 	this.tmp = this.previous;
@@ -131,7 +159,7 @@ function Cloth( w, h ) {
 		for ( u = 0; u <= w; u ++ ) {
 
 			particles.push(
-				new Particle( u / w, v / h, 0, MASS )
+				new Particle( u / w, v / h, 0, CLOTH.MASS )
 			);
 
 		}
@@ -147,13 +175,13 @@ function Cloth( w, h ) {
 			constrains.push( [
 				particles[ index( u, v ) ],
 				particles[ index( u, v + 1 ) ],
-				restDistance
+				CLOTH.restDistance
 			] );
 
 			constrains.push( [
 				particles[ index( u, v ) ],
 				particles[ index( u + 1, v ) ],
-				restDistance
+				CLOTH.restDistance
 			] );
 
 		}
@@ -165,7 +193,7 @@ function Cloth( w, h ) {
 		constrains.push( [
 			particles[ index( u, v ) ],
 			particles[ index( u, v + 1 ) ],
-			restDistance
+			CLOTH.restDistance
 
 		] );
 
@@ -176,7 +204,7 @@ function Cloth( w, h ) {
 		constrains.push( [
 			particles[ index( u, v ) ],
 			particles[ index( u + 1, v ) ],
-			restDistance
+			CLOTH.restDistance
 		] );
 
 	}
@@ -219,66 +247,75 @@ function Cloth( w, h ) {
 
 	this.index = index;
 
+        this.updateCloth = function()
+        {
+	    var cloth = this;
+	    var p = cloth.particles;
+
+	    for ( var i = 0, il = p.length; i < il; i ++ ) {
+		clothGeometry.vertices[ i ].copy( p[ i ].position );
+	    }
+	    clothGeometry.computeFaceNormals();
+	    clothGeometry.computeVertexNormals();
+
+	    clothGeometry.normalsNeedUpdate = true;
+	    clothGeometry.verticesNeedUpdate = true;
+	}
+    
 }
 
-function simulate( time ) {
+Cloth.prototype.update = function( time )
+{
+    if (time == null)
+	time = Date.now();
 
-	if ( ! lastTime ) {
-
-		lastTime = time;
-		return;
-
-	}
+    windStrength = Math.cos( time / 7000 ) * 20 + 40;
+    windForce.set( Math.sin( time / 2000 ),
+                   Math.cos( time / 3000 ),
+                   Math.sin( time / 1000 ) ).normalize().multiplyScalar( windStrength );
+    //arrow.setLength( windStrength );
+    //arrow.setDirection( windForce );
+    
+    if ( ! lastTime ) {
+	lastTime = time;
+	return;
+    }
 	
-	var i, il, particles, particle, pt, constrains, constrain;
+    var i, il, particles, particle, pt, constrains, constrain;
 
-	// Aerodynamics forces
-	if ( wind ) {
-
-		var face, faces = clothGeometry.faces, normal;
-
-		particles = cloth.particles;
-
-		for ( i = 0, il = faces.length; i < il; i ++ ) {
-
-			face = faces[ i ];
-			normal = face.normal;
-
-			tmpForce.copy( normal ).normalize().multiplyScalar( normal.dot( windForce ) );
-			particles[ face.a ].addForce( tmpForce );
-			particles[ face.b ].addForce( tmpForce );
-			particles[ face.c ].addForce( tmpForce );
-
-		}
-
+    // Aerodynamics forces
+    if ( wind ) {
+	var face, faces = clothGeometry.faces, normal;
+	particles = cloth.particles;
+	for ( i = 0, il = faces.length; i < il; i ++ ) {
+	    face = faces[ i ];
+	    normal = face.normal;
+	    tmpForce.copy( normal ).normalize().multiplyScalar( normal.dot( windForce ) );
+	    particles[ face.a ].addForce( tmpForce );
+	    particles[ face.b ].addForce( tmpForce );
+	    particles[ face.c ].addForce( tmpForce );
 	}
+    }
 	
-	for ( particles = cloth.particles, i = 0, il = particles.length
-			; i < il; i ++ ) {
-
-		particle = particles[ i ];
-		particle.addForce( gravity );
-
-		particle.integrate( TIMESTEP_SQ );
-
-	}
+    for ( particles = cloth.particles, i = 0, il = particles.length
+	  ; i < il; i ++ ) {
+	particle = particles[ i ];
+	particle.addForce( gravity );
+	particle.integrate( TIMESTEP_SQ );
+    }
 
 	// Start Constrains
 
-	constrains = cloth.constrains,
-	il = constrains.length;
-	for ( i = 0; i < il; i ++ ) {
+    constrains = cloth.constrains,
+    il = constrains.length;
+    for ( i = 0; i < il; i ++ ) {
+	constrain = constrains[ i ];
+	satisifyConstrains( constrain[ 0 ], constrain[ 1 ], constrain[ 2 ] );
+    }
 
-		constrain = constrains[ i ];
-		satisifyConstrains( constrain[ 0 ], constrain[ 1 ], constrain[ 2 ] );
-
-	}
-
-	// Ball Constrains
-
-
-	ballPosition.z = - Math.sin( Date.now() / 600 ) * 90 ; //+ 40;
-	ballPosition.x = Math.cos( Date.now() / 400 ) * 70;
+    // Ball Constrains
+    ballPosition.z = - Math.sin( Date.now() / 600 ) * 90 ; //+ 40;
+    ballPosition.x = Math.cos( Date.now() / 400 ) * 70;
 
 /*
 	if ( sphere && sphere.visible )
@@ -298,40 +335,40 @@ function simulate( time ) {
 
 	}
 */
-	// Floor Constains
-	for ( particles = cloth.particles, i = 0, il = particles.length
-			; i < il; i ++ ) {
+    // Floor Constains
+    for ( particles = cloth.particles, i = 0, il = particles.length
+	  ; i < il; i ++ ) {
 
-		particle = particles[ i ];
-		pos = particle.position;
-		if ( pos.y < - 250 ) {
-
-			pos.y = - 250;
-
-		}
-
+	particle = particles[ i ];
+	pos = particle.position;
+	if ( pos.y < - 250 ) {
+	    pos.y = - 250;
 	}
+    }
 
 	// Pin Constrains
-	for ( i = 0, il = pins.length; i < il; i ++ ) {
-
-		var xy = pins[ i ];
-		var p = particles[ xy ];
-		p.position.copy( p.original );
-		p.previous.copy( p.original );
-
-	}
-
-
+    for ( i = 0, il = pins.length; i < il; i ++ ) {
+	var xy = pins[ i ];
+	var p = particles[ xy ];
+	p.position.copy( p.original );
+	p.previous.copy( p.original );
+    }
 }
 
-function clothAnimate()
+
+Cloth.prototype.setupPins = function()
 {
-				var time = Date.now();
-
-				windStrength = Math.cos( time / 7000 ) * 20 + 40;
-				windForce.set( Math.sin( time / 2000 ), Math.cos( time / 3000 ), Math.sin( time / 1000 ) ).normalize().multiplyScalar( windStrength );
-				//arrow.setLength( windStrength );
-				//arrow.setDirection( windForce );
-				simulate(time);
+    pins = CLOTH.pins;
+    pinsFormation = CLOTH.pinsFormation;
+    pinsFormation.push( pins );
+    pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+    pinsFormation.push( pins );
+    pins = [ 0 ];
+    pinsFormation.push( pins );
+    pins = []; // cut the rope ;)
+    pinsFormation.push( pins );
+//			pins = [ 0, cloth.w ]; // classic 2 pins
+//			pinsFormation.push( pins );
+    pins = pinsFormation[ 1 ];
 }
+cloth.setupPins();
