@@ -347,8 +347,8 @@ Cloth.prototype.setupPins = function()
     pinsFormation.push( pins );
     pins = []; // cut the rope ;)
     pinsFormation.push( pins );
-//			pins = [ 0, cloth.w ]; // classic 2 pins
-//			pinsFormation.push( pins );
+			pins = [ 0, this.w ]; // classic 2 pins
+			pinsFormation.push( pins );
     this.pinsFormation = pinsFormation;
     this.pins = pinsFormation[ 1 ];
 }
