@@ -138,7 +138,10 @@ var drawAxis = (view, origin)=>{
     })
     .label({
     	color: 0xaaaaaa,
-    	background: backgroundColor
+    	background: backgroundColor,
+    	size: 36,
+    	snap: false,
+    	depth: 1
     	// offset: [1,1]
     })
 
@@ -185,7 +188,9 @@ var drawAxis = (view, origin)=>{
       data: ["year", "y", "z"],
     }).label({
       color: 0xaaaaaa,
-      background: backgroundColor
+      background: backgroundColor,
+      size: 48,
+      depth: 1
     });		
 
 }
@@ -240,26 +245,28 @@ var drawGrid = (view, origin)=>{
 	})
 }
 
+var mathbox = mathBox({
+  plugins: ['core', 'controls', 'cursor', 'stats'],
+  // plugins: ['VR', 'ui', 'controls'],
+  controls: {
+    klass: THREE.OrbitControls
+    // klass: THREE.VRControls
+  },
+});
+
+window._m = mathbox
+
+var three = mathbox.three;
+
+three.camera.position.set(-3.5, .4, 1.3);
+
+three.renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
+
 
 var draw=(datas)=>{
 	var data = datas.active
 	// debugger
-	var mathbox = mathBox({
-	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
-	  // plugins: ['VR', 'ui', 'controls'],
-	  controls: {
-	    klass: THREE.OrbitControls
-	    // klass: THREE.VRControls
-	  },
-	});
 
-	window._m = mathbox
-
-	var three = mathbox.three;
-
-	three.camera.position.set(-3.5, .4, 1.3);
-
-	three.renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
 
 	// Mathbox view
 	var view = mathbox.cartesian({
@@ -267,15 +274,15 @@ var draw=(datas)=>{
 	  scale: chartScale,
 	});
 
-    var camera = view.camera({
-      lookAt: [0, 0, 0],
-    }, {
-      position: function (t) { 
-      	var _t = 0.1*t
-      	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
-      	.map(x=>{return 1.5*x + 1}) 
-      },
-    });
+    // var camera = view.camera({
+    //   lookAt: [0, 0, 0],
+    // }, {
+    //   position: function (t) { 
+    //   	var _t = 0.1*t
+    //   	return [-3 * Math.cos(_t), .4 * Math.cos(_t * .381), -3 * Math.sin(_t)]
+    //   	.map(x=>{return 1.5*x + 1}) 
+    //   },
+    // });
 
 	var origin = {x: chartRange.x[0], y: chartRange.y[0], z: chartRange.z[0]}
 
@@ -327,7 +334,7 @@ var draw=(datas)=>{
 	var charts={}
 	charts['temperature'] = plotLine('temperature', [12, 24],  0, 0xffcc44, '#tColor')
 	charts['co2'] 		 = plotLine('co2', 			[0, 2200], 3.3,  0xffff00, null)
-	charts['ice'] 		 = plotLine('ice', [0, 10], 6.6, 0xffffff, null)
+	// charts['ice'] 		 = plotLine('ice', [0, 10], 6.6, 0xffffff, null)
 	charts['balance']		= plotLine('balance', [0, 5], 10, 0x00ffff, null)
 	// charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
 

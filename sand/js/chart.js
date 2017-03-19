@@ -118,11 +118,14 @@ class Chart{
 	    })
 	    .text({
 	    	live: false,
+	    	depth: 2,
 	    	data: interpolate(this.yRange[0], this.yRange[1], 5)
 	    })
 	    .label({
 	    	color: this.color,
-	    	background: backgroundColor
+	    	background: backgroundColor,
+	    	size: 36,
+	    	depth: 1
 	    	// offset: [1,1]
 	    })
 
@@ -133,9 +136,14 @@ class Chart{
 			live: false,
 	    }).text({
 	      data: [this.id],
+	      depth: 2
 	    }).label({
 	      color: this.color,
-	      background: backgroundColor
+	      background: backgroundColor,
+	      snap: false,
+	      size: 48,
+	      depth: 1,
+	      zIndex: 1
 	    });		
 
 	    // projection at 2300
@@ -149,7 +157,9 @@ class Chart{
 	      data: [0],
 	    }).label({
 	      color: this.color,
-	      background: backgroundColor
+	      background: backgroundColor,
+	      size: 36,
+	      depth: 1
 	    });		
 
 	    this.labelPosition = this.mathbox.select('#'+this.id+'-label-position')
