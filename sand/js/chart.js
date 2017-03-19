@@ -13,6 +13,7 @@ class Chart{
 		this.scale = options.scale
 		this.color = options.color
 		this.colors = options.colors
+		this.lineWidth = options.lineWidth || 10
 
 		this.chart = null
 
@@ -47,7 +48,7 @@ class Chart{
 			opacity: 1.0,
 			color: this.color,
 			colors: this.colors,
-			width: 10
+			width: this.lineWidth
 		})
 
 		// draw line
@@ -62,7 +63,7 @@ class Chart{
 			id: this.id+'-line-reference',
 			color: this.color,
 			colors: this.colors,
-			width: 20
+			width: 5
 		})
 
 

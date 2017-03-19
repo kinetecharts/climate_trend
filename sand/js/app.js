@@ -21,7 +21,7 @@ const numData = 451
 const chartRange={
 	x:[1850, 2300],
 	y:[12, 24],
-	z:[0, 10]
+	z:[-5, 5]
 }
 
 
@@ -198,25 +198,6 @@ var drawAxis = (view, origin)=>{
 var drawGrid = (view, origin)=>{
 	const lineWidth = 1
 	const alpha = 0.3
-	// view.grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0xffaa44
-	// })
-
-	// view.transform({position:[0, 0, 10]})
-	// .grid({
-	// 	axes: "xy",
-	// 	divideX: 3,
-	// 	divideY: 3,
-	// 	width: lineWidth,
-	// 	opacity: alpha,
-	// 	color: 0x00ff00
-	// })
-
 
 	view
 	.transform({
@@ -286,12 +267,12 @@ var draw=(datas)=>{
 
 	var origin = {x: chartRange.x[0], y: chartRange.y[0], z: chartRange.z[0]}
 
-	drawAxis(view, origin)
+	// drawAxis(view, origin)
 	drawGrid(view, origin)
 
 	// color gradient for temperature curve
 	view.interval({
-		id:'tColor',
+		id:'tempratureColor',
 		width: numData,
 		channels: 4,
 		items: 1,
@@ -315,27 +296,59 @@ var draw=(datas)=>{
 		}
 	})
 
-	var plotLine = (id, yRange, z_offset, color, colors)=>{
-		var chart = new Chart(mathbox, {
-			x : data.year,
-			y : data[id],
-			z_offset : z_offset,
-			id : id,
-			xRange : chartRange.x,
-			yRange : yRange,
-			zRrange : chartRange.z,
-			scale : chartScale,
-			color : color,
-			colors : colors
-		})
-		return chart
-	}
+	// color gradient for co2 curve
+	view.interval({
+		id:'co2Color',
+		width: numData,
+		channels: 4,
+		items: 1,
+		live: true,
+		expr: (emit, x, i, t)=>{
+			var a = x > Year ? 0.1 : 1.0
+			emit(1, 1, 1, a) // make it blink alarm at high temperature
+		}
+	})
 
 	var charts={}
-	charts['temperature'] = plotLine('temperature', [12, 24],  0, 0xffcc44, '#tColor')
-	charts['co2'] 		 = plotLine('co2', 			[0, 2200], 3.3,  0xffff00, null)
+	charts['temperature'] = new Chart(mathbox, {
+		x : data.year,
+		y : data['temperature'],
+		z_offset : 0,
+		id : 'temperature',
+		xRange : chartRange.x,
+		yRange : [12, 24],
+		zRrange : chartRange.z,
+		scale : chartScale,
+		color : 0xffcc44,
+		colors : '#tempratureColor'
+	})
+	charts['co2'] = new Chart(mathbox, {
+		x : data.year,
+		y : data['co2'],
+		z_offset : -5,
+		id : 'co2',
+		xRange : chartRange.x,
+		yRange : [0, 2200],
+		zRrange : chartRange.z,
+		scale : chartScale,
+		color : 0xffff00,
+		colors : '#co2Color'
+	})
+	charts['balance'] = new Chart(mathbox, {
+		x : data.year,
+		y : data['balance'],
+		z_offset : -10,
+		id : 'balance',
+		xRange : chartRange.x,
+		yRange : [0, 5],
+		zRrange : chartRange.z,
+		scale : chartScale,
+		color : 0x00ffff,
+		colors : '#co2Color',
+		lineWidth: 4
+	})
+
 	// charts['ice'] 		 = plotLine('ice', [0, 10], 6.6, 0xffffff, null)
-	charts['balance']		= plotLine('balance', [0, 5], 10, 0x00ffff, null)
 	// charts['precipitation'] = plotLine('precipitation', [0.000032, 0.00004], 10,  0x00ff00, null)
 
 	var sands = new Sands(mathbox, {
@@ -348,7 +361,7 @@ var draw=(datas)=>{
 			zRrange : chartRange.z,
 			scale : chartScale,
 			color : 0xffcc44,
-			colors : '#tColor'
+			colors : '#tempratureColor'
 	})
 
 	three.on('update', ()=>{
@@ -360,9 +373,4 @@ var draw=(datas)=>{
 		sands.update(data['temperature'])
 
 	})
-}
-
-
-var sands=function(mathbox){
-
 }
