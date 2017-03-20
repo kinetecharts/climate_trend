@@ -13,7 +13,8 @@ class Chart{
 		this.scale = options.scale
 		this.color = options.color
 		this.colors = options.colors
-		this.lineWidth = options.lineWidth || 10
+		this.lineWidth = options.lineWidth || 20
+		this.labelFunc = options.labelFunc || ((val)=>{return [val]})
 
 		this.chart = null
 
@@ -152,7 +153,7 @@ class Chart{
         	id: this.id+'-label-position',
 			data: [[this.xRange[1], 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
 			channels: 3, // necessary
-			live: false,
+			live: true,
 	    }).text({
 	    	id: this.id+'-label-text',
 	      data: [0],
@@ -163,8 +164,31 @@ class Chart{
 	      depth: 1
 	    });		
 
+
+
+	    // Current value
+        view.array({
+        	id: this.id+'-label-year-position',
+			data: [[Year, 0.1*(this.yRange[1]-this.yRange[0]) + this.yRange[1], this.z_offset]],
+			channels: 3, // necessary
+			live: true,
+	    }).text({
+	    	id: this.id+'-label-year-text',
+	      data: ['temperature'],
+	    }).label({
+	      color: this.color,
+	      background: backgroundColor,
+	      size: 36,
+	      depth: 1
+	    });		
+
+
+
+
 	    this.labelPosition = this.mathbox.select('#'+this.id+'-label-position')
 	    this.labelText = this.mathbox.select('#'+this.id+'-label-text')
+	    this.labelYearPos = this.mathbox.select('#'+this.id+'-label-year-position')
+	    this.labelYearText = this.mathbox.select('#'+this.id+'-label-year-text')
 
 	}
 
@@ -174,5 +198,10 @@ class Chart{
 		this.chart.set('data', newData)
 		this.labelPosition.set('data', [[this.xRange[1], y[numData-1], this.z_offset]])
 		this.labelText.set('data', [y[numData-1].toPrecision(3)])
+
+		this.labelYearPos.set('data', 
+			[[Year, 0.1*(this.yRange[1]-this.yRange[0]) + y[Year-1850], this.z_offset]])
+		this.labelYearText.set('data', 
+			this.labelFunc(Year, (y[Year-1850] - PreIndustrial[this.id]).toFixed(1)))
 	}
 }

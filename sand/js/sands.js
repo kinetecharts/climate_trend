@@ -7,8 +7,8 @@ var temperatureColorMap = function(val){
 	var r0 = 1 - (val-min) / (max-min) // Green percentage
 	var r1 = 1 - r0
 
-	var c0 = [0.2, 1, 0.2] // Green
-	var c1 = [1, 0.2, 0.2] // Red
+	var c0 = [0.1, 0.7, 1] // Blue
+	var c1 = [1, 0.4, 0.1] // Red
 	return {
 		r: r0*c0[0]+r1*c1[0], 
 		g: r0*c0[1]+r1*c1[1],
