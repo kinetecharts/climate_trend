@@ -86,13 +86,14 @@ var events=[
 	{command: "cameraControl.home()", delay: 100},
 	{command: "cameraControl.follow()", delay: 110},
 	{command: "cameraControl.home()", delay: 120},
-	{command: "toggle()", delay: 120},
+	{command: "toggle()", delay: 125},
 	{command: "runEvents()", delay: 130},
 ]
 
 var runEvents= ()=>{
 	events.forEach(event=>{
 		setTimeout(()=>{
+			console.log(event.command)
 			eval(event.command)
 		}, event.delay * 1000)
 	})
