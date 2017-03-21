@@ -93,7 +93,7 @@ var events=[
 var runEvents= ()=>{
 	events.forEach(event=>{
 		setTimeout(()=>{
-			console.log(event.command)
+			console.log("event: "+event.command)
 			eval(event.command)
 		}, event.delay * 1000)
 	})
