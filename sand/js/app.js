@@ -63,7 +63,7 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 	})
 	.then(d=>{
 		draw(d)
-		runEvents()
+		runEvents(events_normal)
 	})
 	.fail(err=>{
 		console.log(err)

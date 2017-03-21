@@ -1,9 +1,9 @@
 
 var playHistory = (_duration) =>{
-	var duration = _duration || 120000 // 2min
+	var duration = _duration || 120 // 2min
 	var param = {y: 1850}
 	var t1 = new TWEEN.Tween(param)
-		.to({y:2300}, duration)
+		.to({y:2300}, duration*1000)
 		.onUpdate(()=>{
 			SandYear = Math.round(param.y)
 		})
@@ -12,7 +12,7 @@ var playHistory = (_duration) =>{
 	var param1 = {y: 1850}
 	setTimeout(()=>{
 		var t2 = new TWEEN.Tween(param1)
-			.to({y:2300}, duration)
+			.to({y:2300}, duration*1000)
 			.onUpdate(()=>{
 				Year = Math.round(param1.y)
 			})
@@ -72,8 +72,8 @@ var loop = ()=>{
 
 
 
-var events=[
-	{command: "playHistory()", delay: 2},
+var events_normal=[
+	{command: "playHistory(120)", delay: 2},
 	{command: "cameraControl.temperature()", delay: 10},
 	{command: "cameraControl.co2()", delay: 20},
 	{command: "cameraControl.balance()", delay: 30},
@@ -87,10 +87,18 @@ var events=[
 	{command: "cameraControl.follow()", delay: 110},
 	{command: "cameraControl.home()", delay: 120},
 	{command: "toggle()", delay: 125},
-	{command: "runEvents()", delay: 135},
+	{command: "runEvents(events)", delay: 135},
 ]
 
-var runEvents= ()=>{
+var events_vr=[
+	{command: "playHistory(60)", delay: 2},
+	{command: "toggle()", delay: 65},
+	{command: "runEvents(events)", delay: 70},
+]
+
+
+
+var runEvents= (events)=>{
 	events.forEach(event=>{
 		setTimeout(()=>{
 			console.log("event: "+event.command)

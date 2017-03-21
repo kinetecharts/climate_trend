@@ -118,7 +118,10 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 		window._data = _data
 		return _data
 	})
-	.then(d=>{return draw(d)})
+	.then(d=>{
+		draw(d)
+		runEvents(events_vr)
+	})
 	.fail(err=>{
 		console.log(err)
 	})
