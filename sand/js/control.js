@@ -99,5 +99,4 @@ var runEvents= ()=>{
 	})
 }
 
-runEvents()
 
