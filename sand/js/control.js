@@ -93,7 +93,7 @@ var events_normal=[
 var events_vr=[
 	{command: "playHistory(60)", delay: 2},
 	{command: "toggle()", delay: 65},
-	{command: "runEvents(events)", delay: 70},
+	{command: "runEvents(events)", delay: 80},
 ]
 
 
