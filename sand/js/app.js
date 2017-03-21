@@ -243,6 +243,7 @@ three.camera.position.set(-3.5, .4, 1.3);
 
 three.renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
 
+var cameraControl = new CameraControl(three.controls, chartScale)
 
 var draw=(datas)=>{
 	var data = datas.active
