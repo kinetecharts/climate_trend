@@ -87,7 +87,7 @@ var events=[
 	{command: "cameraControl.follow()", delay: 110},
 	{command: "cameraControl.home()", delay: 120},
 	{command: "toggle()", delay: 125},
-	{command: "runEvents()", delay: 130},
+	{command: "runEvents()", delay: 135},
 ]
 
 var runEvents= ()=>{
