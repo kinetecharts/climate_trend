@@ -292,7 +292,7 @@ var draw=(datas)=>{
 			var g = r0*c0[1]+r1*c1[1]
 			var b = r0*c0[2]+r1*c1[2]
 			var a = 1.0-Math.pow(Math.sin(t*3), 16) + r0 + 0.2
-			if (x > Year) a *= 0.1
+			if (x > Year) a *= 0.0
 			emit(r, g, b, a) // make it blink alarm at high temperature
 		}
 	})
@@ -305,7 +305,7 @@ var draw=(datas)=>{
 		items: 1,
 		live: true,
 		expr: (emit, x, i, t)=>{
-			var a = x > Year ? 0.1 : 1.0
+			var a = x > Year ? 0.0 : 1.0
 			emit(1, 1, 1, a) // make it blink alarm at high temperature
 		}
 	})

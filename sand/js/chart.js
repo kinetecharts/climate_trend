@@ -52,7 +52,44 @@ class Chart{
 			width: this.lineWidth
 		})
 
+		var dataRCP8p5 = _.zip(this.x, _data.rcp8p5[this.id], this.z)
 		// draw line
+		view.array({
+		  id: this.id+'-rcp8p5',
+		  width: numData,
+		  data: dataRCP8p5,
+		  items: 1,
+		  channels: 3,
+		  live: false
+		}).line({
+			id: this.id+'-rcp8p5-line',
+			opacity: 0.5,
+			zIndex: 10,
+			color: this.color,
+			// colors: this.colors,
+			width: 1
+		})
+
+		var dataRCP2p6 = _.zip(this.x, _data.rcp2p6[this.id], this.z)
+		// draw line
+		view.array({
+		  id: this.id+'-rcp2p6',
+		  width: numData,
+		  data: dataRCP2p6,
+		  items: 1,
+		  channels: 3,
+		  live: false
+		}).line({
+			id: this.id+'-rcp2p6-line',
+			opacity: 0.5,
+			zIndex: 10,
+			color: this.color,
+			// colors: this.colors,
+			width: 1
+		})
+
+
+		// draw reference line
 		view.array({
 		  id: this.id+'-reference',
 		  width: 2,
