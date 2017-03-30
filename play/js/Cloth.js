@@ -367,20 +367,26 @@ Cloth.prototype.toggleWind = function() {
     CLOTH.wind = !CLOTH.wind;
 }
 
-Cloth.prototype.setupCloth = function(scene)
+Cloth.prototype.setupCloth = function(scene, tex, clothMaterial)
 {
     // cloth material
 
     //var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/circuit_pattern.png' );
     //var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/lace1.png' );
-    var clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/paisley1.jpg' );
-    clothTexture = videoTexture;
+    var clothTexture = tex;
+    if (!tex)
+	clothTexture = THREE.ImageUtils.loadTexture( 'models/textures/patterns/paisley1.jpg' );
     report("clothTexture: "+clothTexture);
     //clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping;
     clothTexture.wrapS = clothTexture.wrapT = THREE.ClampToEdgeWrapping;
     //clothTexture.anisotropy = 16;
 
-    var clothMaterial = new THREE.MeshPhongMaterial( { alphaTest: 0.5, color: 0xffffff, specular: 0x030303, emissive: 0x111111, shininess: 10, map: clothTexture, side: THREE.DoubleSide } );
+    if (!clothMaterial) {
+	clothMaterial = new THREE.MeshPhongMaterial(
+	    { alphaTest: 0.5, color: 0xffffff, specular: 0x030303,
+	      emissive: 0x111111, shininess: 10, map: clothTexture,
+	      transparent: true, side: THREE.DoubleSide } );
+    }
     CLOTH_MAT = clothMaterial;
     this.clothMaterial = clothMaterial;
     // cloth geometry
