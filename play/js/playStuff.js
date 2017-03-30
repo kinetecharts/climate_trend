@@ -7,6 +7,7 @@ var playing = true;
 //var MODEL_PATH = null;
 var SP = null;
 var VIDEO_TEX = null;
+var VIDEO_MAT = null;
 var MB = null;
 var loader = null;
 var SCENE = null;
@@ -143,12 +144,18 @@ function addSphereMovie(scene)
 {
     report("addMovie "+scene);
     var imageSource = imageSrc;
-    var texture = imageSource.createTexture();
-    VIDEO_TEX = texture;
-    var material = new THREE.MeshBasicMaterial({
+    if (!VIDEO_TEX) {
+	VIDEO_TEX = imageSource.createTexture();
+    }
+    var texture = VIDEO_TEX;
+    if (!VIDEO_MAT) {
+	VIDEO_MAT = new THREE.MeshBasicMaterial({
 	    map: texture,
+	    transparent: true,
 	    side: THREE.DoubleSide,
-    });
+	});
+    }
+    var material = VIDEO_MAT;
     var r = 1.0;
     var thLen = toRadians(60);
     var phLen = toRadians(40);
@@ -188,12 +195,19 @@ function addMovie(scene)
     var h = 4.0;
     report("addMovie "+scene);
     var imageSource = imageSrc;
-    var texture = imageSource.createTexture();
+    if (!VIDEO_TEX) {
+	VIDEO_TEX = imageSource.createTexture();
+    }
+    var texture = VIDEO_TEX;
     VIDEO_TEX = texture;
-    var material = new THREE.MeshBasicMaterial({
+    if (!VIDEO_MAT) {
+	VIDEO_MAT = new THREE.MeshBasicMaterial({
 	    map: texture,
+	    transparent: true,
 	    side: THREE.DoubleSide,
-    });
+	});
+    }
+    var material = VIDEO_MAT;
     var pts = [new THREE.Vector2(0, 0),
 	       new THREE.Vector2(0, 1),
 	       new THREE.Vector2(1, 1),
@@ -330,8 +344,12 @@ function timerFun_(e)
     $("#yearText").html(yStr);
     //
     // Handle Narrative
-    var nar = timeToNarrative(t) || "";
+    var nar = getNarrative(t) || "";
     $("#narrativeText").html(nar);
+    var opacity = getVideoOpacity(t);
+    if (typeof opacity == "number") {
+	VIDEO_MAT.opacity = opacity;
+    }
 }
 
 PL.isPlaying = function() { return playing; }
@@ -376,7 +394,7 @@ function addClothScreen()
       CLOTH.wind = 0.05;
       //cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
       cloth = new Cloth();
-      cloth.setupCloth(SCENE);
+    cloth.setupCloth(SCENE, VIDEO_TEX, VIDEO_MAT);
       cloth.obj.scale.z=.02;
       cloth.obj.scale.x=.025;
       cloth.obj.scale.y=.015;
@@ -392,6 +410,15 @@ var SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvh
 
 var SS = null;
 var SSData = null;
+
+function getFloat(f, defval)
+{
+    if (typeof f == "number")
+	return f;
+    if (typeof f == "string")
+	return JSON.parse(f);
+    return defval;
+}
 
 function timeStr(t)
 {
@@ -419,23 +446,37 @@ function timeToYear(t)
     return null;
 }
 
-function timeToNarrative(t)
+function getVideoOpacity(t)
 {
     var y = timeToYear(t);
-    return yearToNarrative(y);
+    var va = getFieldByYear(y, "videofade");
+    va = getFloat(va, 1.0);
+    return va;
 }
 
-function yearToNarrative(y)
+function getNarrative(t)
+{
+    var y = timeToYear(t);
+    return getFieldByYear(y, "narrative");
+}
+
+/*
+function getFieldByTime(t, field)
+{
+    return getFieldByYear(y, field);
+}
+*/
+
+function getFieldByYear(y, field)
 {
     if (!y)
 	return null;
     var str = "";
     for (var i=0; i<SS.rows.length; i++) {
 	var row = SS.rows[i];
-	report("i: "+i+" y: "+y+"  row.year: "+row.year);
+	//report("gfby i: "+i+" y: "+y+"  row.year: "+row.year);
 	if ( row.year && y > row.year) {
-	    str = row.narrative;
-	    report ("str: "+str);
+	    str = row[field];
 	}
     }
     return str;
