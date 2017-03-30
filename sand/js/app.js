@@ -30,18 +30,6 @@ var SandYear = 1850
 
 const chartScale=[1.5,1,1.5]
 
-var loadData=(file)=>{
-	var deferred = Q.defer()
-	$.get(file, d=>{
-		var res = Papa.parse(d, {header : true, skipEmptyLines: true, dynamicTyping: true})
-		var formated = res.data
-		window._d = formated
-		deferred.resolve(formated)
-	})
-
-	return deferred.promise
-}
-
 var colors = {
   x: new THREE.Color(0xFF4136),
   y: new THREE.Color(0x2ECC40),
@@ -62,42 +50,19 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 		return _data
 	})
 	.then(d=>{
+		var numPasses = 5
+		for(var i=0; i<numPasses; i++){
+			d=smoothEnergyBalance(d)
+		}
+		return d
+	})
+	.then(d=>{
 		draw(d)
 		runEvents(events_normal)
 	})
 	.fail(err=>{
 		console.log(err)
 	})
-
-var interpolate = (lo, hi, n) => {
-  n--; // go to end of range
-  var vals = [];
-  for (var i = 0; i <= n; i++){
-    vals.push(Math.round(10 * (lo + (hi - lo)*(i/n)))/10);
-  }
-  return vals;
-}
-
-var processData = (_d, numData)=>{
-	var res={
-		year: [],
-		temperature: [],
-		co2: [],
-		ice: [],
-		balance: [],
-		precipitation: []
-	}
-
-	for (var i = 0; i < numData; i++) {
-		res.year.push(_d[i].year)
-		res.temperature.push(_d[i].Temperature)
-		res.co2.push(_d[i].CO2Concentration)
-		res.ice.push(_d[i].SeaIceFraction)
-		res.balance.push(_d[i].EnergyBalance)
-		res.precipitation.push(_d[i].Precipitation)
-	}	
-	return(res)
-}
 
 // set active = r*rcp8.5 + (1-r)*rcp2.6
 var setActiveData = (data, r) =>{
