@@ -15,8 +15,39 @@ var SCREEN = null;
 var SOBJ = null;
 var SK_SCREEN = null;
 var ANCHOR = null;
+var AVATAR = null;
 var light1 = null;
 var light2 = null;
+
+function loadJSONModel(scene, path, opts, afterFun)
+{
+    report("loadFBXModel "+scene+" "+path);
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function( item, loaded, total ) {
+	console.log( item, loaded, total );
+    };
+    var loader = new THREE.JSONLoader( manager );
+    //var loader = new THREE.SceneLoader( manager );
+    loader.load( path,
+        function( object ) {
+           /*
+	     object.mixer = new THREE.AnimationMixer( object );
+	     mixers.push( object.mixer );
+	     var action = object.mixer.clipAction( object.animations[ 0 ] );
+	     action.play();
+	   */
+	    scene.add( object );
+	    if (afterFun) {
+		afterFun(object);
+	    }
+	},
+        function() {
+	},
+	function (e) {
+	    report("Error loading JSON file "+path+"\n"+e);
+	}
+	);
+}
 
 function loadFBXModel(scene, path, opts, afterFun)
 {
@@ -190,6 +221,16 @@ function addMovie(scene)
     scene.add(obj);
 }
 
+function loadAvatar(scene, path, opts)
+{
+    report("**** loadAvatar ****");
+    //loadFBXModel(scene, path, opts, function(obj) {
+    loadJSONModel(scene, path, opts, function(obj) {
+        report("**** got avatar ****");
+	AVATAR = obj;
+    });
+}
+
 function findAnchor(obj)
 {
     var anchor = obj.getObjectByName("VizAnchor");
@@ -239,6 +280,9 @@ function loadPlayStuff(three, mathbox)
     if (MODEL_PATH) {
 	loadModel(scene, MODEL_PATH, MODEL_OPTS, processHooks);
     }
+    //var AVATAR_PATH = "./models/avatar.fbx";
+    var AVATAR_PATH = "./models/avatar.json";
+    loadAvatar(scene, AVATAR_PATH, MODEL_OPTS);
 
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
 
@@ -274,8 +318,20 @@ function timerFun_(e)
     var t = imageSrc.video.currentTime;
     //report("d: "+d+"  t: "+t);
     //report("dur: "+d);
-    var str = "t: "+t;
+    var str = "t: "+timeStr(t);
     $("#textLine").html(str);
+    //
+    // Handle year
+    //
+    var y = timeToYear(t);
+    var yStr = "";
+    if (y != null)
+	yStr = ""+Math.floor(y+0.5);
+    $("#yearText").html(yStr);
+    //
+    // Handle Narrative
+    var nar = timeToNarrative(t) || "";
+    $("#narrativeText").html(nar);
 }
 
 PL.isPlaying = function() { return playing; }
@@ -331,6 +387,111 @@ function addClothScreen()
       UPDATE_FUN = CLOTH.update;
 }
 
+//var SSURL = "https://spreadsheets.google.com/feeds/list/1aJP9n8cVBF1PvqfVd_f6szuR1ZS8iX_3y0cJnCFwQeA/default/public/values?alt=json";
+var SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+
+var SS = null;
+var SSData = null;
+
+function timeStr(t)
+{
+    var m = Math.floor(Math.floor(t)/60);
+    var s = t - m*60;
+    var si = Math.floor(s);
+    var sf = s-si;
+    return m+":"+si+"."+Math.floor(10*sf);
+}
+
+function timeToYear(t)
+{
+    var t1 = 10*60;
+    var y1 = 1800;
+    var t2 = 30*60;
+    var y2 = 2300;
+    if (t < t1) {
+	return null;
+    }
+    if (t < t2) {
+	var f = (t-t1)/(t2-t1);
+	var y = y1 + f*(y2-y1);
+	return y;
+    }
+    return null;
+}
+
+function timeToNarrative(t)
+{
+    var y = timeToYear(t);
+    return yearToNarrative(y);
+}
+
+function yearToNarrative(y)
+{
+    if (!y)
+	return null;
+    var str = "";
+    for (var i=0; i<SS.rows.length; i++) {
+	var row = SS.rows[i];
+	report("i: "+i+" y: "+y+"  row.year: "+row.year);
+	if ( row.year && y > row.year) {
+	    str = row.narrative;
+	    report ("str: "+str);
+	}
+    }
+    return str;
+}
+
+function dumpSpreadSheet(ss)
+{
+    var rows = ss.rows;
+    for (var i=0; i<rows.length; i++) {
+	report("row "+i);
+	var row = rows[i];
+	for (var id in row) {
+	    var val = row[id];
+	    report(" "+id+" "+val);
+	}
+    }
+}
+
+function handleSpreadSheet(data)
+{
+    SSData = data;
+    var entries = data.feed.entry;
+    var rows = [];
+    for (var i=0; i<entries.length; i++) {
+        var e = entries[i];
+	report("e "+i+" "+JSON.stringify(e));
+	var row = {};
+        for (var key in e) {
+	    if (!key.startsWith("gsx$")) {
+		continue;
+	    }
+	    var id = key.slice(4);
+	    report("key: "+key+" "+" "+id+" "+e[key]);
+	    var val = e[key]["$t"];
+	    if (val == "\"")
+                val = rows[i-1][id];
+	    row[id] = val;
+	}
+	var ys = row["years"];
+	if (ys) {
+	    ys = ys.replace("approx","");
+	    var parts = ys.split("-").map(function(s) { return s.trim(); });
+	    report("parts: "+parts);
+	    var years = parts.map(JSON.parse);
+	    row["year"] = years[0];
+	}
+	else {
+	    row["year"]=null;
+	}
+	rows.push(row);
+    }
+    var ss = {rows: rows};
+    SS = ss;
+    return ss;
+}
+
 $(document).ready(function() {
     report("**** setting up slider ****");
     $("#timeLine").slider({
@@ -339,5 +500,9 @@ $(document).ready(function() {
     });
     $("#playStop").click(togglePlayStop);
     timerFun();
+    $.getJSON(SSURL, function(data) {
+        //report("GOT JSON: "+data);
+	handleSpreadSheet(data);
+    });
 });
 
