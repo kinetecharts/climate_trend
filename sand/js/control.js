@@ -1,18 +1,19 @@
 
-var playHistory = (_duration) =>{
+// _duration in seconds
+var playHistory = (_duration, _from, _to) =>{
 	var duration = _duration || 120 // 2min
-	var param = {y: 1850}
+	var param = {y: _from}
 	var t1 = new TWEEN.Tween(param)
-		.to({y:2300}, duration*1000)
+		.to({y:_to}, duration*1000)
 		.onUpdate(()=>{
 			SandYear = Math.round(param.y)
 		})
 		.start()
 
-	var param1 = {y: 1850}
+	var param1 = {y: _from}
 	setTimeout(()=>{
 		var t2 = new TWEEN.Tween(param1)
-			.to({y:2300}, duration*1000)
+			.to({y:_to}, duration*1000)
 			.onUpdate(()=>{
 				Year = Math.round(param1.y)
 			})
@@ -73,7 +74,7 @@ var loop = ()=>{
 
 
 var events_normal=[
-	{command: "playHistory(120)", delay: 2},
+	{command: "playHistory(120, 1850, 2300)", delay: 2},
 	{command: "cameraControl.temperature()", delay: 10},
 	{command: "cameraControl.co2()", delay: 20},
 	{command: "cameraControl.balance()", delay: 30},
