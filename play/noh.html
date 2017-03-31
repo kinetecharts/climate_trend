@@ -4,10 +4,6 @@
 		<title>Climate Music Project perforance at NOHSpace Theatre</title>
 		<meta charset="utf-8">
   		<script src="../lib/mathbox-bundle.js"></script>
-		<!--
-  		<script src="./js/three.js"></script>
-  		<script src="../lib/mathbox-core.js"></script>
-                -->
   		<script src="../lib/jquery-3.1.1.min.js"></script>
 		<script src="../lib/jquery-ui.js"></script>
 		<script src="../lib/lodash.min.js"></script>
@@ -23,7 +19,6 @@
 			varying vec2 vUV;
 
 			vec4 pack_depth( const in float depth ) {
-
 				const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );
 				const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );
 				vec4 res = fract( depth * bit_shift );
@@ -33,30 +28,19 @@
 			}
 
 			void main() {
-
 				vec4 pixel = texture2D( texture, vUV );
-
 				if ( pixel.a < 0.5 ) discard;
-
 				gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );
-
 			}
 		</script>
 
 		<script type="x-shader/x-vertex" id="vertexShaderDepth">
-
 			varying vec2 vUV;
-
 			void main() {
-
 				vUV = 0.75 * uv;
-
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-
 				gl_Position = projectionMatrix * mvPosition;
-
 			}
-
 		</script>
 		
 		<style>
@@ -141,18 +125,13 @@ report("------------------------------");
 report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
 report("imageSrc: "+imageSrc);
-var SHOW_MOVIE = true;
-var SHOW_CLOTH_SCREEN = true;
+CMPVR.MODELS = [
+    "./NOHSpace.dae",
+//    {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
+];
+CMPVR.SHOW_MOVIE = true;
+CMPVR.SHOW_CLOTH_SCREEN = false;
 var AVATAR_PATH = "./models/avatar.json";
-//MODEL_PATH = "./DomeSpaceNoTex.dae"
-var MODEL_PATH = "./NOHSpace.dae"
-//var MODEL_PATH = null;
-var MODEL_OPTS = {
-   'scale': [.03,.03,.03],
-   'position': [5,-2.5,4],
-   'rotation': [0,90,0]
-};
-
 
 </script>
 <script src = "../js/chart.js"></script>
