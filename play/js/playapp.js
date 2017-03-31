@@ -284,7 +284,7 @@ var draw=(datas)=>{
 	window._m = mathbox
 
 	var three = mathbox.three;
-        loadPlayStuff(three, mathbox)
+        CMPVR.load(three, mathbox)
 
 	three.camera.position.set(-3.5, .4, 1.3);
 

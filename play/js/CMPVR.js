@@ -1,8 +1,9 @@
 "use strict";
 
-var PL = {};
-var duration = 1920.042667;
-var playing = true;
+var CMPVR = {};
+CMPVR.duration = 1920.042667;
+CMPVR.playing = true;
+CMPVR.cloth = null;
 
 //var MODEL_PATH = null;
 var SP = null;
@@ -20,9 +21,12 @@ var AVATAR = null;
 var light1 = null;
 var light2 = null;
 
-function loadJSONModel(scene, path, opts, afterFun)
+var SHOW_MOVIE = true;
+var SHOW_CLOTH_SCREEN = false;
+
+CMPVR.loadJSONModel = function(scene, path, opts, afterFun)
 {
-    report("loadFBXModel "+scene+" "+path);
+    report("loadJSONModel "+scene+" "+path);
     var manager = new THREE.LoadingManager();
     manager.onProgress = function( item, loaded, total ) {
 	console.log( item, loaded, total );
@@ -50,7 +54,7 @@ function loadJSONModel(scene, path, opts, afterFun)
 	);
 }
 
-function loadFBXModel(scene, path, opts, afterFun)
+CMPVR.loadFBXModel = function(scene, path, opts, afterFun)
 {
     report("loadFBXModel "+scene+" "+path);
     //var path = './DomeSpace.fbx';
@@ -80,7 +84,7 @@ function loadFBXModel(scene, path, opts, afterFun)
 	);
 }
 
-function loadColladaModel(scene, path, opts, afterFun)
+CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
 {
     report("loadColladaModel "+scene+" "+path);
     var imageSource = imageSrc;
@@ -127,20 +131,20 @@ function loadColladaModel(scene, path, opts, afterFun)
     } );
 }
 
-function loadModel(scene, path, opts, afterFun)
+CMPVR.loadModel = function(scene, path, opts, afterFun)
 {
     if (path.endsWith(".fbx")) {
-	loadFBXModel(scene, path, opts, afterFun);
+	CMPVR.loadFBXModel(scene, path, opts, afterFun);
     }
     else if (path.endsWith(".dae")) {
-	loadColladaModel(scene, path, opts, afterFun);
+	CMPVR.loadColladaModel(scene, path, opts, afterFun);
     }
     else {
 	report("Unknown model type "+path);
     }
 }
 
-function addSphereMovie(scene)
+CMPVR.addSphereMovie = function(scene)
 {
     report("addMovie "+scene);
     var imageSource = imageSrc;
@@ -186,7 +190,7 @@ function addSphereMovie(scene)
     scene.add(obj);
 }
 
-function addMovie(scene)
+CMPVR.addMovie = function(scene)
 {
     var x = 4.7;
     var y = 0.3;
@@ -235,17 +239,17 @@ function addMovie(scene)
     scene.add(obj);
 }
 
-function loadAvatar(scene, path, opts)
+CMPVR.loadAvatar = function(scene, path, opts)
 {
     report("**** loadAvatar ****");
     //loadFBXModel(scene, path, opts, function(obj) {
-    loadJSONModel(scene, path, opts, function(obj) {
+    CMPVR.loadJSONModel(scene, path, opts, function(obj) {
         report("**** got avatar ****");
 	AVATAR = obj;
     });
 }
 
-function findAnchor(obj)
+CMPVR.findAnchor = function(obj)
 {
     var anchor = obj.getObjectByName("VizAnchor");
     if (!anchor)
@@ -257,7 +261,7 @@ function findAnchor(obj)
     anchor.visible = false;
 }
 
-function findScreen(obj)
+CMPVR.findScreen = function(obj)
 {
     var screen = obj.getObjectByName("Screen");
     return;
@@ -278,26 +282,36 @@ function findScreen(obj)
 This goes through the loaded model and finds objects that were put there
 to help us locate positions or assign some behaviors.
 */
-function processHooks(obj)
+CMPVR.processHooks = function(obj)
 {
-    findAnchor(obj);
-    findScreen(obj);
+    CMPVR.findAnchor(obj);
+    CMPVR.findScreen(obj);
 }
 
-function loadPlayStuff(three, mathbox)
+// Gets called from in playapp.js
+//
+CMPVR.load = function(three, mathbox)
 {
     MB = mathbox;
     var scene = three.scene;
     SCENE = scene;
-    addMovie(scene);
+    if (SHOW_MOVIE) {
+        CMPVR.addMovie(scene);
+    }
     report("***************************** MODEL_PATH: "+MODEL_PATH);
     if (MODEL_PATH) {
-	loadModel(scene, MODEL_PATH, MODEL_OPTS, processHooks);
+	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
     }
     //var AVATAR_PATH = "./models/avatar.fbx";
-    var AVATAR_PATH = "./models/avatar.json";
-    loadAvatar(scene, AVATAR_PATH, MODEL_OPTS);
-
+    if (AVATAR_PATH) {
+	CMPVR.loadAvatar(scene, AVATAR_PATH, MODEL_OPTS);
+    }
+    if (SHOW_CLOTH_SCREEN) {
+	setTimeout(function() {
+	    if (SHOW_MOVIE)
+		CMPVR.addClothScreen();
+	}, 500);
+    }
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
 
     var color1 = 0xffaaaa;
@@ -320,12 +334,12 @@ function tourSliderChanged(e, ui)
 {
     report("**** tourSliderChanged ****");
     var v = ui.value;
-    var t = v*duration;
+    var t = v*CMPVR.duration;
     report("v: "+v+"   t: "+t);
     imageSrc.setPlayTime(t);
 }
 
-function timerFun_(e)
+CMPVR.timerFun_ = function(e)
 {
     //report("*** tick... ");
     var d = imageSrc.video.duration;
@@ -352,49 +366,50 @@ function timerFun_(e)
     }
 }
 
-PL.isPlaying = function() { return playing; }
+CMPVR.isPlaying = function() { return CMPVR.playing; }
 
-PL.play = function()
+CMPVR.play = function()
 {
-    playing = true;
+    CMPVR.playing = true;
     imageSrc.play();
 }
 
-PL.pause = function()
+CMPVR.pause = function()
 {
-    playing = false;
+    CMPVR.playing = false;
     imageSrc.pause();
 }
 
 function togglePlayStop(e)
 {
     report("togglePlayStop");
-    if (PL.isPlaying()) {
-	PL.pause();
+    if (CMPVR.isPlaying()) {
+	CMPVR.pause();
     }
     else {
-	PL.play();
+	CMPVR.play();
     }
 }
 
-function timerFun(e)
+CMPVR.timerFun = function(e)
 {
     try {
-	timerFun_(e);
+	CMPVR.timerFun_(e);
     }
     catch (e) {
 	report("error: "+e);
     }
-    setTimeout(timerFun, 100);
+    setTimeout(CMPVR.timerFun, 100);
 }
 
-function addClothScreen()
+CMPVR.addClothScreen = function()
 {
-      videoTexture = VIDEO_TEX;
+      //videoTexture = VIDEO_TEX;
       CLOTH.wind = 0.05;
       //cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
-      cloth = new Cloth();
-    cloth.setupCloth(SCENE, VIDEO_TEX, VIDEO_MAT);
+      var cloth = new Cloth();
+      CMPVR.cloth = cloth;
+      cloth.setupCloth(SCENE, VIDEO_TEX, VIDEO_MAT);
       cloth.obj.scale.z=.02;
       cloth.obj.scale.x=.025;
       cloth.obj.scale.y=.015;
@@ -502,14 +517,14 @@ function handleSpreadSheet(data)
     var rows = [];
     for (var i=0; i<entries.length; i++) {
         var e = entries[i];
-	report("e "+i+" "+JSON.stringify(e));
+	//report("e "+i+" "+JSON.stringify(e));
 	var row = {};
         for (var key in e) {
 	    if (!key.startsWith("gsx$")) {
 		continue;
 	    }
 	    var id = key.slice(4);
-	    report("key: "+key+" "+" "+id+" "+e[key]);
+	    //report("key: "+key+" "+" "+id+" "+e[key]);
 	    var val = e[key]["$t"];
 	    if (val == "\"")
                 val = rows[i-1][id];
@@ -519,7 +534,7 @@ function handleSpreadSheet(data)
 	if (ys) {
 	    ys = ys.replace("approx","");
 	    var parts = ys.split("-").map(function(s) { return s.trim(); });
-	    report("parts: "+parts);
+	    //report("parts: "+parts);
 	    var years = parts.map(JSON.parse);
 	    row["year"] = years[0];
 	}
@@ -540,7 +555,7 @@ $(document).ready(function() {
 		min: 0, max: 1, step: 0.001
     });
     $("#playStop").click(togglePlayStop);
-    timerFun();
+    CMPVR.timerFun();
     $.getJSON(SSURL, function(data) {
         //report("GOT JSON: "+data);
 	handleSpreadSheet(data);

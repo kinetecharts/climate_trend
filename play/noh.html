@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>gpgpu - birds flocking</title>
+		<title>Climate Music Project perforance at NOHSpace Theatre</title>
 		<meta charset="utf-8">
   		<script src="../lib/mathbox-bundle.js"></script>
 		<!--
@@ -128,10 +128,7 @@
 <script src="js/loaders/ColladaLoader.js"></script>
 <script src="js/loaders/FBXLoader.js"></script>
 <script src="js/Cloth.js"></script>
-<!--
-<script src="js/loaders/FBXLoader.js"></script>	
-<script src="js/loaders/OBJLoader.js"></script>	
--->
+<script src = "./js/CMPVR.js"></script>
 <script>
 var spec = getImageSpec();
 report("spec: "+JSON.stringify(spec));
@@ -144,30 +141,22 @@ report("------------------------------");
 report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
 report("imageSrc: "+imageSrc);
-var MODEL_PATH = null;
+var SHOW_MOVIE = true;
+var SHOW_CLOTH_SCREEN = true;
+var AVATAR_PATH = "./models/avatar.json";
+//MODEL_PATH = "./DomeSpaceNoTex.dae"
+var MODEL_PATH = "./NOHSpace.dae"
+//var MODEL_PATH = null;
 var MODEL_OPTS = {
    'scale': [.03,.03,.03],
    'position': [5,-2.5,4],
    'rotation': [0,90,0]
 };
-//MODEL_PATH = "./DomeSpaceNoTex.dae"
-MODEL_PATH = "./NOHSpace.dae"
-//MODEL_PATH = "./models/Nara0.dae";
-//MODEL_PATH = "./box.dae"
 
 
 </script>
 <script src = "../js/chart.js"></script>
 <script src = "./js/playapp.js"></script>
-<!--<script src = "./js/addCloth.js"></script> -->
-<script src = "./js/playStuff.js"></script>
-<script>
-  var videoTexture = null;
-  var cloth = null;
-  setTimeout(function() {
-      addClothScreen();
-    }, 500);
-</script>
 
 </body>
 </html>
