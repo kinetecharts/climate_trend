@@ -1,9 +1,18 @@
 "use strict";
 
 var CMPVR = {};
+CMPVR.updateFuns = [];
 CMPVR.duration = 1920.042667;
 CMPVR.playing = true;
 CMPVR.cloth = null;
+CMPVR.MODELS = [];
+CMPVR.OBJSPECS = {};
+CMPVR.OBJS = {};
+CMPVR.MODEL_OPTS = {
+   'scale': [.03,.03,.03],
+   'position': [5,-2.5,4],
+   'rotation': [0,90,0]
+};
 
 //var MODEL_PATH = null;
 var SP = null;
@@ -21,8 +30,10 @@ var AVATAR = null;
 var light1 = null;
 var light2 = null;
 
-var SHOW_MOVIE = true;
-var SHOW_CLOTH_SCREEN = false;
+CMPVR.SHOW_MOVIE = true;
+CMPVR.SHOW_CLOTH_SCREEN = false;
+
+CMPVR.getClockTime = function() { return new Date()/1000.0; }
 
 CMPVR.loadJSONModel = function(scene, path, opts, afterFun)
 {
@@ -96,6 +107,10 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
 	report("***** Got Collada *****");
 	var dae = collada.scene;
 	DAE = dae;
+	if (opts.name) {
+	    CMPVR.OBJSPECS[opts.name] = opts;
+	    CMPVR.OBJS[opts.name] = dae;
+	}
 	dae.traverse( function ( child ) {
 	    if ( child instanceof THREE.SkinnedMesh ) {
 		var animation = new THREE.Animation( child, child.geometry.animation );
@@ -295,21 +310,28 @@ CMPVR.load = function(three, mathbox)
     MB = mathbox;
     var scene = three.scene;
     SCENE = scene;
-    if (SHOW_MOVIE) {
+    if (CMPVR.SHOW_MOVIE) {
         CMPVR.addMovie(scene);
     }
-    report("***************************** MODEL_PATH: "+MODEL_PATH);
-    if (MODEL_PATH) {
-	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
-    }
+    //report("***************************** MODEL_PATH: "+MODEL_PATH);
+    CMPVR.MODELS.forEach(m => {
+	if (typeof m == "string") {
+	    CMPVR.loadModel(scene, m, CMPVR.MODEL_OPTS, CMPVR.processHooks);
+	}
+	else {
+	    CMPVR.loadModel(scene, m.path, m, CMPVR.processHooks);
+	}
+    });
+//    if (MODEL_PATH) {
+//	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
+//    }
     //var AVATAR_PATH = "./models/avatar.fbx";
     if (AVATAR_PATH) {
-	CMPVR.loadAvatar(scene, AVATAR_PATH, MODEL_OPTS);
+	CMPVR.loadAvatar(scene, AVATAR_PATH, CMPVR.MODEL_OPTS);
     }
-    if (SHOW_CLOTH_SCREEN) {
+    if (CMPVR.SHOW_CLOTH_SCREEN) {
 	setTimeout(function() {
-	    if (SHOW_MOVIE)
-		CMPVR.addClothScreen();
+	    CMPVR.addClothScreen();
 	}, 500);
     }
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
@@ -360,9 +382,11 @@ CMPVR.timerFun_ = function(e)
     // Handle Narrative
     var nar = getNarrative(t) || "";
     $("#narrativeText").html(nar);
-    var opacity = getVideoOpacity(t);
-    if (typeof opacity == "number") {
-	VIDEO_MAT.opacity = opacity;
+    if (VIDEO_MAT) {
+	var opacity = getVideoOpacity(t);
+	if (typeof opacity == "number") {
+	    VIDEO_MAT.opacity = opacity;
+	}
     }
 }
 
@@ -404,9 +428,7 @@ CMPVR.timerFun = function(e)
 
 CMPVR.addClothScreen = function()
 {
-      //videoTexture = VIDEO_TEX;
       CLOTH.wind = 0.05;
-      //cloth = new Cloth( CLOTH.xSegs, CLOTH.ySegs );
       var cloth = new Cloth();
       CMPVR.cloth = cloth;
       cloth.setupCloth(SCENE, VIDEO_TEX, VIDEO_MAT);
@@ -417,7 +439,22 @@ CMPVR.addClothScreen = function()
       cloth.obj.position.x = 2;
       cloth.obj.position.y = -0;
       cloth.invertTex();
-      UPDATE_FUN = CLOTH.update;
+      //UPDATE_FUN = CLOTH.update;
+}
+
+CMPVR.update = function()
+{
+    var t = CMPVR.getClockTime();
+    if (CLOTH)
+	CLOTH.update();
+    Object.keys(CMPVR.OBJS).forEach(name => {
+	var spec = CMPVR.OBJSPECS[name];
+	var obj = CMPVR.OBJS[name];
+	//report("update "+name+" "+obj+" "+spec.update);
+	if (spec.update) {
+	    spec.update(obj, t, spec.name);
+	}
+    });
 }
 
 //var SSURL = "https://spreadsheets.google.com/feeds/list/1aJP9n8cVBF1PvqfVd_f6szuR1ZS8iX_3y0cJnCFwQeA/default/public/values?alt=json";

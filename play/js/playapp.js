@@ -370,7 +370,7 @@ var draw=(datas)=>{
 	    Object.keys(charts).forEach(id=>{
 		charts[id].update(data[id])
 	    })
-	    if (UPDATE_FUN)
-		UPDATE_FUN();
+	    if (CMPVR)
+		CMPVR.update();
 	})
 }
