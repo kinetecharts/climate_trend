@@ -19,15 +19,6 @@ function getFloat(f, defval)
     return defval;
 }
 
-function timeStr(t)
-{
-    var m = Math.floor(Math.floor(t)/60);
-    var s = t - m*60;
-    var si = Math.floor(s);
-    var sf = s-si;
-    return m+":"+si+"."+Math.floor(10*sf);
-}
-
 function timeToYear(t)
 {
     var t1 = 10*60;

@@ -34,6 +34,15 @@ var light2 = null;
 CMPVR.SHOW_MOVIE = true;
 CMPVR.SHOW_CLOTH_SCREEN = false;
 
+CMPVR.timeStr = function(t)
+{
+    var m = Math.floor(Math.floor(t)/60);
+    var s = t - m*60;
+    var si = Math.floor(s);
+    var sf = s-si;
+    return m+":"+si+"."+Math.floor(10*sf);
+}
+
 CMPVR.getClockTime = function() { return new Date()/1000.0; }
 
 CMPVR.loadJSONModel = function(scene, path, opts, afterFun)
@@ -369,7 +378,7 @@ CMPVR.timerFun_ = function(e)
     var t = imageSrc.video.currentTime;
     //report("d: "+d+"  t: "+t);
     //report("dur: "+d);
-    var str = "t: "+timeStr(t);
+    var str = "t: "+CMPVR.timeStr(t);
     $("#textLine").html(str);
     //
     // Handle year
@@ -481,45 +490,6 @@ function getNarrative(t)
 //var SSURL = "https://spreadsheets.google.com/feeds/list/1aJP9n8cVBF1PvqfVd_f6szuR1ZS8iX_3y0cJnCFwQeA/default/public/values?alt=json";
 var SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
 
-/*
-var SS = null;
-var SSData = null;
-
-function getFloat(f, defval)
-{
-    if (typeof f == "number")
-	return f;
-    if (typeof f == "string")
-	return JSON.parse(f);
-    return defval;
-}
-
-function timeStr(t)
-{
-    var m = Math.floor(Math.floor(t)/60);
-    var s = t - m*60;
-    var si = Math.floor(s);
-    var sf = s-si;
-    return m+":"+si+"."+Math.floor(10*sf);
-}
-
-function timeToYear(t)
-{
-    var t1 = 10*60;
-    var y1 = 1800;
-    var t2 = 30*60;
-    var y2 = 2300;
-    if (t < t1) {
-	return null;
-    }
-    if (t < t2) {
-	var f = (t-t1)/(t2-t1);
-	var y = y1 + f*(y2-y1);
-	return y;
-    }
-    return null;
-}
-*/
 
 $(document).ready(function() {
     report("**** setting up slider ****");
@@ -529,12 +499,12 @@ $(document).ready(function() {
     });
     $("#playStop").click(togglePlayStop);
     CMPVR.timerFun();
-    CMPVR.gss = new GSS.SpreadSheet();
-    /*
-    $.getJSON(SSURL, function(data) {
-        //report("GOT JSON: "+data);
-	handleSpreadSheet(data);
-    });
-    */
+    //TODO: How to do this if *strict* is being used...
+    if (GSS) {
+	CMPVR.gss = new GSS.SpreadSheet();
+    }
+    else {
+	report("***** No GSpreadSheet included ****");
+    }
 });
 
