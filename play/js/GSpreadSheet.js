@@ -14,8 +14,14 @@ function getFloat(f, defval)
 {
     if (typeof f == "number")
 	return f;
-    if (typeof f == "string")
-	return JSON.parse(f);
+    if (typeof f == "string") {
+	try {
+	    return JSON.parse(f);
+	}
+	catch (e) {
+	    //report("err parsing float for str: "+f);
+	}
+    }
     return defval;
 }
 
