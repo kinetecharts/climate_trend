@@ -289,11 +289,13 @@ CMPVR.findAnchor = function(obj)
 CMPVR.findScreen = function(obj)
 {
     var screen = obj.getObjectByName("Screen");
-    return;
     SK_SCREEN = screen;
     report("SCREEN: "+SCREEN);
     if (!screen)
 	return;
+    report("****** HIDING SketchSup Screen ******");
+    screen.visible = false;
+    return;
     var mesh = screen.children[0];
     mesh.geometry.mergeVertices();
     var mat = new THREE.MeshBasicMaterial({
@@ -432,6 +434,7 @@ CMPVR.timerFun = function(e)
     }
     catch (e) {
 	report("error: "+e);
+	report("stack: "+e.stack);
     }
     setTimeout(CMPVR.timerFun, 100);
 }
@@ -473,6 +476,7 @@ function getVideoOpacity(t)
 	return 0;
     var y = timeToYear(t);
     var va = CMPVR.gss.getFieldByYear(y, "videofade");
+    //report("getVideoOpacity "+t+" va: "+va);
     va = getFloat(va, 1.0);
     return va;
 }
