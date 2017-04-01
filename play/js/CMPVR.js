@@ -13,6 +13,7 @@ CMPVR.MODEL_OPTS = {
    'position': [5,-2.5,4],
    'rotation': [0,90,0]
 };
+CMPVR.AVATAR_PATH = null;
 
 //var MODEL_PATH = null;
 var SP = null;
@@ -326,8 +327,8 @@ CMPVR.load = function(three, mathbox)
 //	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
 //    }
     //var AVATAR_PATH = "./models/avatar.fbx";
-    if (AVATAR_PATH) {
-	CMPVR.loadAvatar(scene, AVATAR_PATH, CMPVR.MODEL_OPTS);
+    if (CMPVR.AVATAR_PATH) {
+	CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.MODEL_OPTS);
     }
     if (CMPVR.SHOW_CLOTH_SCREEN) {
 	setTimeout(function() {
@@ -457,9 +458,30 @@ CMPVR.update = function()
     });
 }
 
+function getVideoOpacity(t)
+{
+    if (!CMPVR.gss)
+	return 0;
+    var y = timeToYear(t);
+    var va = CMPVR.gss.getFieldByYear(y, "videofade");
+    va = getFloat(va, 1.0);
+    return va;
+}
+
+function getNarrative(t)
+{
+    if (!CMPVR.gss)
+	return "";
+    var y = timeToYear(t);
+    return CMPVR.gss.getFieldByYear(y, "narrative");
+}
+
+
+
 //var SSURL = "https://spreadsheets.google.com/feeds/list/1aJP9n8cVBF1PvqfVd_f6szuR1ZS8iX_3y0cJnCFwQeA/default/public/values?alt=json";
 var SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
 
+/*
 var SS = null;
 var SSData = null;
 
@@ -497,93 +519,7 @@ function timeToYear(t)
     }
     return null;
 }
-
-function getVideoOpacity(t)
-{
-    var y = timeToYear(t);
-    var va = getFieldByYear(y, "videofade");
-    va = getFloat(va, 1.0);
-    return va;
-}
-
-function getNarrative(t)
-{
-    var y = timeToYear(t);
-    return getFieldByYear(y, "narrative");
-}
-
-/*
-function getFieldByTime(t, field)
-{
-    return getFieldByYear(y, field);
-}
 */
-
-function getFieldByYear(y, field)
-{
-    if (!y)
-	return null;
-    var str = "";
-    for (var i=0; i<SS.rows.length; i++) {
-	var row = SS.rows[i];
-	//report("gfby i: "+i+" y: "+y+"  row.year: "+row.year);
-	if ( row.year && y > row.year) {
-	    str = row[field];
-	}
-    }
-    return str;
-}
-
-function dumpSpreadSheet(ss)
-{
-    var rows = ss.rows;
-    for (var i=0; i<rows.length; i++) {
-	report("row "+i);
-	var row = rows[i];
-	for (var id in row) {
-	    var val = row[id];
-	    report(" "+id+" "+val);
-	}
-    }
-}
-
-function handleSpreadSheet(data)
-{
-    SSData = data;
-    var entries = data.feed.entry;
-    var rows = [];
-    for (var i=0; i<entries.length; i++) {
-        var e = entries[i];
-	//report("e "+i+" "+JSON.stringify(e));
-	var row = {};
-        for (var key in e) {
-	    if (!key.startsWith("gsx$")) {
-		continue;
-	    }
-	    var id = key.slice(4);
-	    //report("key: "+key+" "+" "+id+" "+e[key]);
-	    var val = e[key]["$t"];
-	    if (val == "\"")
-                val = rows[i-1][id];
-	    row[id] = val;
-	}
-	var ys = row["years"];
-	if (ys) {
-	    ys = ys.replace("approx","");
-	    var parts = ys.split("-").map(function(s) { return s.trim(); });
-	    //report("parts: "+parts);
-	    var years = parts.map(JSON.parse);
-	    row["year"] = years[0];
-	}
-	else {
-	    row["year"]=null;
-	}
-	rows.push(row);
-    }
-    var ss = {rows: rows};
-    SS = ss;
-    return ss;
-}
 
 $(document).ready(function() {
     report("**** setting up slider ****");
@@ -593,9 +529,12 @@ $(document).ready(function() {
     });
     $("#playStop").click(togglePlayStop);
     CMPVR.timerFun();
+    CMPVR.gss = new GSS.SpreadSheet();
+    /*
     $.getJSON(SSURL, function(data) {
         //report("GOT JSON: "+data);
 	handleSpreadSheet(data);
     });
+    */
 });
 
