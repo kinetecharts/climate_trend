@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Climate Music Project perforance at NOHSpace Theatre</title>
+		<meta charset="utf-8">
+  		<script src="../lib/mathbox-bundle.js"></script>
+  		<script src="../lib/jquery-3.1.1.min.js"></script>
+		<script src="../lib/jquery-ui.js"></script>
+		<script src="../lib/lodash.min.js"></script>
+		<script src="../lib/q.js"></script>
+		<script src="../lib/papaparse.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+		<link rel="stylesheet" href="../lib/mathbox.css">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+		<style>
+			body {
+				background-color: #ffffff;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				cursor: pointer;
+			}
+
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #000;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+			}
+
+			div.textViewer {
+			        color: rgba(240,240,240, .9);
+			        background: rgba(200,200,0,0.0);
+				position: absolute;
+				top: 15px;
+				left: 200px;
+				xxwidth: 100%;
+			        width: 700px;
+			        align-items: center;
+			        horizontal-align: center;
+			}
+
+		</style>
+<link rel="stylesheet" href="css/jquery-ui.css">
+<style>
+.ui-slider {
+    height: 20px;
+    width: 100%;
+    align-items: center;
+    //padding-left: 50px;
+}
+.ui-slider-handle {
+    height: 20px;
+    width: 5px;
+    //padding-left: 50px;
+}
+</style>
+
+	</head>
+<body>
+  <div class="textViewer">
+    <div id="timeLine" style="width:100%;height:10px;border-style:solid;border-width: 2;align-content:center"></div>
+    <span id="textLine">Foo Bar</span><br>
+    <span id="yearText">0000</span><br>
+    <span id="narrativeText">????</span><br>
+    
+  </div>
+<script src="https://webrtc.github.io/adapter/adapter-2.1.0.js"></script>
+<script src="js/wrtc.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/DeviceOrientationControls.js"></script>
+<script src="js/ImageSource.js"></script>	
+<script src="js/Pano.js"></script>	
+<script src="js/PanoParams.js"></script>	
+<script src="js/loaders/ColladaLoader.js"></script>
+<script src="js/loaders/FBXLoader.js"></script>
+<script src="./js/Cloth.js"></script>
+<script src="./js/CMPVR.js"></script>
+<script src="./js/GSpreadSheet.js"></script>
+<script>
+var spec = getImageSpec();
+report("spec: "+JSON.stringify(spec));
+spec.type = ImageSource.TYPE.VIDEO;
+//spec.url = "http://dvr4.paldeploy.com/video/stearman.mp4";
+//spec.url = "../video/Climate-Music-V3-Distortion_HD.mp4";
+spec.url = "http://dvr4.paldeploy.com/video/Tony/Climate-Music-V3-Distortion_HD_540.mp4";
+spec.url = "../video/Climate-Music-V3-Distortion_HD_540.mp4";
+report("------------------------------");
+report("spec: "+JSON.stringify(spec));
+var imageSrc = new ImageSource(spec);
+report("imageSrc: "+imageSrc);
+
+CMPVR.MODELS = [];
+CMPVR.SHOW_MOVIE = false;
+
+var gss = null;
+
+$(document).ready(function() {
+    gss = new GSS.SpreadSheet();
+    CMPVR.timerFun();
+});
+
+</script>
+<script src = "../js/chart.js"></script>
+<script src = "./js/playapp.js"></script>
+
+
+</body>
+</html>
