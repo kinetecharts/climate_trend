@@ -34,6 +34,10 @@ var light2 = null;
 CMPVR.SHOW_MOVIE = true;
 CMPVR.SHOW_CLOTH_SCREEN = false;
 
+var clock = new THREE.Clock();
+var skeletonHelper;
+var mixer;
+
 CMPVR.timeStr = function(t)
 {
     var m = Math.floor(Math.floor(t)/60);
@@ -334,12 +338,18 @@ CMPVR.load = function(three, mathbox)
 	    CMPVR.loadModel(scene, m.path, m, CMPVR.processHooks);
 	}
     });
+
+
+    if (CMPVR.BVH_PATH) {
+       CMPVR.loadBVH(scene, CMPVR.BVH_PATH);
+    }
+
 //    if (MODEL_PATH) {
 //	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
 //    }
     //var AVATAR_PATH = "./models/avatar.fbx";
     if (CMPVR.AVATAR_PATH) {
-	CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.MODEL_OPTS);
+	   CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.MODEL_OPTS);
     }
     if (CMPVR.SHOW_CLOTH_SCREEN) {
 	setTimeout(function() {
@@ -362,6 +372,28 @@ CMPVR.load = function(three, mathbox)
     light2.position.x = -10;
     light2.position.z = 5;
     scene.add( light2 );
+}
+
+CMPVR.loadBVH = function(scene, bvh) {
+    var loader = new THREE.BVHLoader();
+    loader.load( bvh, function( result ) {
+        console.log("BVH: ", result);
+        var dancer = new THREE.Object3D();
+        skeletonHelper = new THREE.SkeletonHelper( result.skeleton.bones[ 0 ] );
+        skeletonHelper.skeleton = result.skeleton; // allow animation mixer to bind to SkeletonHelper directly
+        var boneContainer = new THREE.Group();
+        boneContainer.add( result.skeleton.bones[ 0 ] );
+        dancer.add( skeletonHelper );
+        dancer.add( boneContainer );
+        console.log(dancer);
+        dancer.scale.x = 0.06;
+        dancer.scale.y = 0.06;
+        dancer.scale.z = 0.06;
+        scene.add(dancer);
+        // play animation
+        mixer = new THREE.AnimationMixer( skeletonHelper );
+        mixer.clipAction( result.clip ).setEffectiveWeight( 1.0 ).play();
+    } );
 }
 
 function tourSliderChanged(e, ui)
@@ -461,13 +493,17 @@ CMPVR.update = function()
     if (CLOTH)
 	CLOTH.update();
     Object.keys(CMPVR.OBJS).forEach(name => {
-	var spec = CMPVR.OBJSPECS[name];
-	var obj = CMPVR.OBJS[name];
+	   var spec = CMPVR.OBJSPECS[name];
+	   var obj = CMPVR.OBJS[name];
 	//report("update "+name+" "+obj+" "+spec.update);
-	if (spec.update) {
-	    spec.update(obj, t, spec.name);
-	}
+    	if (spec.update) {
+    	    spec.update(obj, t, spec.name);
+    	}
     });
+
+    var delta = clock.getDelta();
+    if ( mixer ) mixer.update( delta );
+    if ( skeletonHelper ) skeletonHelper.update();
 }
 
 function getVideoOpacity(t)
