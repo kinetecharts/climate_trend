@@ -11,8 +11,6 @@
 		<script src="../lib/papaparse.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
 
-
-
 		<link rel="stylesheet" href="../lib/mathbox.css">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
 
@@ -128,11 +126,11 @@ report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
 report("imageSrc: "+imageSrc);
 CMPVR.MODELS = [
-    "./NOHSpace.dae",
+    {path: "./NOHSpace.dae", scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
 //    {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
 ];
 CMPVR.SHOW_MOVIE = true;
-CMPVR.SHOW_CLOTH_SCREEN = false;
+CMPVR.SHOW_CLOTH_SCREEN = true;
 //CMPVR.AVATAR_PATH = "./models/avatar.json";
 CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
 
