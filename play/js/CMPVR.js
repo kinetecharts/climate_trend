@@ -1,26 +1,37 @@
 "use strict";
 
 var CMPVR = {};
+
+CMPVR.MODELS = [];
+CMPVR.OBJSPECS = {};
+CMPVR.OBJS = {};
+CMPVR.SHOW_AXES = true;
+
+CMPVR.DEFAULT_MODEL_OPTS = {
+   'scale': [1.0, 1.0, 1.0],
+   'position': [0, 0, 0],
+   'rotation': [0,90,0]
+};
+CMPVR.AVATAR_PATH = null;
+CMPVR.SCREEN_SPEC = {x: 5.5, y: 2.5, z: -0.1, width: 6.5, height: 4.0};
+CMPVR.CLOTH_SCREEN_SPEC = {x: 2, y: 2.5, z: -0.1};
+CMPVR.SHOW_MOVIE = true;
+CMPVR.SHOW_CLOTH_SCREEN = false;
+
 CMPVR.updateFuns = [];
 CMPVR.duration = 1920.042667;
 CMPVR.playing = true;
 CMPVR.cloth = null;
-CMPVR.MODELS = [];
-CMPVR.OBJSPECS = {};
-CMPVR.OBJS = {};
-CMPVR.MODEL_OPTS = {
-   'scale': [.03,.03,.03],
-   'position': [5,-2.5,4],
-   'rotation': [0,90,0]
-};
-CMPVR.AVATAR_PATH = null;
+CMPVR.axisHelper = null;
 
+// These caps variables are mostly for debugging
+// they get assigned to things that are convenient
+// in the JavaScript console.
 //var MODEL_PATH = null;
 var SP = null;
 var VIDEO_TEX = null;
 var VIDEO_MAT = null;
 var MB = null;
-var loader = null;
 var SCENE = null;
 var DAE = null;
 var SCREEN = null;
@@ -28,12 +39,10 @@ var SOBJ = null;
 var SK_SCREEN = null;
 var ANCHOR = null;
 var AVATAR = null;
-var light1 = null;
-var light2 = null;
+var LIGHT1 = null;
+var LIGHT2 = null;
 
-CMPVR.SHOW_MOVIE = true;
-CMPVR.SHOW_CLOTH_SCREEN = false;
-
+var loader = null;
 var clock = new THREE.Clock();
 var skeletonHelper;
 var mixer;
@@ -153,10 +162,10 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
 	dae.updateMatrix();
 	scene.add(dae);
 	if (afterFun) {
-	    afterFun(dae);
+	    //afterFun(dae);
+	    // This is a bad hack... see note for findAnchor
+	    setTimeout(function() { afterFun(dae);}, 100);
 	}
-//	init();
-//	animate();
     } );
 }
 
@@ -219,13 +228,12 @@ CMPVR.addSphereMovie = function(scene)
     scene.add(obj);
 }
 
-CMPVR.addMovie = function(scene)
+CMPVR.addMovie = function(scene, spec)
 {
-    var x = 4.7;
-    var y = 0.3;
-    var z = .2;
-    var w = 6.0;
-    var h = 4.0;
+    spec = spec || CMPVR.SCREEN_SPEC;
+    var pos = spec;
+    var w = spec.width;
+    var h = spec.height;
     report("addMovie "+scene);
     var imageSource = imageSrc;
     if (!VIDEO_TEX) {
@@ -255,16 +263,15 @@ CMPVR.addMovie = function(scene)
     screen.scale.x *= -w;
     screen.scale.y *= h;
     screen.scale.z *= 1;
-    screen.position.z = z - w/2.0;
-    screen.position.y = y - h/2.0;
+    screen.position.x = pos.x;
+    screen.position.y = pos.y - h/2.0;
+    screen.position.z = pos.z - w/2.0;
     screen.rotation.y = toRadians(90);
-    screen.position.x = x;
-//    screen.position.y = -1.0;
     var obj = new THREE.Object3D();
     SOBJ = obj;
     obj.add(screen);
     //obj.rotation.z = toRadians(25);
-    obj.rotation.z = toRadians(0);
+    //obj.rotation.z = toRadians(0);
     scene.add(obj);
 }
 
@@ -278,6 +285,19 @@ CMPVR.loadAvatar = function(scene, path, opts)
     });
 }
 
+/*
+This looks for a "anchor" object which is a triangle mesh
+with given name.  This can be put in by SketchUp to define
+an anchor point.  If the anchor is found, the model is
+repositioned so that anchor coincides with (0,0,0).
+
+For the repositioning to work, the obj must already be placed
+in the scene.   For some reason when the model is immediately
+loaded and placed in the scene, this is not working.  So the
+call to this processing is delayed a little bit.  I think the
+reason is that mathbox changes something in the transforms
+after this is loaded.
+*/
 CMPVR.findAnchor = function(obj)
 {
     var anchor = obj.getObjectByName("VizAnchor");
@@ -287,7 +307,11 @@ CMPVR.findAnchor = function(obj)
     var mesh = anchor.children[0];
     var geo = mesh.geometry;
     geo.mergeVertices();
-    anchor.visible = false;
+    anchor.visible = true;
+    var v = anchor.localToWorld(new THREE.Vector3());
+    report("********************************************************");
+    report("v: "+JSON.stringify(v));
+    obj.position.sub(v);
 }
 
 CMPVR.findScreen = function(obj)
@@ -299,7 +323,7 @@ CMPVR.findScreen = function(obj)
 	return;
     report("****** HIDING SketchSup Screen ******");
     screen.visible = false;
-    return;
+    /*
     var mesh = screen.children[0];
     mesh.geometry.mergeVertices();
     var mat = new THREE.MeshBasicMaterial({
@@ -307,6 +331,7 @@ CMPVR.findScreen = function(obj)
 	    side: THREE.DoubleSide,
     });
     mesh.material = mat;
+   */
 }
 
 /*
@@ -326,13 +351,17 @@ CMPVR.load = function(three, mathbox)
     MB = mathbox;
     var scene = three.scene;
     SCENE = scene;
+    if (CMPVR.SHOW_AXES) {
+	CMPVR.axisHelper = new THREE.AxisHelper( 10 );
+	scene.add( CMPVR.axisHelper );
+    }
     if (CMPVR.SHOW_MOVIE) {
         CMPVR.addMovie(scene);
     }
     //report("***************************** MODEL_PATH: "+MODEL_PATH);
     CMPVR.MODELS.forEach(m => {
 	if (typeof m == "string") {
-	    CMPVR.loadModel(scene, m, CMPVR.MODEL_OPTS, CMPVR.processHooks);
+	    CMPVR.loadModel(scene, m, CMPVR.DEFAULT_MODEL_OPTS, CMPVR.processHooks);
 	}
 	else {
 	    CMPVR.loadModel(scene, m.path, m, CMPVR.processHooks);
@@ -349,7 +378,7 @@ CMPVR.load = function(three, mathbox)
 //    }
     //var AVATAR_PATH = "./models/avatar.fbx";
     if (CMPVR.AVATAR_PATH) {
-	   CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.MODEL_OPTS);
+	   CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.DEFAULT_MODEL_OPTS);
     }
     if (CMPVR.SHOW_CLOTH_SCREEN) {
 	setTimeout(function() {
@@ -359,19 +388,21 @@ CMPVR.load = function(three, mathbox)
     var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
 
     var color1 = 0xffaaaa;
-    light1 = new THREE.PointLight( color1, 2, 50 );
+    var light1 = new THREE.PointLight( color1, 2, 50 );
     light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color1 } ) ) );
     light1.position.y = 30;
     light1.position.x = -10;
     scene.add( light1 );
+    LIGHT1 = light1;
 		
     var color2 = 0xaaffaa;
-    light2 = new THREE.PointLight( color2, 2, 50 );
+    var light2 = new THREE.PointLight( color2, 2, 50 );
     light2.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color2 } ) ) );
     light2.position.y = 30;
     light2.position.x = -10;
     light2.position.z = 5;
     scene.add( light2 );
+    LIGHT2 = light2;
 }
 
 CMPVR.loadBVH = function(scene, bvh) {
@@ -473,6 +504,7 @@ CMPVR.timerFun = function(e)
 
 CMPVR.addClothScreen = function()
 {
+      var pos = CMPVR.CLOTH_SCREEN_SPEC;
       CLOTH.wind = 0.05;
       var cloth = new Cloth();
       CMPVR.cloth = cloth;
@@ -481,8 +513,9 @@ CMPVR.addClothScreen = function()
       cloth.obj.scale.x=.025;
       cloth.obj.scale.y=.015;
       cloth.obj.rotation.y=toRadians(90);
-      cloth.obj.position.x = 2;
-      cloth.obj.position.y = -0;
+      cloth.obj.position.x = pos.x;
+      cloth.obj.position.y = pos.y;
+      cloth.obj.position.z = pos.z;
       cloth.invertTex();
       //UPDATE_FUN = CLOTH.update;
 }
