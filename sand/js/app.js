@@ -316,7 +316,7 @@ var draw=(datas)=>{
 		z_offset : -5,
 		id : 'balance',
 		xRange : chartRange.x,
-		yRange : [-5, 10],
+		yRange : [-1, 8],
 		zRrange : chartRange.z,
 		scale : chartScale,
 		color : 0x00ffff,
