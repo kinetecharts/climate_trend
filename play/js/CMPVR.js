@@ -23,6 +23,12 @@ CMPVR.duration = 1920.042667;
 CMPVR.playing = true;
 CMPVR.cloth = null;
 CMPVR.axisHelper = null;
+CMPVR.VIEWS =
+    {"home": {position: {x: -7.31, y: 4.18, z: 1.75},
+	      rotation: {x: -1.0, y: -1.0306177244546486, z: -0.927818006846596}},
+     "far": {position: {x: -13.8, y: 13.6, z: 2.5},
+	     rotation: {x: -1.4, y: -0.69, z: -1.36}}
+    };
 
 // These caps variables are mostly for debugging
 // they get assigned to things that are convenient
@@ -33,6 +39,7 @@ var VIDEO_TEX = null;
 var VIDEO_MAT = null;
 var MB = null;
 var SCENE = null;
+var CAMERA = null;
 var DAE = null;
 var SCREEN = null;
 var SOBJ = null;
@@ -346,10 +353,34 @@ CMPVR.processHooks = function(obj)
 
 // Gets called from in playapp.js
 //
+CMPVR.setView = function(view)
+{
+    view = view || "home";
+    if (typeof view == "string")
+	view = CMPVR.VIEWS[view];
+    var cam = CMPVR.camera;
+    if (!cam) {
+	error("No camera");
+    }
+    if (view.position) {
+	cam.position.x = view.position.x;
+	cam.position.y = view.position.y;
+	cam.position.z = view.position.z;
+    }
+    if (view.rotation) {
+	cam.rotation.x = view.rotation.x;
+	cam.rotation.y = view.rotation.y;
+	cam.rotation.z = view.rotation.z;
+    }
+}
+
 CMPVR.load = function(three, mathbox)
 {
     MB = mathbox;
     var scene = three.scene;
+    var camera = three.camera;
+    CMPVR.camera = camera;
+    CMPVR.setView();
     SCENE = scene;
     if (CMPVR.SHOW_AXES) {
 	CMPVR.axisHelper = new THREE.AxisHelper( 10 );
@@ -403,6 +434,8 @@ CMPVR.load = function(three, mathbox)
     light2.position.z = 5;
     scene.add( light2 );
     LIGHT2 = light2;
+
+    setTimeout(function() { CMPVR.setView();}, 100);
 }
 
 CMPVR.loadBVH = function(scene, bvh) {
