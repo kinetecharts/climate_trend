@@ -282,7 +282,7 @@ var draw=(datas)=>{
 	charts['temperature'] = new Chart(mathbox, {
 		x : data.year,
 		y : data['temperature'],
-		z_offset : 0,
+		z_offset : -10,
 		id : 'temperature',
 		xRange : chartRange.x,
 		yRange : [12, 24],
@@ -298,7 +298,7 @@ var draw=(datas)=>{
 	charts['co2'] = new Chart(mathbox, {
 		x : data.year,
 		y : data['co2'],
-		z_offset : -5,
+		z_offset : 0,
 		id : 'co2',
 		xRange : chartRange.x,
 		yRange : [0, 2200],
@@ -313,7 +313,7 @@ var draw=(datas)=>{
 	charts['balance'] = new Chart(mathbox, {
 		x : data.year,
 		y : data['balance'],
-		z_offset : -10,
+		z_offset : -5,
 		id : 'balance',
 		xRange : chartRange.x,
 		yRange : [-5, 10],
@@ -323,7 +323,7 @@ var draw=(datas)=>{
 		colors : '#co2Color',
 		lineWidth: 4,
 		labelFunc: (year, val)=>{
-			return [''+year+': '+val+' net balance']
+			return [''+year+': '+val+' energy balance']
 		}
 	})
 
@@ -333,7 +333,7 @@ var draw=(datas)=>{
 	var sands = new Sands(mathbox, {
 			x : data.year,
 			y : data['temperature'],
-			z_offset : 0,
+			z_offset : -10,
 			id : 'sands',
 			xRange : chartRange.x,
 			yRange : [12, 24],

@@ -42,17 +42,17 @@ class CameraControl{
 		this.moveTo(new THREE.Vector3(-0.1, 0.7, 2.7), duration)
 		this.focusTo(new THREE.Vector3(0,0,0), duration)
 	}
-	temperature(_duration){
+	co2(_duration){ 
 		var duration = _duration || this.defaultDuration
 		this.moveTo(new THREE.Vector3(-2.5, 0, 1.2), duration)
 		this.focusTo(new THREE.Vector3(0,0, -0.4), duration)
 	}
-	co2(_duration){
+	balance(_duration){
 		var duration = _duration || this.defaultDuration
 		this.moveTo(new THREE.Vector3(-2.2, 0, 0), duration)
 		this.focusTo(new THREE.Vector3(0,0,-1.6), duration)
 	}
-	balance(_duration){
+	temperature(_duration){
 		var duration = _duration || this.defaultDuration
 		this.moveTo(new THREE.Vector3(-2.2, 0, -1.6), duration)
 		this.focusTo(new THREE.Vector3(0,0,-3.2), duration)
@@ -67,9 +67,9 @@ class CameraControl{
 		var midT = (chartRange.y[1] + chartRange.y[0])/2
 		var y = (_data.active.temperature[Year - 1850] - midT) * chartScale[1]*2 / totalT
 
-		var z = 0 //temerature z_offset is 0
+		var z = -2.4 //temerature z_offset is 0
 
 		this.focusTo(new THREE.Vector3(x, y, z), duration)
-		this.moveTo(new THREE.Vector3(x-1, y+0.3, z+0.3), duration)
+		this.moveTo(new THREE.Vector3(x-1, y+0.3+0.2, z+0.3+0.3), duration)
 	}
 }
