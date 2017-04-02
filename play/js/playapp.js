@@ -272,14 +272,20 @@ var draw=(datas)=>{
     report("----- draw");
 	var data = datas.active
 	// debugger
+	// var mathbox = mathBox({
+	//   plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
+	//   // plugins: ['VR', 'ui', 'controls'],
+	//   controls: {
+	//     klass: THREE.OrbitControls
+	//     //klass: THREE.VRControls
+	//   },
+	// });
+
 	var mathbox = mathBox({
-	  plugins: ['VR', 'ui', 'core', 'controls', 'cursor', 'stats'],
-	  // plugins: ['VR', 'ui', 'controls'],
-	  controls: {
-	    klass: THREE.OrbitControls
-	    //klass: THREE.VRControls
-	  },
-	});
+      plugins: ['core', 'controls', 'mathbox', 'stats', 'webvr'],
+      controls: { klass: THREE.OrbitControls },
+      webvr: { standing: true },
+    });
     
 	window._m = mathbox
 
