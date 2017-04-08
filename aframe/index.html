@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>NOH Space Test</title>
+	<meta name="generator" content="MS Code" />
+</head>
+
+<script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+<script src="js/my_aframe/sms_wasd-controls.js"></script>
+<!--<script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.6.0/dist/aframe-extras.min.js"></script>-->
+
+<script>
+
+</script>
+
+<body>
+  
+  <a-scene>
+    <!--  START BY ESTABLISHING THE ASSET CONTAINER -->
+  <a-assets>
+	
+	<!--<a-asset-item id="chairsuv1_GEO" src="assets/model/chairsuv1.json"></a-asset-item>-->
+	<!--<a-asset-item id="chairs_GEO"    src="assets/model/chairs.json"></a-asset-item>-->
+	<!--<a-asset-item id="example_GEO"   src="assets/model/model.json"></a-asset-item>-->
+	<img id="chair_row0_LM" src= "assets/image/chair_row0_lm.jpg">
+	<img id="chair_row1_LM" src= "assets/image/chair_row1_lm.jpg">
+	<img id="chair_row2_LM" src= "assets/image/chair_row2_lm.jpg">
+	<img id="chair_row3_LM" src= "assets/image/chair_row3_lm.jpg">
+	<img id="chair_row4_LM" src= "assets/image/chair_row4_lm.jpg">
+	<img id="chair_row5_LM" src= "assets/image/chair_row5_lm.jpg">
+	
+	<img id="chairs_LM" src= "assets/image/chairs_lm.jpg">
+	<a-asset-item id="chairs_GEO"    src="assets/model/chairs_geo.obj"></a-asset-item>
+
+	<img id="walls_LM" src= "assets/image/walls_lm.jpg">
+	<a-asset-item id="walls_GEO"    src="assets/model/walls_geo.obj"></a-asset-item>
+
+	<img id="floor_LM" src= "assets/image/floor_lm.jpg">
+	<a-asset-item id="floor_GEO"    src="assets/model/floor_geo.obj"></a-asset-item>
+
+	<img id="ceiling_LM" src= "assets/image/ceiling_lm.jpg">
+	<a-asset-item id="ceiling_GEO"    src="assets/model/ceiling_geo.obj"></a-asset-item>
+
+	<img id="aud_LM" src= "assets/image/aud_lm.jpg">
+	<a-asset-item id="aud_GEO"    src="assets/model/aud_geo.obj"></a-asset-item>
+
+	<img id="pillars_LM" src= "assets/image/pillars_lm.jpg">
+	<a-asset-item id="pillars_GEO"    src="assets/model/pillars_geo.obj"></a-asset-item>
+
+	<img id="curtain_LM" src= "assets/image/curtain_lm.jpg">
+	<a-asset-item id="curtain_GEO"    src="assets/model/curtain_geo.obj"></a-asset-item>
+
+	<img id="curtainbk_LM" src= "assets/image/curtainbk_lm.jpg">
+	<a-asset-item id="curtainbk_GEO"    src="assets/model/curtainbk_geo.obj"></a-asset-item>
+
+  </a-assets>
+
+	<!--<a-entity id="example" object-model="src: assets/model/model.json"></a-entity>-->
+	<!--<a-entity id="example" object-model="src: assets/model/model.json"></a-entity>-->
+	<!--<a-entity object-model="src: assets/model/chairs.json;"> </a-entity>-->
+	<!--<a-entity id="chairs" material="shader: flat; src: #chairs_LM" obj-model="obj: #chairs_GEO"></a-entity>-->
+	<a-entity id="walls" material="shader: flat; src: #walls_LM" obj-model="obj: #walls_GEO"></a-entity>
+	<a-entity id="floor" material="shader: flat; src: #floor_LM" obj-model="obj: #floor_GEO"></a-entity>
+	<a-entity id="ceiling" material="shader: flat; src: #ceiling_LM" obj-model="obj: #ceiling_GEO"></a-entity>
+	<a-entity id="aud" material="shader: flat; src: #aud_LM" obj-model="obj: #aud_GEO"></a-entity>
+	<a-entity id="pillars" material="shader: flat; src: #pillars_LM" obj-model="obj: #pillars_GEO"></a-entity>
+	<a-entity id="curtain" material="shader: flat; src: #curtain_LM" obj-model="obj: #curtain_GEO"></a-entity>
+	<a-entity id="curtainbk" material="shader: flat; src: #curtainbk_LM" obj-model="obj: #curtainbk_GEO"></a-entity>
+
+<a-entity id="chair_R_0_0" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 2.61216 0" position="-2.95052 0 -1.05403" > </a-entity>
+<a-entity id="chair_R_0_1" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 -0.350285 0" position="-2.43125 0 -1.05403" > </a-entity>
+<a-entity id="chair_R_0_2" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 1.33132 0" position="-1.90394 0 -1.05403" > </a-entity>
+<a-entity id="chair_R_0_3" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 -0.636055 0" position="-1.37865 0 -1.05403" > </a-entity>
+<a-entity id="chair_R_0_4" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 2.9682 0" position="-0.854249 0 -1.05403" > </a-entity>
+<a-entity id="chair_L_0_0" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 1.01245 0" position="0.424779 0 -1.05403" > </a-entity>
+<a-entity id="chair_L_0_1" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 1.27902 0" position="0.936814 0 -1.05403" > </a-entity>
+<a-entity id="chair_L_0_2" material="shader: flat; src: #chair_row0_LM" obj-model="obj: #chairs_GEO" rotation="0 0.427133 0" position="1.46908 0 -1.05403" > </a-entity>
+
+<a-entity id="chair_R_1_0" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 0.894879 0" position="-2.9574 0.254 -1.94943" > </a-entity>
+<a-entity id="chair_R_1_1" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.45576 0" position="-2.43125 0.254 -1.94943" > </a-entity>
+<a-entity id="chair_R_1_2" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 0.22584 0" position="-1.90394 0.254 -1.94943" > </a-entity>
+<a-entity id="chair_R_1_3" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.74153 0" position="-1.37865 0.254 -1.94943" > </a-entity>
+<a-entity id="chair_R_1_4" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 1.86273 0" position="-0.854249 0.254 -1.94943" > </a-entity>
+<a-entity id="chair_L_1_0" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.28674 0" position="0.424779 0.254 -1.95403" > </a-entity>
+<a-entity id="chair_L_1_1" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.02018 0" position="0.936814 0.254 -1.95403" > </a-entity>
+<a-entity id="chair_L_1_2" material="shader: flat; src: #chair_row1_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.87206 0" position="1.46908 0.254 -1.95403" > </a-entity>
+
+<a-entity id="chair_R_2_0" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 4.83788 0" position="-2.9574 0.381 -2.88342" > </a-entity>
+<a-entity id="chair_R_2_1" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 2.48724 0" position="-2.43125 0.381 -2.88342" > </a-entity>
+<a-entity id="chair_R_2_2" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 4.16884 0" position="-1.90394 0.381 -2.88342" > </a-entity>
+<a-entity id="chair_R_2_3" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 2.20147 0" position="-1.37865 0.381 -2.88342" > </a-entity>
+<a-entity id="chair_R_2_4" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 5.80573 0" position="-0.854249 0.381 -2.88342" > </a-entity>
+<a-entity id="chair_L_2_0" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 2.05874 0" position="0.424779 0.381 -2.88803" > </a-entity>
+<a-entity id="chair_L_2_1" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 2.32531 0" position="0.936814 0.381 -2.88803" > </a-entity>
+<a-entity id="chair_L_2_2" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 1.47342 0" position="1.46908 0.381 -2.88803" > </a-entity>
+<a-entity id="chair_L_2_3" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 3.44666 0" position="1.93597 0.381 -2.88803" > </a-entity>
+<a-entity id="chair_L_2_4" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 3.46427 0" position="2.44193 0.381 -2.88803" > </a-entity>
+<a-entity id="chair_L_2_5" material="shader: flat; src: #chair_row2_LM" obj-model="obj: #chairs_GEO" rotation="0 3.18788 0" position="2.95523 0.381 -2.90233" > </a-entity>
+
+<a-entity id="chair_R_3_0" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 1.16972 0" position="-2.9574 0.635 -3.79543" > </a-entity>
+<a-entity id="chair_R_3_1" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.18093 0" position="-2.43125 0.635 -3.79543" > </a-entity>
+<a-entity id="chair_R_3_2" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 0.500677 0" position="-1.90394 0.635 -3.79543" > </a-entity>
+<a-entity id="chair_R_3_3" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.4667 0" position="-1.37865 0.635 -3.79543" > </a-entity>
+<a-entity id="chair_R_3_4" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 2.13756 0" position="-0.854249 0.635 -3.79543" > </a-entity>
+<a-entity id="chair_L_3_0" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 1.92537 0" position="0.424779 0.635 -3.90003" > </a-entity>
+<a-entity id="chair_L_3_1" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 2.19193 0" position="0.936814 0.635 -3.90003" > </a-entity>
+<a-entity id="chair_L_3_2" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 1.34005 0" position="1.46908 0.635 -3.90003" > </a-entity>
+<a-entity id="chair_L_3_3" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 3.31328 0" position="1.93597 0.635 -3.90003" > </a-entity>
+<a-entity id="chair_L_3_4" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 3.3309 0" position="2.44193 0.635 -3.90003" > </a-entity>
+<a-entity id="chair_L_3_5" material="shader: flat; src: #chair_row3_LM" obj-model="obj: #chairs_GEO" rotation="0 3.42977 0" position="2.95523 0.635 -3.90003" > </a-entity>
+
+<a-entity id="chair_R_4_0" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 2.66696 0" position="-2.9574 0.8885 -4.66243" > </a-entity>
+<a-entity id="chair_R_4_1" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 0.316313 0" position="-2.43125 0.8885 -4.66243" > </a-entity>
+<a-entity id="chair_R_4_2" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 1.99792 0" position="-1.90394 0.8885 -4.66243" > </a-entity>
+<a-entity id="chair_R_4_3" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 0.0305424 0" position="-1.37865 0.8885 -4.66243" > </a-entity>
+<a-entity id="chair_R_4_4" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 3.6348 0" position="-0.854249 0.8885 -4.66243" > </a-entity>
+<a-entity id="chair_L_4_0" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 1.19403 0" position="0.424779 0.8885 -4.66703" > </a-entity>
+<a-entity id="chair_L_4_1" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 1.46059 0" position="0.936814 0.8885 -4.66703" > </a-entity>
+<a-entity id="chair_L_4_2" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 0.608705 0" position="1.46908 0.8885 -4.66703" > </a-entity>
+<a-entity id="chair_L_4_3" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 2.58194 0" position="1.93597 0.8885 -4.66703" > </a-entity>
+<a-entity id="chair_L_4_4" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 2.59955 0" position="2.44193 0.8885 -4.66703" > </a-entity>
+<a-entity id="chair_L_4_5" material="shader: flat; src: #chair_row4_LM" obj-model="obj: #chairs_GEO" rotation="0 2.69843 0" position="2.95523 0.8885 -4.66703" > </a-entity>
+
+<a-entity id="chair_R_5_0" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 -0.742199 0" position="-2.9574 1.1425 -5.55143" > </a-entity>
+<a-entity id="chair_R_5_1" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 -3.09284 0" position="-2.43125 1.1425 -5.55143" > </a-entity>
+<a-entity id="chair_R_5_2" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 -1.41124 0" position="-1.90394 1.1425 -5.55143" > </a-entity>
+<a-entity id="chair_R_5_3" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 -3.37861 0" position="-1.37865 1.1425 -5.55143" > </a-entity>
+<a-entity id="chair_R_5_4" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 0.225647 0" position="-0.854249 1.1425 -5.55143" > </a-entity>
+<a-entity id="chair_L_5_0" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 0.295382 0" position="0.424779 1.1425 -5.54603" > </a-entity>
+<a-entity id="chair_L_5_1" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 0.561949 0" position="0.936814 1.1425 -5.54603" > </a-entity>
+<a-entity id="chair_L_5_2" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 -0.289937 0" position="1.46908 1.1425 -5.54603" > </a-entity>
+<a-entity id="chair_L_5_3" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 1.6833 0" position="1.93597 1.1425 -5.54603" > </a-entity>
+<a-entity id="chair_L_5_4" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 1.70091 0" position="2.44193 1.1425 -5.54603" > </a-entity>
+<a-entity id="chair_L_5_5" material="shader: flat; src: #chair_row5_LM" obj-model="obj: #chairs_GEO" rotation="0 1.79979 0" position="2.95523 1.1425 -5.54603" > </a-entity>
+
+    <!--  A SOLID BG -->
+    <a-sky color="#333"> </a-sky>
+
+    <!-- ADD A CAMERA AND CURSOR  -->
+	<a-entity id="visitor"  position="1.0 1.1 0.0" rotation="0.0 90.0 0.0">
+    	<a-entity camera id="scene_cam" look-controls sms_wasd-controls="acceleration: 10.0" position="0 .0175 0"  fov="40">
+        	<a-cursor color="red">
+      	</a-entity>
+    </a-entity>
+
+<!-- CLOSE THE SCENE OUT -->
+</a-scene>
+
+</body>
+</html>
