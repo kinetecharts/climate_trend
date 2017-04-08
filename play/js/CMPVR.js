@@ -2,10 +2,30 @@
 
 var CMPVR = {};
 
+function report(str) { console.log(str); }
+
+function getClockTime()
+{
+    return new Date().getTime()/1000.0;
+}
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+var toDegrees = function(r) {
+    return r*180/Math.PI;
+};
+
+var toRadians = function(d) {
+    return Math.PI * d / 180.0;
+};
+
 CMPVR.MODELS = [];
 CMPVR.OBJSPECS = {};
 CMPVR.OBJS = {};
-CMPVR.SHOW_AXES = true;
+CMPVR.SHOW_AXES = false;
 
 CMPVR.DEFAULT_MODEL_OPTS = {
    'scale': [1.0, 1.0, 1.0],
@@ -191,7 +211,7 @@ CMPVR.loadModel = function(scene, path, opts, afterFun)
 
 CMPVR.addSphereMovie = function(scene)
 {
-    report("addMovie "+scene);
+    report("addSphereMovie "+scene);
     var imageSource = imageSrc;
     if (!VIDEO_TEX) {
 	VIDEO_TEX = imageSource.createTexture();
