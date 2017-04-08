@@ -100,43 +100,45 @@
     <span id="narrativeText">????</span><br>
     
   </div>
-<script src="https://webrtc.github.io/adapter/adapter-2.1.0.js"></script>
-<script src="js/wrtc.js"></script>
-<script src="js/OrbitControls.js"></script>
-<script src="js/DeviceOrientationControls.js"></script>
-<script src="js/ImageSource.js"></script>	
-<script src="js/Pano.js"></script>	
-<script src="js/PanoParams.js"></script>	
+
+<script src="js/ImageSource.js"></script>
 <script src="js/loaders/ColladaLoader.js"></script>
 <script src="js/loaders/FBXLoader.js"></script>
 <script src="js/loaders/BVHLoader.js"></script>
 <script src="js/Cloth.js"></script>
 <script src = "./js/CMPVR.js"></script>
 <script src = "./js/GSpreadSheet.js"></script>
+
+<script src = "../sand/js/processdata.js"></script>
+<script src = "../sand/js/chart2.js"></script>
+<script src = "../sand/js/sands2.js"></script>
+<script src = "../sand/js/app2.js"></script>
+<script src = "../sand/js/control.js"></script>
+<script src = "../sand/js/cameraControl.js"></script>
+
 <script>
-var spec = getImageSpec();
-report("spec: "+JSON.stringify(spec));
-spec.type = ImageSource.TYPE.VIDEO;
-//spec.url = "http://dvr4.paldeploy.com/video/stearman.mp4";
-//spec.url = "../video/Climate-Music-V3-Distortion_HD.mp4";
-spec.url = "http://dvr4.paldeploy.com/video/Tony/Climate-Music-V3-Distortion_HD_540.mp4";
-spec.url = "../video/Climate-Music-V3-Distortion_HD_540.mp4";
+
+var spec = {type: ImageSource.TYPE.VIDEO,
+            url: "../video/Climate-Music-V3-Distortion_HD_540.mp4"};
 report("------------------------------");
 report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
 report("imageSrc: "+imageSrc);
 CMPVR.MODELS = [
-    {path: "./NOHSpace.dae", scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
-//    {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
+   {path: "./NOHSpace.dae",
+    scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
+// {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
 ];
 CMPVR.SHOW_MOVIE = true;
 CMPVR.SHOW_CLOTH_SCREEN = true;
 //CMPVR.AVATAR_PATH = "./models/avatar.json";
 CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
 
+//chartPosition = [0,3,1.5]
+  
+startDataViz(events_normal);
+CMPVR.load(three, mathbox)
+		    
 </script>
-<script src = "../js/chart.js"></script>
-<script src = "./js/playapp.js"></script>
-
 </body>
 </html>
