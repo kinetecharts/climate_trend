@@ -454,7 +454,7 @@ CMPVR.load = function(three, mathbox)
     light2.position.z = 5;
     scene.add( light2 );
     LIGHT2 = light2;
-
+    three.on('update', ()=> { CMPVR.update() });
     setTimeout(function() { CMPVR.setView();}, 100);
 }
 
