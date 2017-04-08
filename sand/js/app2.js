@@ -39,7 +39,6 @@ var colors = {
 
 // loadData('data/rcp8p5.csv')
 let dataFiles = ['../data/rcp8p5.csv', '../data/rcp2p6.csv']
-console.log("**** loading data...");
 
 // This was moved to a function, so that its possible for a script
 // to make changes or pass in the list of events (without having
@@ -67,7 +66,7 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 	        draw(d)
 		//runEvents(events_normal)
 	        if (events)
-		    runEvents(eventsl)
+		    runEvents(events)
 	})
 	.fail(err=>{
 		console.log(err)
