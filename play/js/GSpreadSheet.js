@@ -57,7 +57,7 @@ GSS.SpreadSheet.prototype.load = function()
     $.getJSON(SSURL, function(data) {
         //report("GOT JSON: "+data);
 	inst.handleData(data);
-	inst.dump();
+	//inst.dump();
     });
 }
 
