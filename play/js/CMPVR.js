@@ -38,6 +38,7 @@ CMPVR.CLOTH_SCREEN_SPEC = {x: 2, y: 2.5, z: -0.1};
 CMPVR.SHOW_MOVIE = true;
 CMPVR.SHOW_CLOTH_SCREEN = false;
 
+CMPVR.context = null;
 CMPVR.updateFuns = [];
 CMPVR.duration = 1920.042667;
 CMPVR.playing = true;
@@ -394,12 +395,86 @@ CMPVR.setView = function(view)
     }
 }
 
-CMPVR.load = function(three, mathbox)
+//
+// This is for starting the scene without mathbox running first...
+// (Then mathbox could be used via mathbox.Context
+//
+CMPVR.init = function()
+{
+    var container = document.createElement( 'div' );
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(
+	30, window.innerWidth / window.innerHeight, 1, 30000 );
+    scene.add(camera);
+    var renderer = new THREE.WebGLRenderer( { antialias: true } );
+    CMPVR.renderer = renderer;
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    //renderer.setClearColor( scene.fog.color ); //NOFOG
+    renderer.setClearColor( 0x000020 ); //NOFOG
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.addEventListener('change', render);
+    //var controls = new THREE.TrackballControls( camera, container );
+    CMPVR.controls = controls;
+    container.appendChild( renderer.domElement );
+
+    if (false) {
+	var imageUrl = 'models/textures/patterns/fabric1.jpg';
+	//var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
+	var texture = new THREE.TextureLoader().load( imageUrl );
+	var geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
+	var material = new THREE.MeshBasicMaterial( { map: texture } );
+	var mesh = new THREE.Mesh( geometry, material );
+	scene.add( mesh );
+    }
+
+    camera.position.z = 400;
+    CMPVR.setupScene(scene, camera);
+    document.body.appendChild( renderer.domElement );
+    window.addEventListener( 'resize', onWindowResize, false );
+    animate();
+    
+    function animate() {
+	report("animate");
+	requestAnimationFrame( animate );
+	render();
+	if (CMPVR.context)
+	    CMPVR.context.frame();
+	var time = Date.now();
+	CMPVR.controls.update();
+	CMPVR.update();
+	//stats.update();
+    }
+    
+    function render() {
+	renderer.render(scene, camera);
+    }
+    
+    function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+    
+}
+
+// Use this to start CMPVR as a 'slave' to mathbox
+// which should already be started, so that three
+// and mathbox are defined and passed as arguments.
+CMPVR.initFromMathbox = function(mathbox)
 {
     MB = mathbox;
-    var scene = three.scene;
-    var camera = three.camera;
+    var three = mathbox.three;
+    //var scene = three.scene;
+    //var camera = three.camera;
+    CMPVR.setupScene(three.scene, three.camera);
+    three.on('update', ()=> { CMPVR.update() });
+}
+
+CMPVR.setupScene = function(scene, camera)
+{
     CMPVR.camera = camera;
+    CMPVR.scene = scene;
     CMPVR.setView();
     SCENE = scene;
     if (CMPVR.SHOW_AXES) {
@@ -454,7 +529,6 @@ CMPVR.load = function(three, mathbox)
     light2.position.z = 5;
     scene.add( light2 );
     LIGHT2 = light2;
-    three.on('update', ()=> { CMPVR.update() });
     setTimeout(function() { CMPVR.setView();}, 100);
 }
 
