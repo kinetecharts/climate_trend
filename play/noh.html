@@ -135,9 +135,17 @@ CMPVR.SHOW_CLOTH_SCREEN = true;
 CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
 
 //chartPosition = [0,3,1.5]
-  
-startDataViz(events_normal);
-CMPVR.load(three, mathbox)
+
+MATHBOX_MASTER = true;
+if (MATHBOX_MASTER) {
+    startDataViz(events_normal);
+    //CMPVR.load(three, mathbox);
+    CMPVR.initFromMathbox(mathbox);
+}
+else {
+    CMPVR.init();
+    startMathboxContext(CMPVR.renderer, CMPVR.scene, CMPVR.camera, CMPVR.controls, events_normal);   
+}
 		    
 </script>
 </body>
