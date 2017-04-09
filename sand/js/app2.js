@@ -249,6 +249,34 @@ function startDataViz(events)
     cameraControl = new CameraControl(three.controls, chartScale);
 }
 
+var context;
+
+function startMathboxContext(renderer, scene, camera, controls, events)
+{
+    loadDataViz(events);
+    context = new MathBox.Context(renderer, scene, camera);
+    mathbox = context.api;
+    context.init();
+    /*
+	plugins: ['core', 'controls', 'cursor', 'stats'],
+	// plugins: ['VR', 'ui', 'controls'],
+	controls: {
+	    klass: THREE.OrbitControls
+	    // klass: THREE.VRControls
+	},
+    });
+    */
+    
+    window._m = mathbox
+    //three = mathbox.three;
+
+    camera.position.set(-3.5, .4, 1.3);
+    renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
+
+    cameraControl = new CameraControl(controls, chartScale);
+    return context;
+}
+
 var draw=(datas)=>{
 	var data = datas.active
 	// debugger
