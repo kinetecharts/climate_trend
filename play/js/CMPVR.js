@@ -469,7 +469,31 @@ CMPVR.initFromMathbox = function(mathbox)
     //var camera = three.camera;
     CMPVR.setupScene(three.scene, three.camera);
     three.on('update', ()=> { CMPVR.update() });
+
+    // CMPVR.initWebvr();
 }
+
+// CMPVR.initWebvr() {
+//     //
+//     WEBVR.getVRDisplay( function ( display ) {
+//         if ( display !== undefined ) {
+//             vrdisplay = display;
+//             camera = new THREE.WebVRCamera( display, renderer );
+//         }
+//         document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
+//     } );
+//     //
+//     var gamepad = new THREE.DaydreamController();
+//     gamepad.position.set( 0.25, - 0.5, 0 );
+//     scene.add( gamepad );
+//     //
+//     var gamepadHelper = new THREE.Line( new THREE.BufferGeometry(), new THREE.LineBasicMaterial( { linewidth: 4 } ) );
+//     gamepadHelper.geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( [ 0, 0, 0, 0, 0, - 10 ], 3 ) );
+//     gamepad.add( gamepadHelper );
+//     renderer.domElement.addEventListener( 'click', function ( event ) {
+//         gamepadHelper.material.color.setHex( Math.random() * 0xffffff );
+//     } );
+// }
 
 CMPVR.setupScene = function(scene, camera)
 {
