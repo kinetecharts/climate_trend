@@ -109,16 +109,18 @@ var cameraDuration = yearsToSec(startYear+25, year_per_minute)*1000 // in millis
 
 var events_normal=[
 	{command: "playHistory(yearsToSec(endYear, year_per_minute), startYear, endYear)", delay: 0},
-	{command: "cameraControl.home(cameraDuration)", delay: yearsToSec(1900)},
-	{command: "cameraControl.co2(cameraDuration)", delay: yearsToSec(1950)},
-	{command: "cameraControl.balance(cameraDuration)", delay: yearsToSec(2000)},
-	{command: "cameraControl.temperature(cameraDuration)", delay: yearsToSec(2050)},
-	{command: "cameraControl.home(cameraDuration)", delay: yearsToSec(2100)},
+	// {command: "cameraControl.home(cameraDuration)", delay: yearsToSec(1900)},
+	// {command: "cameraControl.co2(cameraDuration)", delay: yearsToSec(1950)},
+	// {command: "cameraControl.balance(cameraDuration)", delay: yearsToSec(2000)},
+	// {command: "cameraControl.temperature(cameraDuration)", delay: yearsToSec(2050)},
+	// {command: "cameraControl.home(cameraDuration)", delay: yearsToSec(2100)},
 	{command: "good()", delay: yearsToSec(2150)},
 	{command: "bad()", delay: yearsToSec(2190)},
-	{command: "cameraControl.follow(cameraDuration)", delay: yearsToSec(2220)},
-	{command: "cameraControl.follow(cameraDuration)", delay: yearsToSec(2260)},
-	{command: "cameraControl.home(cameraDuration)", delay: yearsToSec(2300)},
+	// {command: "cameraControl.follow(cameraDuration)", delay: yearsToSec(2220)},
+	// {command: "cameraControl.follow(cameraDuration)", delay: yearsToSec(2260)},
+	// {command: "cameraControl.home(cameraDuration)", delay: yearsToSec(2300)},
+
+	
 	// {command: "cameraControl.follow(cameraDuration)", delay: 50*time_scale},
 	// {command: "cameraControl.follow(cameraDuration)", delay: 60*time_scale},
 	// {command: "cameraControl.temperature(cameraDuration)", delay: 70*time_scale},
