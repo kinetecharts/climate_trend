@@ -1,6 +1,8 @@
 *~
 *.skb
 video/*
+play/video/*
+play/junk/*
 node_modules/*
 play/models/*
 .ipynb_checkpoints/*

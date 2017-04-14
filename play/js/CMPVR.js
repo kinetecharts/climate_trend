@@ -63,7 +63,7 @@ var CMPVR = {
     },
 
     animate: function() {
-        report("animate");
+        //report("animate");
         requestAnimationFrame( this.animate.bind(this) );
         this.render();
         if (this.context)
