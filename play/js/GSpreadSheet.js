@@ -50,14 +50,30 @@ GSS.SpreadSheet = function()
     this.load();
 }
 
+GSS.SpreadSheet.getJSON = function(url, handler)
+{
+    report(">>>>> getJSON: "+url);
+    $.ajax({
+        url: url,
+	dataType: 'text',
+	success: function(str) {
+		var data = JSON.parse(str);
+		handler(data);
+	    }
+	});
+}
 
 GSS.SpreadSheet.prototype.load = function()
 {
     var inst = this;
+    report("GSS.SpreadSheet.load "+SSURL);
+    //GSS.SpreadSheet.getJSON(SSURL, function(data) {
     $.getJSON(SSURL, function(data) {
-        //report("GOT JSON: "+data);
+        report("GOT JSON: "+data);
 	inst.handleData(data);
 	//inst.dump();
+    }).fail(function() {
+	report("************ SpreadSheet error ***************");
     });
 }
 
@@ -68,7 +84,7 @@ GSS.SpreadSheet.prototype.handleData = function(data)
     var rows = [];
     for (var i=0; i<entries.length; i++) {
         var e = entries[i];
-	//report("e "+i+" "+JSON.stringify(e));
+	report("e "+i+" "+JSON.stringify(e));
 	var row = {};
         for (var key in e) {
 	    if (!key.startsWith("gsx$")) {
