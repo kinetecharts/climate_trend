@@ -69,7 +69,7 @@ GSS.SpreadSheet.prototype.load = function()
     report("GSS.SpreadSheet.load "+SSURL);
     //GSS.SpreadSheet.getJSON(SSURL, function(data) {
     $.getJSON(SSURL, function(data) {
-        report("GOT JSON: "+data);
+        //report("GOT JSON: "+data);
 	inst.handleData(data);
 	//inst.dump();
     }).fail(function() {
@@ -84,7 +84,7 @@ GSS.SpreadSheet.prototype.handleData = function(data)
     var rows = [];
     for (var i=0; i<entries.length; i++) {
         var e = entries[i];
-	report("e "+i+" "+JSON.stringify(e));
+	//report("e "+i+" "+JSON.stringify(e));
 	var row = {};
         for (var key in e) {
 	    if (!key.startsWith("gsx$")) {
