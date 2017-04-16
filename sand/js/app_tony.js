@@ -1,7 +1,15 @@
 "use strict";
 
-var search = location.search.substring(1);
-var qsObj = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+var qstr = location.search.substring(1);
+var qsObj = {};
+if (qstr) {
+    try {
+	qsObj = JSON.parse('{"' + decodeURI(qstr).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+    }
+    catch (e) {
+	alert("Bad query string in URL");
+    }
+}
 
 function getParameter(name) {
     var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -9,8 +17,8 @@ function getParameter(name) {
 }
 
 //for (var key in params) {
+console.log("------------------------------------");
 for (var key in qsObj) {
-    console.log("------------------------------------");
     var str = qsObj[key];
     console.log(" "+key+": "+str);
     //var str = getParameter(key);
@@ -18,9 +26,15 @@ for (var key in qsObj) {
 	if (params[key] == null) {
 	    alert("Bad param "+key);
 	}
-	params[key] = eval(str);
+	try {
+	    params[key] = eval(str);
+	}
+	catch(e) {
+	    alert("Bad element in query string: "+str);
+	}
     }
 }
+console.log("------------------------------------");
 
 const Parameters = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
 
