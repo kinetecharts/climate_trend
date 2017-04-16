@@ -318,6 +318,30 @@ var draw=(datas)=>{
 		}
 	})
 
+
+	// Draw year label
+    view.array({
+    	id: 'label-year',
+		data: [[
+			0.0 * chartRange.x[0] + 1.0 * chartRange.x[1], 
+			1.3 * chartRange.y[1] + (-0.3) * chartRange.y[0],
+			chartRange.z[0]
+		]],
+		channels: 3, // necessary
+		live: true,
+    }).text({
+    	id: 'label-year-text',
+      data: ['Year'],
+    }).label({
+      color: 0xffffff,
+      background: backgroundColor,
+      size: 36*3,
+      depth: 1
+    });		
+
+    var labelYearText = mathbox.select("#label-year-text")
+
+
 	var charts={}
 	charts['temperature'] = new Chart(mathbox, {
 		x : data.year,
@@ -400,5 +424,6 @@ var draw=(datas)=>{
 		})
 		sands.update(data['temperature'])
 
+		labelYearText.set('data', [Year])
 	})
 }
