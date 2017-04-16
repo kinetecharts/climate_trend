@@ -10,7 +10,7 @@ envelopeLineWidth   3   The thickness of upper and lower envelope lines
 refLineWidth        3   The thickness of the horizontal reference lines
 co2LineWidth        20  Thickness of CO2 graph
 tempLineWidth       20  Thickness of temp graph
-balanceLineWidth    10  Thickness of temp graph
+balanceLineWidth    10  Thickness of energy balance graph
 */
 var params = {}
 
