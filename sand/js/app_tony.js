@@ -305,9 +305,10 @@ var draw=(datas)=>{
 		}
 	})
 
-	// color gradient for co2 curve
+	// line alpha for co2 and balance curve
+	// controlling part of line this is visible to creating years marching forward effect
 	view.interval({
-		id:'co2Color',
+		id:'lineAlpha',
 		width: numData,
 		channels: 4,
 		items: 1,
@@ -319,27 +320,29 @@ var draw=(datas)=>{
 	})
 
 
-	// Draw year label
-    view.array({
-    	id: 'label-year',
-		data: [[
-			0.0 * chartRange.x[0] + 1.0 * chartRange.x[1], 
-			1.3 * chartRange.y[1] + (-0.3) * chartRange.y[0],
-			chartRange.z[0]
-		]],
-		channels: 3, // necessary
-		live: true,
-    }).text({
-    	id: 'label-year-text',
-      data: ['Year'],
-    }).label({
-      color: 0xffffff,
-      background: backgroundColor,
-      size: 36*3,
-      depth: 1
-    });		
+	if(!params.hideLegend){
+		// Draw year label
+	    view.array({
+	    	id: 'label-year',
+			data: [[
+				0.0 * chartRange.x[0] + 1.0 * chartRange.x[1], 
+				1.3 * chartRange.y[1] + (-0.3) * chartRange.y[0],
+				chartRange.z[0]
+			]],
+			channels: 3, // necessary
+			live: true,
+	    }).text({
+	    	id: 'label-year-text',
+	      data: ['Year'],
+	    }).label({
+	      color: 0xffffff,
+	      background: backgroundColor,
+	      size: 36*3,
+	      depth: 1
+	    });		
 
-    var labelYearText = mathbox.select("#label-year-text")
+	    var labelYearText = mathbox.select("#label-year-text")
+	}
 
 
 	var charts={}
@@ -372,7 +375,7 @@ var draw=(datas)=>{
 		zRrange : chartRange.z,
 		scale : chartScale,
 		color : 0xaf8f30,
-		colors : '#co2Color',
+		colors : '#lineAlpha',
 	        lineWidth : params.co2LineWidth,
 	        //labelSize : labelSize,
 		labelFunc: (year, val)=>{
@@ -390,7 +393,7 @@ var draw=(datas)=>{
 		zRrange : chartRange.z,
 		scale : chartScale,
 		color : 0x00ffff,
-		colors : '#co2Color',
+		colors : '#lineAlpha',
 	        //labelSize : labelSize,
 	        lineWidth: params.balanceLineWidth,
 		labelFunc: (year, val)=>{
@@ -424,6 +427,7 @@ var draw=(datas)=>{
 		})
 		sands.update(data['temperature'])
 
-		labelYearText.set('data', [Year])
+		if(!params.hideLegend)
+			labelYearText.set('data', [Year])
 	})
 }
