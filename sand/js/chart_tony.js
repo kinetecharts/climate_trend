@@ -1,8 +1,27 @@
 "use strict"
 
-var refLineWidth = 3
-var envelopeLineWidth = 3
-var chartGridLineWidth = 1
+/*
+A few params can be set through the query string.  These are:
+
+labelSize           60  The size for all labels
+gridLineWidth       5   The thickness of lines on the zx and yz axes
+chartGridLineWidth  1   The thickness of the 'ticks' on each chart
+envelopeLineWidth   3   The thickness of upper and lower envelope lines
+refLineWidth        3   The thickness of the horizontal reference lines
+co2LineWidth        20  Thickness of CO2 graph
+tempLineWidth       20  Thickness of temp graph
+balanceLineWidth    10  Thickness of temp graph
+*/
+var params = {}
+
+params.labelSize = 60;
+params.gridLineWidth = 5;
+params.chartGridLineWidth = 3;
+params.envelopeLineWidth = 3;
+params.refLineWidth = 3;
+params.co2LineWidth = 20
+params.tempLineWidth = 60
+params.balanceLineWidth = 30
 
 class Chart{
 	constructor(mathbox, options){
@@ -18,9 +37,9 @@ class Chart{
 		this.color = options.color
 		this.colors = options.colors
 	        this.lineWidth = options.lineWidth || 20
-	        this.lineWidth = 40
 		this.labelFunc = options.labelFunc || ((val)=>{return [val]})
-	        this.labelSize = options.labelSize || 36
+	        //this.labelSize = options.labelSize || 36
+	        this.labelSize = params.labelSize || 60
 		this.chart = null
 
 		this.init()
@@ -73,7 +92,7 @@ class Chart{
 			color: this.color,
 			// colors: this.colors,
 			//width: 1
-			width: envelopeLineWidth
+			width: params.envelopeLineWidth
 		})
 
 		var dataRCP2p6 = _.zip(this.x, _data.rcp2p6[this.id], this.z)
@@ -92,7 +111,7 @@ class Chart{
 			color: this.color,
 			// colors: this.colors,
 			//width: 1
-			width: envelopeLineWidth
+			width: params.envelopeLineWidth
 		})
 
 
@@ -109,7 +128,7 @@ class Chart{
 			color: this.color,
 			colors: this.colors,
 			//width: 5
-			width: refLineWidth
+			width: params.refLineWidth
 		})
 
 
@@ -123,7 +142,7 @@ class Chart{
 			divideY: 4,
 			niceX: false,
 			niceY: false,
-			width: chartGridLineWidth,
+			width: params.chartGridLineWidth,
 			opacity: 0.3,
 			color: this.color
 		})

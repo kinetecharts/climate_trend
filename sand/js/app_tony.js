@@ -1,31 +1,26 @@
 "use strict";
 
-var labelSize = 64;
-var gridLineWidth = 5;
-// var envelopeLineWidth  // This is defined in chart_tony.js
-// var refLineWidth  // This is defined in chart_tony.js
-// var chartGridLineWidth  // This is defined in chart_tony.js
+var search = location.search.substring(1);
+var qsObj = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
 
 function getParameter(name) {
     var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
-var str = getParameter("labelWidth");
-if (str)
-    labelSize = eval(str);
-str = getParameter("gridLineWidth");
-if (str)
-    gridLineWidth = eval(str);
-str = getParameter("envelopeLineWidth");
-if (str)
-    envelopeLineWidth = eval(str);
-str = getParameter("refLineWidth");
-if (str)
-    refLineWidth = eval(str);
-str = getParameter("chartGridLineWidth");
-if (str)
-    chartGridLineWidth = eval(str);
+//for (var key in params) {
+for (var key in qsObj) {
+    console.log("------------------------------------");
+    var str = qsObj[key];
+    console.log(" "+key+": "+str);
+    //var str = getParameter(key);
+    if (str) {
+	if (params[key] == null) {
+	    alert("Bad param "+key);
+	}
+	params[key] = eval(str);
+    }
+}
 
 const Parameters = ['temperature', 'co2', 'ice', 'balance', 'precipitation']
 
@@ -193,7 +188,7 @@ var drawAxis = (view, origin)=>{
 
 var drawGrid = (view, origin)=>{
 	//const lineWidth = 1
-	const lineWidth = gridLineWidth
+	const lineWidth = params.gridLineWidth
 	const alpha = 0.3
 
 	view
@@ -322,7 +317,8 @@ var draw=(datas)=>{
 		// color : 0xffcc44,
 		color : 0xffffff,
 	        colors : '#tempratureColor',
-	        labelSize : labelSize,
+	        //labelSize : labelSize,
+	        lineWidth : params.tempLineWidth,
 		labelFunc: (year, val)=>{
 			//return [''+year+': '+val+'\u2103 increase']
 			return [val+'\u2103 increase']
@@ -339,7 +335,8 @@ var draw=(datas)=>{
 		scale : chartScale,
 		color : 0xaf8f30,
 		colors : '#co2Color',
-	        labelSize : labelSize,
+	        lineWidth : params.co2LineWidth,
+	        //labelSize : labelSize,
 		labelFunc: (year, val)=>{
 			//return [''+year+': '+val+'PPM increase']
 		        return [val+'PPM increase']
@@ -356,8 +353,8 @@ var draw=(datas)=>{
 		scale : chartScale,
 		color : 0x00ffff,
 		colors : '#co2Color',
-	        labelSize : labelSize,
-		lineWidth: 4,
+	        //labelSize : labelSize,
+	        lineWidth: params.balanceLineWidth,
 		labelFunc: (year, val)=>{
 			//return [''+year+': '+val+' energy balance']
 			return [val+' energy balance']
