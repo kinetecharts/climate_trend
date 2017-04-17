@@ -40,7 +40,7 @@ class Chart{
 	        this.lineWidth = options.lineWidth || 20
 		this.labelFunc = options.labelFunc || ((val)=>{return [val]})
 	        //this.labelSize = options.labelSize || 36
-	        this.labelSize = params.labelSize || 60
+	        this.labelSize = params.labelSize
 		this.chart = null
 
 		this.init()
