@@ -70,7 +70,7 @@
       <span id="yearText" style="font-size: 50pt">????</span><p>
        <table class="legendTable">
 	 <tr>
-	   <td><img src="tempDot.png" width="30"></td>
+	   <td><img src="dot-temp.png" width="30"></td>
 <!--
 	   <td>Temperature</td>
 -->
@@ -80,14 +80,14 @@
 	   </td>
 	 </tr>
 	 <tr>
-	   <td><img src="energyDot.png" width="30"></td>
+	   <td><img src="dot-bal.png" width="30"></td>
 	   <td>Energy Balance</td>
 	   <td>
 	   <span id="energyVal" class="labels">2.0</span>
 	   </td>
 	 </tr>
 	 <tr>
-	   <td><img src="co2Dot.png" width="30"></td>
+	   <td><img src="dot-co2.png" width="30"></td>
            <!--
 	   <td>CO<sub>2</sub></td>
            -->
@@ -108,12 +108,23 @@
 <script src = "./js/control.js"></script>
 <script src = "./js/cameraControl.js"></script>
 <script src = "./js/app_v2.js"></script>
+<script src = "./js/GSpreadSheet.js"></script>
 <script>
+function report(str) { console.log(str); }
+
+GSS.SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+
 $(document).ready(function(){
    $("#yearText").html(2525);
    $("#yearLabel").html(2525);
-   if (!params.showPanel)
+   if (!params.showPanel) {
       $("#panel").hide();
+   }
+   if (!params.showGraphics) {
+       var c = three.renderer.domElement;
+       c.width = 1;
+   }
+   gss = new GSS.SpreadSheet();
 });
 
 </script>
