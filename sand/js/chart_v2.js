@@ -24,6 +24,7 @@ params.tempLineWidth = 60
 params.balanceLineWidth = 30
 params.hideLegend = false
 params.showPanel = true;
+params.showGraphics = true;
 
 class Chart{
 	constructor(mathbox, options){
