@@ -3,14 +3,18 @@
 /*
 A few params can be set through the query string.  These are:
 
-labelSize           60  The size for all labels
-gridLineWidth       5   The thickness of lines on the zx and yz axes
-chartGridLineWidth  1   The thickness of the 'ticks' on each chart
-envelopeLineWidth   3   The thickness of upper and lower envelope lines
-refLineWidth        3   The thickness of the horizontal reference lines
-co2LineWidth        20  Thickness of CO2 graph
-tempLineWidth       20  Thickness of temp graph
-balanceLineWidth    10  Thickness of energy balance graph
+param             default Meaning
+----------------------------------------------------------------------
+labelSize           60    The size for all labels
+gridLineWidth       5     The thickness of lines on the zx and yz axes
+chartGridLineWidth  1     The thickness of the 'ticks' on each chart
+envelopeLineWidth   3     The thickness of upper and lower envelope lines
+refLineWidth        3     The thickness of the horizontal reference lines
+co2LineWidth        20    Thickness of CO2 graph
+tempLineWidth       20    Thickness of temp graph
+balanceLineWidth    10    Thickness of energy balance graph
+showGraphics        1     Whether to show the data viz graphs
+showPanel           0     Whether to show the side panel with legend
 */
 var params = {}
 
