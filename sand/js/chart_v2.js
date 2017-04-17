@@ -14,7 +14,7 @@ balanceLineWidth    10  Thickness of energy balance graph
 */
 var params = {}
 
-params.labelSize = 10;
+params.labelSize = 60;
 params.gridLineWidth = 5;
 params.chartGridLineWidth = 3;
 params.envelopeLineWidth = 3;
