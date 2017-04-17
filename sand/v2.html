@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<title>Climate Change Music</title>
+		<meta charset="utf-8">
+  		<script src="../lib/r84/mathbox-bundle.js"></script>
+  		<script src = "../lib/jquery-3.1.1.min.js"></script>
+		<script src="../lib/lodash.min.js"></script>
+		<script src="../lib/q.js"></script>
+		<script src="../lib/papaparse.min.js"></script>
+		<script src="../lib/Tween.min.js"></script>
+<!-- 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+ -->		<link rel="stylesheet" href="../lib/r84/mathbox.css">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+		<style>
+			body {
+				background-color: #ffffff;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				xxxtext-align:center;
+				cursor: pointer;
+			}
+
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #000;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+			}
+
+			.legendTable {
+			        xxborder-width:0; xxborder-style: solid;
+				font-size: 20pt;
+			}
+
+			div.legend {
+				color: rgba(255,255,255, .9);
+				background: rgba(200,200,0,0.0);
+				position: absolute;
+				xtop: 200px;
+				bottom: 200px;
+				right: 20px;
+				width: 420px;
+				align-items: left;
+				xxhorizontal-align: center;
+			}
+
+			#yearLabel {
+				color: rgba(255,255,255, .9);
+				background: rgba(200,200,0,0.0);
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				xwidth: 50px;
+				align-items: left;
+			}
+		</style>
+
+</head>
+<body>
+   <div id="yearLabel">
+   </div>
+   <div class="legend" id="panel">
+      <span id="yearText" style="font-size: 50pt">????</span><p>
+       <table class="legendTable">
+	 <tr>
+	   <td><img src="tempDot.png" width="30"></td>
+<!--
+	   <td>Temperature</td>
+-->
+	   <td>Temp. increase</td>
+	   <td>
+	   <span id="tempVal" class="labels">+2.3</span>
+	   </td>
+	 </tr>
+	 <tr>
+	   <td><img src="energyDot.png" width="30"></td>
+	   <td>Energy Balance</td>
+	   <td>
+	   <span id="energyVal" class="labels">2.0</span>
+	   </td>
+	 </tr>
+	 <tr>
+	   <td><img src="co2Dot.png" width="30"></td>
+           <!--
+	   <td>CO<sub>2</sub></td>
+           -->
+	   <td>CO<sub>2</sub> increase</td>
+	   <td>
+	   <span id="co2Val" class="labels"></span>
+	   </td>
+	 </tr>
+      </table>
+       <p>&nbsp;
+       <p>&nbsp;
+      <span id="narrativeText" style="font-size:20pt">Some Big Event</span>
+   </div>
+
+<script src = "./js/processdata.js"></script>
+<script src = "./js/chart_v2.js"></script>
+<script src = "./js/sands.js"></script>
+<script src = "./js/control.js"></script>
+<script src = "./js/cameraControl.js"></script>
+<script src = "./js/app_v2.js"></script>
+<script>
+$(document).ready(function(){
+   $("#yearText").html(2525);
+   $("#yearLabel").html(2525);
+   if (!params.showPanel)
+      $("#panel").hide();
+});
+
+</script>
+</body>
+</html>
