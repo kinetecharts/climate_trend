@@ -1,5 +1,7 @@
 "use strict";
 
+var gss = null;
+
 var qstr = location.search.substring(1);
 var qsObj = {};
 if (qstr) {
@@ -436,6 +438,11 @@ var draw=(datas)=>{
 		})
 		sands.update(data['temperature'])
 
+                if (gss) {
+	            var narrative = gss.getFieldByYear(Year, 'eventsinvideo');
+		    console.log("year: "+Year+"  narrative: "+narrative);
+		    $("#narrativeText").html(narrative);
+		}
 	        //if(!params.hideLegend)
 			//labelYearText.set('data', [Year])
 		labelYearText.set('data', [''])
