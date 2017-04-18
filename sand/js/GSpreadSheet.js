@@ -7,7 +7,10 @@ so the generic things stay in the GSS.SpreadSheet, and specific things are in an
 */
 var GSS = {};
 
-GSS.SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+//GSS.SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+//GSS.SSURL = "https://docs.google.com/spreadsheets/d/19XgsAvQ4bOKOrFh4wZ8grkNSnG48XmjTyKPryhPpauQ/edit?usp=sharing?alt=json";
+GSS.SSURL = "https://docs.google.com/spreadsheets/d/19XgsAvQ4bOKOrFh4wZ8grkNSnG48XmjTyKPryhPpauQ/edit?usp=sharing?alt=json";
+
 
 
 function getFloat(f, defval)
@@ -145,7 +148,8 @@ GSS.SpreadSheet.prototype.getFieldByYear = function(y, field)
     for (var i=0; i<rows.length; i++) {
 	var row = rows[i];
 	//report("gfby i: "+i+" y: "+y+"  row.year: "+row.year);
-	if ( row.year && y > row.year) {
+	//if ( row.year && y > row.year) {
+	if ( row.year && y == row.year) {
 	    str = row[field];
 	}
     }
