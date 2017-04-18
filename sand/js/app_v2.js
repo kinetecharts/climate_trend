@@ -359,6 +359,7 @@ var draw=(datas)=>{
 		scale : chartScale,
 		// color : 0xffcc44,
 		color : 0xffffff,
+		dotColor : 0x44bbff,
 	        colors : '#tempratureColor',
 	        //labelSize : labelSize,
 	        lineWidth : params.tempLineWidth,
