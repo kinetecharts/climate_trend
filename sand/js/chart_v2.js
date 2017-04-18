@@ -42,6 +42,7 @@ class Chart{
 		this.zRrange = options.zRrange
 		this.scale = options.scale
 		this.color = options.color
+	        this.dotColor = options.dotColor || this.color;
 		this.colors = options.colors
 	        this.lineWidth = options.lineWidth || 20
 		this.labelFunc = options.labelFunc || ((val)=>{return [val]})
@@ -93,8 +94,10 @@ class Chart{
 			live: true
 		}).point({
 			id: this.id+'-lineend-point-mark',
-			opacity: 0.3,
-			color: this.color,
+		   //	opacity: 0.3,
+			opacity: 0.8,
+			color: this.dotColor,
+                        zIndex: 21, //DGK
 			size: 60
 		})
 
@@ -109,6 +112,7 @@ class Chart{
 			id: this.id+'-lineend-point-mark-b',
 			opacity: 1,
 			color: 0xffffff,
+                        zIndex: 22, //DGK
 			size: 20
 		})
 
