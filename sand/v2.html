@@ -20,9 +20,14 @@
 				font-family:Monospace;
 				font-size:13px;
 				xxxtext-align:center;
+                                text-indent: 0px;
 				cursor: pointer;
 			}
 
+			p {
+			    text-indent: 0px;
+			}
+			
 			a {
 				color:#0078ff;
 			}
@@ -36,18 +41,24 @@
 
 			.legendTable {
 			        xxborder-width:0; xxborder-style: solid;
+			        font-family: Arial, Helvetica, sans-serif;
 				font-size: 20pt;
 			}
 
 			div.legend {
+			        border-width:0; border-style: solid;
 				color: rgba(255,255,255, .9);
 				background: rgba(200,200,0,0.0);
 				position: absolute;
 				xtop: 200px;
-				bottom: 200px;
+				bottom: 60px;
 				right: 20px;
-				width: 420px;
-				align-items: left;
+                                width: 440px;
+                                height: 450px;
+			        xxfont-family: "Times New Roman", Times, serif;
+			        font-family: Arial, Helvetica, sans-serif
+                                align-items: left;
+			        text-indent: 0px;
 				xxhorizontal-align: center;
 			}
 
@@ -74,7 +85,7 @@
 <!--
 	   <td>Temperature</td>
 -->
-	   <td>Temp. increase</td>
+	   <td width="220">Temp. increase</td>
 	   <td>
 	   <span id="tempVal" class="labels">+2.3</span>
 	   </td>
@@ -97,9 +108,10 @@
 	   </td>
 	 </tr>
       </table>
-       <p>&nbsp;
-       <p>&nbsp;
-      <span id="narrativeText" style="font-size:20pt">Some Big Event</span>
+       <br>&nbsp;
+       <br>&nbsp;
+       <br>&nbsp;
+      <div id="narrativeText" style="font-size:20pt;text-indent:0px">Some Big Event</div>
    </div>
 
 <script src = "./js/processdata.js"></script>
@@ -113,6 +125,10 @@
 function report(str) { console.log(str); }
 
 GSS.SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+GSS.SSURL = "https://spreadsheets.google.com/feeds/list/19XgsAvQ4bOKOrFh4wZ8grkNSnG48XmjTyKPryhPpauQ/default/public/values?alt=json";
+
+var testStr = "This is a multiline text and should reveal whether "+
+"the first line indents differently";
 
 $(document).ready(function(){
    $("#yearText").html(2525);
@@ -125,6 +141,7 @@ $(document).ready(function(){
        c.width = 1;
    }
    gss = new GSS.SpreadSheet();
+   //$("#narrativeText").html(testStr);
 });
 
 </script>
