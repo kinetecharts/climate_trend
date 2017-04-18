@@ -95,6 +95,7 @@ class Chart{
 			id: this.id+'-lineend-point-mark',
 			opacity: 0.3,
 			color: this.color,
+                        zIndex: 21, //DGK
 			size: 60
 		})
 
@@ -109,6 +110,7 @@ class Chart{
 			id: this.id+'-lineend-point-mark-b',
 			opacity: 1,
 			color: 0xffffff,
+                        zIndex: 22, //DGK
 			size: 20
 		})
 
