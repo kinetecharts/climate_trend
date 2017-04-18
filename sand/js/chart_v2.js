@@ -310,7 +310,7 @@ class Chart{
 			[[Year, y[Year-1850], this.z_offset]]
 			)
 	        $("#yearText").html(Year);
-	        $("#yearLabel").html(Year);
+	        //$("#yearLabel").html(Year);
 		if(!params.hideLegend){
 			this.labelPosition.set('data', [[this.xRange[1], y[numData-1], this.z_offset]])
 
