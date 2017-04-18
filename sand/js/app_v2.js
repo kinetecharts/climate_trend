@@ -366,7 +366,7 @@ var draw=(datas)=>{
 		    //return [''+year+': '+val+'\u2103 increase']
 		    //var str = val+'\u2103 increase';
 		    var str = val+'\u2103';
-		    $("#tempVal").html(str);
+		    $("#tempVal").html(""+val+"&deg;C");
 		    return [str]
 		}
 	})
@@ -441,7 +441,7 @@ var draw=(datas)=>{
 
                 if (gss) {
 	            var narrative = gss.getFieldByYear(Year, 'eventsinvideo');
-		    console.log("year: "+Year+"  narrative: "+narrative);
+		    //console.log("year: "+Year+"  narrative: "+narrative);
 		    $("#narrativeText").html(narrative);
 		}
 	        //if(!params.hideLegend)
