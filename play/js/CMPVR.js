@@ -20,6 +20,8 @@ var toRadians = function(d) {
     return Math.PI * d / 180.0;
 };
 
+var CMPVR_UPDATE_FUNS = [];
+
 //
 // This is for starting the scene without mathbox running first...
 // (Then mathbox could be used via mathbox.Context
@@ -71,6 +73,7 @@ var CMPVR = {
         var time = Date.now();
         this.controls.update();
         this.update();
+	CMPVR_UPDATE_FUNS.forEach( (f) => f() );
         //stats.update();
     },
 
