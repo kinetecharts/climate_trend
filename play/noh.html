@@ -139,13 +139,14 @@
 			//chartPosition = [0,3,1.5]
 
 			MATHBOX_MASTER = true;
+                        events_normal = [];
 			if (MATHBOX_MASTER) {
-				startDataViz(events_normal);
-				CMPVR.initFromMathbox(mathbox);
+			    startDataViz(events_normal);
+			    CMPVR.initFromMathbox(mathbox);
 			}
 			else {
-				CMPVR.init();
-				startMathboxContext(CMPVR.renderer, CMPVR.scene, CMPVR.camera, CMPVR.controls, events_normal);   
+			    CMPVR.init();
+			    startMathboxContext(CMPVR.renderer, CMPVR.scene, CMPVR.camera, CMPVR.controls, events_normal);   
 			}
 		</script>
 	</body>
