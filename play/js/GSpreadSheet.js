@@ -47,6 +47,7 @@ GSS.SpreadSheet = function()
 {
     report("**** GSS.SpreadSheet() ****");
     this.data = null;
+    this.ready = false;
     this.load();
 }
 
@@ -111,6 +112,7 @@ GSS.SpreadSheet.prototype.handleData = function(data)
 	rows.push(row);
     }
     this.rows = rows;
+    this.ready = true;
 }
 
 GSS.SpreadSheet.prototype.dump = function()
@@ -129,7 +131,11 @@ GSS.SpreadSheet.prototype.dump = function()
 
 GSS.SpreadSheet.prototype.getFieldByYear = function(y, field)
 {
-//    report("GSS.SpreadSheet.getFieldByYear "+y+" "+field);
+    //    report("GSS.SpreadSheet.getFieldByYear "+y+" "+field);
+    if (!this.ready) {
+	report("****** warning - getFieldByYear called before ready");
+	return "";
+    }
     if (!y)
 	return null;
     var str = "";
