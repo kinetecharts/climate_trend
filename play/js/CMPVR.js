@@ -171,6 +171,7 @@ var ANCHOR = null;
 var AVATAR = null;
 var LIGHT1 = null;
 var LIGHT2 = null;
+var LIGHT3 = null;
 
 var loader = null;
 var clock = new THREE.Clock();
@@ -207,7 +208,7 @@ CMPVR.loadJSONModel = function(scene, path, opts, afterFun)
 	   */
 	    scene.add( object );
 	    if (afterFun) {
-		afterFun(object);
+		afterFun(object, opts);
 	    }
 	},
         function() {
@@ -255,7 +256,6 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
     opts = opts || {};
     loader = new THREE.ColladaLoader();
     loader.options.convertUpAxis = true;
-    //loader.load( './DomeSpace.dae', function ( collada ) {
     loader.load( path, function ( collada ) {
 	report("***** Got Collada *****");
 	var dae = collada.scene;
@@ -299,10 +299,77 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
     } );
 }
 
+var OBJM = null;
+CMPVR.loadOBJModel0 = function(scene, path, opts, afterFun)
+{
+    var manager = new THREE.LoadingManager();
+    var loader = new THREE.OBJLoader( manager );
+
+    var onProgress = function ( xhr ) {
+	if ( xhr.lengthComputable ) {
+	    var percentComplete = xhr.loaded / xhr.total * 100;
+	    console.log( Math.round(percentComplete, 2) + '% downloaded' );
+	}
+    };
+    var onError = function ( xhr ) {
+    };
+
+    loader.load( path, function ( object ) {
+	object.traverse( function ( child ) {
+	    if ( child instanceof THREE.Mesh ) {
+		//child.material.map = texture;
+	    }
+	} );
+	object.position.y = 0;
+	console.log("adding loaded model to scene");
+        OBJM = object;
+	scene.add( object );
+    }, onProgress, onError );    
+}
+
+CMPVR.loadOBJModel = function(scene, path, opts, afterFun)
+{
+    THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+    var mtlLoader = new THREE.MTLLoader();
+    var mtlPath = path.replace(".obj", ".mtl")
+
+    var onProgress = function ( xhr ) {
+	if ( xhr.lengthComputable ) {
+	    var percentComplete = xhr.loaded / xhr.total * 100;
+	    console.log( Math.round(percentComplete, 2) + '% downloaded' );
+	}
+    };
+    var onError = function ( xhr ) {
+    };
+
+    //var dir = "./models/PlaySpace/";
+    //mtlLoader.setPath( dir );
+    mtlLoader.load( mtlPath, function( materials ) {
+	console.log(">>> Got materials");
+	materials.preload();
+	var objLoader = new THREE.OBJLoader();
+	objLoader.setMaterials( materials );
+	//objLoader.setPath( dir );
+	objLoader.load( path, function ( object ) {
+	    object.position.y = 0;
+	    scene.add( object );
+	    console.log(">>> adding loaded model to scene");
+            OBJM = object;
+	    if (afterFun) {
+		afterFun(object, opts);
+	    }
+	}, onProgress, onError );
+    });
+}
+
 CMPVR.loadModel = function(scene, path, opts, afterFun)
 {
     if (path.endsWith(".fbx")) {
 	CMPVR.loadFBXModel(scene, path, opts, afterFun);
+    }
+    else if (path.endsWith(".obj")) {
+	CMPVR.loadOBJModel(scene, path, opts, afterFun);
     }
     else if (path.endsWith(".dae")) {
 	CMPVR.loadColladaModel(scene, path, opts, afterFun);
@@ -312,7 +379,7 @@ CMPVR.loadModel = function(scene, path, opts, afterFun)
     }
 }
 
-CMPVR.addSphereMovie = function(scene)
+CMPVR.addSphereMovie = function(scene, spec)
 {
     report("addSphereMovie "+scene);
     var imageSource = imageSrc;
@@ -329,27 +396,29 @@ CMPVR.addSphereMovie = function(scene)
     }
     var material = VIDEO_MAT;
     var r = 1.0;
-    var thLen = toRadians(60);
-    var phLen = toRadians(40);
-    var thMin = toRadians(90)-thLen/2;
-    var phMin = toRadians(90)-phLen/2;
+    //var thLen = 120;
+    //var phLen = 80;
+    var thLen = toRadians(140);
+    var thMin = toRadians(180)-thLen/2;
+    //var phMin = toRadians(90)-phLen/2;
+    var phMin = toRadians(31);
+    var phLen = toRadians(49);
     var sphere = new THREE.Mesh(
 	new THREE.SphereGeometry(r, 40, 40,
 				 thMin, thLen, phMin, phLen),
 	    material
 	);
     sphere.scale.x = -1;
-    var f = 5.0;
+    var f = 8.6;
     sphere.scale.x *= f;
     sphere.scale.y *= f;
     sphere.scale.z *= f;
-    //sphere.position.y = -2.5;
     sphere.position.y = 0;
-    sphere.name = "sphere";
+    sphere.name = "sphereMoveScreen";
     SP = sphere;
-    SP.rotation.y = toRadians(90);
-    SP.position.x = -2;
-    SP.position.y = -1.0;
+    //SP.rotation.y = toRadians(0);
+    //SP.position.x = -2;
+    //SP.position.y = -1.0;
     var obj = new THREE.Object3D();
     obj.add(SP);
     //obj.rotation.z = toRadians(25);
@@ -360,11 +429,14 @@ CMPVR.addSphereMovie = function(scene)
 
 CMPVR.addMovie = function(scene, spec)
 {
+    report("----------->>>>>>>>>>> addMovie "+scene);
     spec = spec || CMPVR.SCREEN_SPEC;
+    if (spec.spherical) {
+	return CMPVR.addSphereMovie(scene, spec);
+    }
     var pos = spec;
     var w = spec.width;
     var h = spec.height;
-    report("addMovie "+scene);
     var imageSource = imageSrc;
     if (!VIDEO_TEX) {
 	VIDEO_TEX = imageSource.createTexture();
@@ -468,10 +540,19 @@ CMPVR.findScreen = function(obj)
 This goes through the loaded model and finds objects that were put there
 to help us locate positions or assign some behaviors.
 */
-CMPVR.processHooks = function(obj)
+CMPVR.processHooks = function(obj, opts)
 {
     CMPVR.findAnchor(obj);
     CMPVR.findScreen(obj);
+    console.log("************** "+JSON.stringify(opts));
+    if (!opts)
+	return;
+    if (opts && opts.hide) {
+	var idToHide = opts.hide;
+	console.log("hiding "+idToHide);
+	var hobj = obj.getObjectByName(idToHide);
+	hobj.visible = false;
+    }
 }
 
 // Gets called from in playapp.js
@@ -520,15 +601,10 @@ CMPVR.setupScene = function(scene, camera)
 	}
     });
 
-
     if (CMPVR.BVH_PATH) {
        CMPVR.loadBVH(scene, CMPVR.BVH_PATH);
     }
 
-//    if (MODEL_PATH) {
-//	CMPVR.loadModel(scene, MODEL_PATH, MODEL_OPTS, CMPVR.processHooks);
-//    }
-    //var AVATAR_PATH = "./models/avatar.fbx";
     if (CMPVR.AVATAR_PATH) {
 	   CMPVR.loadAvatar(scene, CMPVR.AVATAR_PATH, CMPVR.DEFAULT_MODEL_OPTS);
     }
@@ -555,6 +631,16 @@ CMPVR.setupScene = function(scene, camera)
     light2.position.z = 5;
     scene.add( light2 );
     LIGHT2 = light2;
+    setTimeout(function() { CMPVR.setView();}, 100);
+
+    var color3 = 0xaaaaff;
+    var light3 = new THREE.PointLight( color3, 2, 50 );
+    light3.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color2 } ) ) );
+    light3.position.y = 30;
+    light3.position.x = -10;
+    light3.position.z = -5;
+    scene.add( light3 );
+    LIGHT3 = light3;
     setTimeout(function() { CMPVR.setView();}, 100);
 }
 

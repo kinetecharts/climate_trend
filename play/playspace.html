@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Climate Music Project perforance at NOHSpace Theatre</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+		<link rel="stylesheet" href="./libs/mathbox.css">
+		<style>
+			body {
+				background-color: #ffffff;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				cursor: pointer;
+			}
+
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #000;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+			}
+
+			div.textViewer {
+					color: rgba(240,240,240, .9);
+					background: rgba(200,200,0,0.0);
+				position: absolute;
+				top: 15px;
+				left: 200px;
+				xxwidth: 100%;
+					width: 700px;
+					align-items: center;
+					horizontal-align: center;
+			}
+
+		</style>
+		<link rel="stylesheet" href="./css/jquery-ui.css">
+		<style>
+			.ui-slider {
+				height: 20px;
+				width: 100%;
+				align-items: center;
+				//padding-left: 50px;
+			}
+			.ui-slider-handle {
+				height: 20px;
+				width: 5px;
+				//padding-left: 50px;
+			}
+		</style>
+	</head>
+<body>
+  <div class="textViewer">
+    <div id="timeLine" style="width:100%;height:10px;border-style:solid;border-width: 2;align-content:center"></div>
+    <span id="textLine">Foo Bar</span><br>
+    <span id="yearText">0000</span><br>
+    <span id="narrativeText">????</span><br>
+    
+  </div>
+
+  <script src = "./libs/mathbox-bundle.js"></script>
+  <script src = "./libs/webvr.js"></script>
+  <script src = "./libs/jquery-3.1.1.min.js"></script>
+  <script src = "./libs/jquery-ui.js"></script>
+  <script src = "./libs/lodash.min.js"></script>
+  <script src = "./libs/q.js"></script>
+  <script src = "./libs/papaparse.min.js"></script>
+  <script src = "./libs/Tween.min.js"></script>
+
+  <script src = "./js/ImageSource.js"></script>
+  <script src = "./libs/loaders/ColladaLoader.js"></script>
+  <script src = "./libs/loaders/FBXLoader.js"></script>
+  <script src = "./libs/loaders/BVHLoader.js"></script>
+  <script src = "./libs/loaders/OBJLoader.js"></script>
+  <script src = "./libs/loaders/MTLLoader.js"></script>
+  <script src = "./libs/loaders/DDSLoader.js"></script>
+
+		<script src = "./js/Cloth.js"></script>
+		<script src = "./js/CMPVR.js"></script>
+		<script src = "./js/GSpreadSheet.js"></script>
+
+		<script src = "./js/processdata.js"></script>
+		<script src = "./js/chart2.js"></script>
+		<script src = "./js/sands2.js"></script>
+		<script src = "./js/app2.js"></script>
+		<script src = "./js/control.js"></script>
+		<script src = "./js/cameraControl.js"></script>
+                <script src = "./js/EARTH.js"></script>
+
+		<script type="x-shader/x-fragment" id="fragmentShaderDepth">
+			uniform sampler2D texture;
+			varying vec2 vUV;
+			vec4 pack_depth( const in float depth ) {
+				const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );
+				const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );
+				vec4 res = fract( depth * bit_shift );
+				res -= res.xxyz * bit_mask;
+				return res;
+			}
+
+			void main() {
+				vec4 pixel = texture2D( texture, vUV );
+				if ( pixel.a < 0.5 ) discard;
+				gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );
+			}
+		</script>
+
+		<script type="x-shader/x-vertex" id="vertexShaderDepth">
+			varying vec2 vUV;
+			void main() {
+				vUV = 0.75 * uv;
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+		
+
+<script>
+
+var spec = {type: ImageSource.TYPE.VIDEO,
+            url: "./video/Climate-Music-V3-Distortion_HD_540.mp4"};
+report("------------------------------");
+report("spec: "+JSON.stringify(spec));
+var imageSrc = new ImageSource(spec);
+report("imageSrc: "+imageSrc);
+CMPVR.MODELS = [
+//   {path: "./models/dae/NOHSpace.dae",
+//    scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
+   {path: "./models/PlaySpace/environment.obj",
+    scale: [1.0,1.0,1.0], position: [0,0,0], rotation: [0,90,0],
+    hide: "sphere"
+},
+// {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
+];
+CMPVR.SCREEN_SPEC = {x: 5.5, y: 2.5, z: -0.1,
+                      width: 6.5, height: 4.0, spherical: true};
+CMPVR.SHOW_MOVIE = true;
+//CMPVR.SHOW_CLOTH_SCREEN = true;
+//CMPVR.AVATAR_PATH = "./models/avatar.json";
+CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
+
+//chartPosition = [0,3,1.5]
+
+//MATHBOX_MASTER = true;
+MATHBOX_MASTER = false;
+var earth = null;
+
+if (MATHBOX_MASTER) {
+    startDataViz(events_normal);
+    //CMPVR.load(three, mathbox);
+    CMPVR.initFromMathbox(mathbox);
+}
+else {
+    CMPVR.init();
+    //CMPVR.context = startMathboxContext(CMPVR.renderer, CMPVR.scene, CMPVR.camera, CMPVR.controls, events_normal);   
+    var scene = CMPVR.scene;
+    var egroup = new THREE.Group();
+    scene.add(egroup);
+    var eradius = 1;
+    earth = new EARTH.Earth(egroup, eradius, {'name':'Full'});
+    earth.group.position.y = 2;
+}
+		    
+</script>
+</body>
+</html>
