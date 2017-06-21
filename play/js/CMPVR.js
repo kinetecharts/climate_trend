@@ -21,6 +21,7 @@ var toRadians = function(d) {
 };
 
 var CMPVR_UPDATE_FUNS = [];
+var CMPVR_RESIZE_FUNS = [];
 
 //
 // This is for starting the scene without mathbox running first...
@@ -31,7 +32,12 @@ var CMPVR = {
     loadedModels: {},
     useFPC: false,
     camera: new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 30000 ),
-    renderer: new THREE.WebGLRenderer( { antialias: true } ),
+    renderer: new THREE.WebGLRenderer( {
+        depth: true,
+        stencil: true,
+        preserveDrawingBuffer: true,
+        antialias: true
+     } ),
     scene: new THREE.Scene(),
     controls: null,
     init: function()
@@ -83,7 +89,8 @@ var CMPVR = {
 	this.prevTime = t;
         this.controls.update(deltaTime);
         this.update();
-	CMPVR_UPDATE_FUNS.forEach( (f) => f() );
+        var duration = this.getClockTime();
+	    CMPVR_UPDATE_FUNS.forEach( (f) => f(duration) );
         //stats.update();
     },
 
@@ -95,9 +102,10 @@ var CMPVR = {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
-	if (this.controls.handleResize) {
-	    this.controls.handleResize();
-	}
+        if (this.controls.handleResize) {
+            this.controls.handleResize();
+        }
+        CMPVR_RESIZE_FUNS.forEach( (f) => f(window.innerWidth, window.innerHeight) );
     }
 };
 // Use this to start CMPVR as a 'slave' to mathbox
@@ -712,6 +720,10 @@ function tourSliderChanged(e, ui)
     var t = v*CMPVR.duration;
     report("v: "+v+"   t: "+t);
     imageSrc.setPlayTime(t);
+}
+
+CMPVR.getVideoTime = function() {
+    return imageSrc.video.currentTime;
 }
 
 CMPVR.timerFun_ = function(e)

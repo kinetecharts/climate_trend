@@ -254,19 +254,25 @@ function startMathboxContext(renderer, scene, camera, controls, events)
     context = new MathBox.Context(renderer, scene, camera);
     mathbox = context.api;
     context.init();
-    /*
-	plugins: ['core', 'controls', 'cursor', 'stats'],
-	// plugins: ['VR', 'ui', 'controls'],
-	controls: {
-	    klass: THREE.OrbitControls
-	    // klass: THREE.VRControls
-	},
-    });
-    */
-    
-    three = mathbox.three;
+
+	// update size
+	function mathboxResize(w, h) {
+		context.resize({
+			viewWidth: w, viewHeight: h
+		});
+	}
+	mathboxResize(window.innerWidth, window.innerHeight);
+	CMPVR_RESIZE_FUNS.push(mathboxResize);
+
+	// update frame mathbox context frame
+	function mathboxUpdate(t) {
+		//context.frame({now: t/1000});
+		context.frame();
+	}
+	CMPVR_UPDATE_FUNS.push(mathboxUpdate);
+
     window._m = mathbox
-    //three = mathbox.three;
+    three = mathbox.three;
 
     camera.position.set(-3.5, .4, 1.3);
     renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
