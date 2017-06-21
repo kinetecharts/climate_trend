@@ -264,6 +264,7 @@ function startMathboxContext(renderer, scene, camera, controls, events)
     });
     */
     
+    three = mathbox.three;
     window._m = mathbox
     //three = mathbox.three;
 
@@ -410,12 +411,25 @@ var draw=(datas)=>{
 			colors : '#tempratureColor'
 	})
 
+    if (three) {
 	three.on('update', ()=>{
 		TWEEN.update()
-
 		Object.keys(charts).forEach(id=>{
 			charts[id].update(data[id])
 		})
 		sands.update(data['temperature'])
-	})
+	});
+    }
+    else {
+	/*
+	CMPVR_UPDATE_FUNS.push(function() {
+	    report("app2 mathbox updates...");
+	    TWEEN.update();
+	    Object.keys(charts).forEach(id=>{
+		charts[id].update(data[id])
+	    })
+	    sands.update(data['temperature']);
+	});
+        */
+    }
 }
