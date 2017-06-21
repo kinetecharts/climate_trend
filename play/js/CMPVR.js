@@ -26,22 +26,27 @@ var CMPVR_UPDATE_FUNS = [];
 // This is for starting the scene without mathbox running first...
 // (Then mathbox could be used via mathbox.Context
 //
+
 var CMPVR = {
+    useFPC: false,
     camera: new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 30000 ),
     renderer: new THREE.WebGLRenderer( { antialias: true } ),
     scene: new THREE.Scene(),
     controls: null,
     init: function()
     {
-        
+        this.prevTime = getClockTime();
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.setClearColor( 0x000020 ); //NOFOG
-        
-        this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement )
 
-        this.controls.addEventListener('change', this.render.bind(this));
-
+	if (this.useFPC) {
+	    this.controls = new THREE.CMP_FirstPersonControls( this.camera , this.renderer.domElement )
+	}
+        else {
+            this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement )
+	    this.controls.addEventListener('change', this.render.bind(this));
+	}
         if (false) {
             var imageUrl = 'models/textures/patterns/fabric1.jpg';
             //var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
@@ -60,7 +65,9 @@ var CMPVR = {
         document.body.appendChild( container );
         
         window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
-        
+	if (this.controls.handleResize) {
+	    this.controls.handleResize();
+	}
         this.animate();
     },
 
@@ -70,8 +77,10 @@ var CMPVR = {
         this.render();
         if (this.context)
             this.context.frame();
-        var time = Date.now();
-        this.controls.update();
+        var t = getClockTime();
+	var deltaTime = (t - this.prevTime);
+	this.prevTime = t;
+        this.controls.update(deltaTime);
         this.update();
 	CMPVR_UPDATE_FUNS.forEach( (f) => f() );
         //stats.update();
@@ -85,6 +94,9 @@ var CMPVR = {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
+	if (this.controls.handleResize) {
+	    this.controls.handleResize();
+	}
     }
 };
 // Use this to start CMPVR as a 'slave' to mathbox
@@ -635,7 +647,7 @@ CMPVR.setupScene = function(scene, camera)
 
     var color3 = 0xaaaaff;
     var light3 = new THREE.PointLight( color3, 2, 50 );
-    light3.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color2 } ) ) );
+    light3.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: color3 } ) ) );
     light3.position.y = 30;
     light3.position.x = -10;
     light3.position.z = -5;
