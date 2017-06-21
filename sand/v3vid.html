@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<title>Climate Change Music</title>
+		<meta charset="utf-8">
+<!--
+  		<script src="../lib/r84/mathbox-bundle.js"></script>
+-->
+  		<script src="../play/libs/mathbox-bundle.dgk.js"></script>
+  		<script src = "../lib/jquery-3.1.1.min.js"></script>
+		<script src = "../play/libs/jquery-ui.js"></script>
+		<script src="../lib/lodash.min.js"></script>
+		<script src="../lib/q.js"></script>
+		<script src="../lib/papaparse.min.js"></script>
+		<script src="../lib/Tween.min.js"></script>
+<!-- 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+ -->		<link rel="stylesheet" href="../lib/r84/mathbox.css">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+		<style>
+			body {
+				background-color: #ffffff;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				xxxtext-align:center;
+                                text-indent: 0px;
+				cursor: pointer;
+			}
+
+			p {
+			    text-indent: 0px;
+			}
+			
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #000;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+			}
+
+			.legendTable {
+			        xxborder-width:0; xxborder-style: solid;
+			        font-family: Arial, Helvetica, sans-serif;
+			font-size: 20pt;
+			}
+
+			div.legend {
+			        border-width:1; border-style: solid;
+				color: rgba(255,255,255, .9);
+				#background-color: #ffffff;
+				background-color: rgba(00,200,0,0.0);
+			        z-index: -1;
+				position: absolute;
+				xtop: 200px;
+				bottom: 60px;
+				right: 20px;
+                                width: 440px;
+                                height: 450px;
+			        xxfont-family: "Times New Roman", Times, serif;
+			        font-family: Arial, Helvetica, sans-serif;
+                                align-items: left;
+			        text-indent: 0px;
+				xxhorizontal-align: center;
+			}
+
+			div.vid {
+				color: rgba(255,255,0, .9);
+				xxxbackground-color: rgba(00,200,0,5.0);
+				background-color: rgba(0,0,0,5.0);
+			        z-index: -2;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+                                width: 100%;
+                                height: 100%;
+                                align-items: left;
+			        text-indent: 0px;
+			}
+
+			#yearText {
+				color: rgba(255,255,255, .9);
+			        xxfont-family: "Times New Roman", Times, serif;
+			        font-family: Arial, Helvetica, sans-serif;
+			        font-size: 80px;
+                        }
+		</style>
+
+		<link rel="stylesheet" href="../play/css/jquery-ui.css">
+		<style>
+			.ui-slider {
+				height: 20px;
+				width: 100%;
+				align-items: center;
+				//padding-left: 50px;
+			}
+			.ui-slider-handle {
+				height: 20px;
+				width: 5px;
+				//padding-left: 50px;
+			}
+		</style>
+
+</head>
+<body>
+      <div id="timeLine" style="width:100%;height:10px;border-style:solid;border-width: 2;align-content:center"></div>
+  <div class="vid" id="bgvideo">
+      <video playsinline autoplay loop id="bgvid" style="width:100%;height:100%;">
+<!--
+         <source src="http://dvr4.paldeploy.com/video/NOHSpace/NOHSpace_path_1.mp4" type="video/mp4">
+         <source src=""./video/Climate-Music-V3-Distortion_HD_540.mp4" type="video/mp4">
+         <source src="http://dvr4.paldeploy.com/video/Climate-Music-V3-Distortion_HD_540.mp4" type="video/mp4">
+-->
+         <source src="../video/Climate-Music-V3-Distortion_HD_540.mp4" type="video/mp4">
+      </video>
+   </div>
+   <div class="legend" id="panel">
+      <span id="yearText">????</span><p>
+       <table class="legendTable">
+	 <tr>
+	   <td><img src="dot-temp.png" width="30"></td>
+	   <td width="220">Temp. increase</td>
+	   <td>
+	   <span id="tempVal" class="labels">+2.3</span>
+	   </td>
+	 </tr>
+	 <tr>
+	   <td><img src="dot-bal.png" width="30"></td>
+	   <td>Energy Balance</td>
+	   <td>
+	   <span id="energyVal" class="labels">2.0</span>
+	   </td>
+	 </tr>
+	 <tr>
+	   <td><img src="dot-co2.png" width="30"></td>
+           <!--
+	   <td>CO<sub>2</sub></td>
+           -->
+	   <td>CO<sub>2</sub> increase</td>
+	   <td>
+	   <span id="co2Val" class="labels"></span>
+	   </td>
+	 </tr>
+      </table>
+       <br>&nbsp;
+       <br>&nbsp;
+       <br>&nbsp;
+      <div id="narrativeText" style="font-size:20pt;text-indent:0px">Some Big Event</div>
+   </div>
+
+<script src = "./js/processdata.js"></script>
+<script src = "./js/chart_v2.js"></script>
+<script src = "./js/sands.js"></script>
+<script src = "./js/control.js"></script>
+<script src = "./js/cameraControl.js"></script>
+<script src = "./js/app_v2.js"></script>
+<script src = "./js/GSpreadSheet.js"></script>
+<script>
+function report(str) { console.log(str); }
+
+GSS.SSURL = "https://spreadsheets.google.com/feeds/list/1Vj4wbW0-VlVV4sG4MzqvDvhc-V7rTNI7ZbfNZKEFU1c/default/public/values?alt=json";
+GSS.SSURL = "https://spreadsheets.google.com/feeds/list/19XgsAvQ4bOKOrFh4wZ8grkNSnG48XmjTyKPryhPpauQ/default/public/values?alt=json";
+
+var testStr = "This is a multiline text and should reveal whether "+
+"the first line indents differently";
+
+var canv = null;
+var panel = null;
+var video = null;
+
+CMP = {};
+CMP.duration = 1000;
+report("******* Need to update true duration *********************");
+
+function tourSliderChanged(e, ui)
+{
+    report("**** tourSliderChanged ****");
+    var v = ui.value;
+    var t = v*CMP.duration;
+    report("v: "+v+"   t: "+t);
+    setPlayTime(t);
+}
+
+function setPlayTime(t)
+{
+    report("setPlayTime "+t);
+    video.currentTime = t;
+}
+
+CMP.timerFun = function(e)
+{
+    try {
+	CMP.timerFun_(e);
+    }
+    catch (e) {
+	report("error: "+e);
+	report("stack: "+e.stack);
+    }
+    setTimeout(CMP.timerFun, 100);
+}
+
+CMP.timerFun_ = function(e)
+{
+//report("*** tick... ");
+    return;
+    var d = imageSrc.video.duration;
+    var t = imageSrc.video.currentTime;
+    //report("d: "+d+"  t: "+t);
+    //report("dur: "+d);
+    var str = "t: "+CMP.timeStr(t);
+    $("#textLine").html(str);
+    //
+    // Handle year
+    //
+    var y = timeToYear(t);
+    var yStr = "";
+    if (y != null)
+	yStr = ""+Math.floor(y+0.5);
+    $("#yearText").html(yStr);
+    //
+    // Handle Narrative
+    var nar = getNarrative(t) || "";
+    $("#narrativeText").html(nar);
+    if (VIDEO_MAT) {
+	var opacity = getVideoOpacity(t);
+	if (typeof opacity == "number") {
+	    VIDEO_MAT.opacity = opacity;
+	}
+    }
+}
+
+CMP.isPlaying = function() { return CMP.playing; }
+
+CMP.play = function()
+{
+    CMP.playing = true;
+    imageSrc.play();
+}
+
+CMP.pause = function()
+{
+    CMP.playing = false;
+    imageSrc.pause();
+}
+
+function togglePlayStop(e)
+{
+    report("togglePlayStop");
+/*
+    if (CMP.isPlaying()) {
+	CMP.pause();
+    }
+    else {
+	CMP.play();
+    }
+*/
+}
+
+$(document).ready(function(){
+   video = document.getElementById("bgvid");
+   panel = document.getElementById("panel");
+   canv = three.renderer.domElement;
+   panel.style.background="#101025"; //*** Note this should match backgroundColor of mathbox
+   $("#yearText").html(2525);
+   //$("#yearLabel").html(2525);
+   if (!params.showPanel) {
+      $("#panel").hide();
+   }
+   if (!params.showGraphics) {
+       //var c = three.renderer.domElement;
+       //canv.width = 1;
+       canv.style.display = "none";
+   }
+   gss = new GSS.SpreadSheet();
+   //$("#narrativeText").html(testStr);
+    report("**** setting up slider ****");
+    $("#timeLine").slider({
+	    slide: tourSliderChanged,
+		min: 0, max: 1, step: 0.001
+    });
+    $("#playStop").click(togglePlayStop);
+    CMP.timerFun();
+});
+
+</script>
+</body>
+</html>
