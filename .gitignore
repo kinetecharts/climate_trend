@@ -2,6 +2,7 @@
 *.skb
 video/*
 */junk/*
+*/*/junk/*
 play/video/*
 play/junk/*
 node_modules/*
