@@ -6,6 +6,8 @@
 <!--
   		<script src="../lib/r84/mathbox-bundle.js"></script>
 -->
+		<link rel="stylesheet" href="../lib/bootstrap.css" />
+		<link rel="stylesheet" href="../lib/jsoneditor.css" />
   		<script src="../play/libs/mathbox-bundle.dgk.js"></script>
   		<script src = "../lib/jquery-3.1.1.min.js"></script>
 		<script src = "../play/libs/jquery-ui.js"></script>
@@ -13,6 +15,8 @@
 		<script src="../lib/q.js"></script>
 		<script src="../lib/papaparse.min.js"></script>
 		<script src="../lib/Tween.min.js"></script>
+		<script src="../lib/bootstrap.js"></script>
+		<script src="../lib/jsoneditor.js"></script>
 <!-- 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
  -->		<link rel="stylesheet" href="../lib/r84/mathbox.css">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -50,6 +54,7 @@
 			}
 
 			div.legend {
+				z-index: 100 !important;
 			        border-width:1; border-style: solid;
 				color: rgba(255,255,255, .9);
 				#background-color: #ffffff;
@@ -152,6 +157,27 @@
       <div id="narrativeText" style="font-size:20pt;text-indent:0px">Some Big Event</div>
    </div>
 
+<!-- Modal -->
+<div class="modal fade" id="config" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Params</h4>
+      </div>
+      <div class="modal-body">
+        <div id="jsoneditor" style="min-height: 400px;"></div>
+      </div>
+      <div class="modal-footer">
+		<button type="button" class="btn btn-danger" id="config-reset">Reset</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="config-save">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src = "./js/params.js"></script>
 <script src = "./js/processdata.js"></script>
 <script src = "./js/chart_v2.js"></script>
 <script src = "./js/sands.js"></script>

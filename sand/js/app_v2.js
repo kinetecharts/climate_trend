@@ -48,8 +48,8 @@ const PreIndustrial = {
 	precipitation: 3.38E-05
 }
 
-//let backgroundColor = 0x101025
-let backgroundColor = 0x303025
+//let config.colors.bg = 0x101025
+//let config.colors.bg = 0x303025
 
 var mouseX = 0, mouseY = 0;
 
@@ -70,11 +70,11 @@ var SandYear = 1850
 
 const chartScale=[1.5,1,1.5]
 
-var colors = {
-  x: new THREE.Color(0xFF4136),
-  y: new THREE.Color(0x2ECC40),
-  z: new THREE.Color(0x0074D9)
-};
+// var colors = {
+//   x: new THREE.Color(0xFF4136),
+//   y: new THREE.Color(0x2ECC40),
+//   z: new THREE.Color(0x0074D9)
+// };
 
 // loadData('data/rcp8p5.csv')
 let dataFiles = ['../data/rcp8p5.csv', '../data/rcp2p6.csv']
@@ -97,7 +97,8 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 		return d
 	})
 	.then(d=>{
-		draw(d)
+		//draw(d)
+		resetApp();
 		runEvents(events_normal)
 	})
 	.fail(err=>{
@@ -126,7 +127,7 @@ var drawAxis = (view, origin)=>{
 	  end: true,
 	  width: 6,
 	  depth: 1,
-	  color: colors.x,
+	  color: new THREE.Color(params.colors.x),
 	  opacity: 1.0,
 	})
 	
@@ -146,7 +147,7 @@ var drawAxis = (view, origin)=>{
     })
     .label({
     	color: 0xaaaaaa,
-    	background: backgroundColor,
+    	background: params.colors.bg,
     	size: 36,
     	snap: false,
     	depth: 1
@@ -162,7 +163,7 @@ var drawAxis = (view, origin)=>{
 	  end: true,
 	  width: 3,
 	  depth: 1,
-	  color: colors.y,
+	  color: new THREE.Color(params.colors.y),
 	  opacity: .5,
 	})
 
@@ -175,7 +176,7 @@ var drawAxis = (view, origin)=>{
 	  end: true,
 	  width: 3,
 	  depth: 1,
-	  color: colors.z,
+	  color: new THREE.Color(params.colors.z),
 	  opacity: .5,
 	});
 
@@ -183,7 +184,7 @@ var drawAxis = (view, origin)=>{
     view.array({
       id: "colors",
       live: false,
-      data: [colors.x, colors.y, colors.z].map(function (color){
+      data: [new THREE.Color(params.colors.x), new THREE.Color(params.colors.y), new THREE.Color(params.colors.z)].map(function (color){
         return [color.r, color.g, color.b, 1];
       }),
     });
@@ -196,7 +197,7 @@ var drawAxis = (view, origin)=>{
       data: ["year", "y", "z"],
     }).label({
       color: 0xaaaaaa,
-      background: backgroundColor,
+      background: params.colors.bg,
       size: 48,
       depth: 1
     });		
@@ -235,29 +236,43 @@ var drawGrid = (view, origin)=>{
 	})
 }
 
-var mathbox = mathBox({
-  //plugins: ['core', 'controls', 'cursor', 'stats'],
-    plugins: ['core', 'controls', 'cursor'],
-  // plugins: ['VR', 'ui', 'controls'],
-  controls: {
-    klass: THREE.OrbitControls
-    // klass: THREE.VRControls
-  },
-});
+function resetApp() {
+	$(document.body).css({'backgroundColor': params.colors.bg});
+	$('canvas').remove();
 
-window._m = mathbox
+    (params.showPanel) ? $('#panel').show() : $('#panel').hide();
+    (params.showVideo) ? $('#bgvideo').show() : $('#bgvideo').hide();
 
-var three = mathbox.three;
-
-three.camera.position.set(-3.5, .4, 1.3);
-
-three.renderer.setClearColor(new THREE.Color(backgroundColor), 1.0);
-
-var cameraControl = new CameraControl(three.controls, chartScale)
-
-cameraControl.home();
+	if (window.three && three.Loop && three.Loop.running) {
+		three.Loop.stop();
+	}
+	draw(window._data);
+}
 
 var draw=(datas)=>{
+
+	var mathbox = mathBox({
+		plugins: ['core', 'mathbox', 'controls', 'cursor'],
+	controls: {
+		klass: THREE.OrbitControls
+	},
+	});
+
+	window._m = mathbox
+
+	// set global scene to be used by three.js inspector
+	window.scene = mathbox.three.scene;
+
+	window.three = mathbox.three;
+
+	three.camera.position.set(-3.5, .4, 1.3);
+
+	three.renderer.setClearColor(new THREE.Color(params.colors.bg), 1.0);
+
+	window.cameraControl = new CameraControl(three.controls, chartScale)
+
+	cameraControl.home();
+
 	var data = datas.active
 	// debugger
 
@@ -340,7 +355,7 @@ var draw=(datas)=>{
 	      data: ['Year'],
 	    }).label({
 	      color: 0xffffff,
-	      background: backgroundColor,
+	      background: params.colors.bg,
 	      size: 36*3,
 	      depth: 1
 	    });		
@@ -449,6 +464,7 @@ var draw=(datas)=>{
 		}
 	        //if(!params.hideLegend)
 			//labelYearText.set('data', [Year])
-		labelYearText.set('data', [''])
+		if (labelYearText)
+			labelYearText.set('data', [''])
 	})
 }

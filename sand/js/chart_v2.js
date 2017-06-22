@@ -16,19 +16,19 @@ balanceLineWidth    10    Thickness of energy balance graph
 showGraphics        1     Whether to show the data viz graphs
 showPanel           0     Whether to show the side panel with legend
 */
-var params = {}
+// var params = {}
 
-params.labelSize = 60;
-params.gridLineWidth = 5;
-params.chartGridLineWidth = 3;
-params.envelopeLineWidth = 3;
-params.refLineWidth = 3;
-params.co2LineWidth = 20
-params.tempLineWidth = 60
-params.balanceLineWidth = 30
-params.hideLegend = false
-params.showPanel = true;
-params.showGraphics = true;
+// params.labelSize = 60;
+// params.gridLineWidth = 5;
+// params.chartGridLineWidth = 3;
+// params.envelopeLineWidth = 3;
+// params.refLineWidth = 3;
+// params.co2LineWidth = 20
+// params.tempLineWidth = 60
+// params.balanceLineWidth = 30
+// params.hideLegend = false
+// params.showPanel = true;
+// params.showGraphics = true;
 
 class Chart{
 	constructor(mathbox, options){
@@ -235,7 +235,7 @@ class Chart{
 		    })
 		    .label({
 		    	color: this.color,
-		    	background: backgroundColor,
+		    	background: params.colors.bg,
 		    	//size: 36,
 		    	size: this.labelSize,
 		    	depth: 1
@@ -252,7 +252,7 @@ class Chart{
 		      depth: 2
 		    }).label({
 		      color: this.color,
-		      background: backgroundColor,
+		      background: params.colors.bg,
 		      snap: false,
 		      //size: 48,
 	              size: this.labelSize,
@@ -271,7 +271,7 @@ class Chart{
 		      data: [0],
 		    }).label({
 		      color: this.color,
-		      background: backgroundColor,
+		      background: params.colors.bg,
 		      //size: 36,
 		      size: this.labelSize,
 		      depth: 1
@@ -288,7 +288,7 @@ class Chart{
 		      data: ['temperature'],
 		    }).label({
 		      color: this.color,
-		      background: backgroundColor,
+		      background: params.colors.bg,
 		      //size: 36,
 	              size: this.labelSize,
 		      depth: 1
