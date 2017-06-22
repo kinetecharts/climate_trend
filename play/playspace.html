@@ -75,6 +75,11 @@
   <script src = "./libs/Tween.min.js"></script>
 
   <script src = "./js/ImageSource.js"></script>
+<!--
+  <script src = "./js/PALControls.js"></script>
+  <script src = "./js/PAL_PointerLockControls.js"></script>
+-->
+  <script src = "./js/CMP_FirstPersonControls.js"></script>
   <script src = "./libs/loaders/ColladaLoader.js"></script>
   <script src = "./libs/loaders/FBXLoader.js"></script>
   <script src = "./libs/loaders/BVHLoader.js"></script>
@@ -151,6 +156,8 @@ CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
 //MATHBOX_MASTER = true;
 MATHBOX_MASTER = false;
 var earth = null;
+
+CMPVR.useFPC = true;
 
 if (MATHBOX_MASTER) {
     startDataViz(events_normal);
