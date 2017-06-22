@@ -48,7 +48,8 @@ const PreIndustrial = {
 	precipitation: 3.38E-05
 }
 
-let backgroundColor = 0x101025
+//let backgroundColor = 0x101025
+let backgroundColor = 0x303025
 
 var mouseX = 0, mouseY = 0;
 
@@ -235,7 +236,8 @@ var drawGrid = (view, origin)=>{
 }
 
 var mathbox = mathBox({
-  plugins: ['core', 'controls', 'cursor', 'stats'],
+  //plugins: ['core', 'controls', 'cursor', 'stats'],
+    plugins: ['core', 'controls', 'cursor'],
   // plugins: ['VR', 'ui', 'controls'],
   controls: {
     klass: THREE.OrbitControls
