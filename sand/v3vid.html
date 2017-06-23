@@ -8,6 +8,7 @@
 -->
 		<link rel="stylesheet" href="../lib/bootstrap.css" />
 		<link rel="stylesheet" href="../lib/jsoneditor.css" />
+		<link rel="stylesheet" href="css/dialog.css" />
   		<script src="../play/libs/mathbox-bundle.dgk.js"></script>
   		<script src = "../lib/jquery-3.1.1.min.js"></script>
 		<script src = "../play/libs/jquery-ui.js"></script>
@@ -17,6 +18,7 @@
 		<script src="../lib/Tween.min.js"></script>
 		<script src="../lib/bootstrap.js"></script>
 		<script src="../lib/jsoneditor.js"></script>
+		<script src="../lib/CCapture.all.min.js"></script>
 <!-- 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
  -->		<link rel="stylesheet" href="../lib/r84/mathbox.css">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -163,10 +165,62 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Edit Params</h4>
+        <h4 class="modal-title">Configuration</h4>
       </div>
       <div class="modal-body">
-        <div id="jsoneditor" style="min-height: 400px;"></div>
+		<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+			<li class="active"><a href="#params" data-toggle="tab">Params</a></li>
+			<li><a href="#recording" data-toggle="tab">Recording</a></li>
+
+		</ul>
+		<div id="my-tab-content" class="tab-content">
+			<div class="tab-pane active" id="params">
+		        <div id="jsoneditor" style="min-height: 400px;"></div>
+			</div>
+			<div class="tab-pane" id="recording">
+				<form class="content" id="recording-form">
+					<h4>Press 'X' to stop recording</h4>
+					<hr/>
+					<div class="form-group">
+						<label>Framerate: 1-60</label>
+						<input type="text" class="form-control" placeholder="framerate: 1-60" name="framerate">
+					</div>
+					<div class="form-group">
+						<label>Format</label>
+						<select class="form-control" name="format">
+							<option>webm</option>
+							<option>webm-mediarecorder</option>
+							<option>png</option>
+							<option>jpg</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Time Limit</label>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="" name="timeLimit">
+							<span class="input-group-addon">secs</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Start Time</label>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="" name="startTime">
+							<span class="input-group-addon">secs</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>
+							<input type="checkbox" name="display">
+							Show Debug View
+						</label>
+					</div>
+					<hr/>
+					<div class="text-center">
+						<a href="#" class="btn btn-info btn-lg" id="start-recording" data-dismiss="modal">Start Recording</a>
+					</div>
+				</div>
+			</form>
+		</div>
       </div>
       <div class="modal-footer">
 		<button type="button" class="btn btn-danger" id="config-reset">Reset</button>
