@@ -28,6 +28,7 @@ var CMPVR_UPDATE_FUNS = [];
 //
 
 var CMPVR = {
+    loadedModels: {},
     useFPC: false,
     camera: new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 30000 ),
     renderer: new THREE.WebGLRenderer( { antialias: true } ),
@@ -560,11 +561,25 @@ CMPVR.processHooks = function(obj, opts)
     console.log("************** "+JSON.stringify(opts));
     if (!opts)
 	return;
+    if (opts.name) {
+	CMPVR.OBJSPECS[opts.name] = opts;
+	CMPVR.OBJS[opts.name] = obj;
+    }
+    if (opts.scale) {
+	console.log("set scale: "+opts.scale);
+	obj.scale.x = opts.scale[0];
+	obj.scale.y = opts.scale[1];
+	obj.scale.z = opts.scale[2];
+    }
     if (opts && opts.hide) {
 	var idToHide = opts.hide;
 	console.log("hiding "+idToHide);
 	var hobj = obj.getObjectByName(idToHide);
-	hobj.visible = false;
+	if (hobj)
+	    hobj.visible = false;
+	else {
+	    console.log("**** hide: no obj named: "+opts.hide);
+	}
     }
 }
 
@@ -664,6 +679,7 @@ CMPVR.loadBVH = function(scene, bvh) {
         var dancer = new THREE.Object3D();
         skeletonHelper = new THREE.SkeletonHelper( result.skeleton.bones[ 0 ] );
         skeletonHelper.skeleton = result.skeleton; // allow animation mixer to bind to SkeletonHelper directly
+	skeletonHelper.material.depthTest = true;
         var boneContainer = new THREE.Group();
         boneContainer.add( result.skeleton.bones[ 0 ] );
         dancer.add( skeletonHelper );
