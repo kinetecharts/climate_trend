@@ -41,7 +41,7 @@ var CMPVR = {
         this.renderer.setClearColor( 0x000020 ); //NOFOG
 
 	if (this.useFPC) {
-	    this.controls = new THREE.CMP_FirstPersonControls( this.camera , this.renderer.domElement )
+	    this.controls = new THREE.CMP_Controls( this.camera , this.renderer.domElement )
 	}
         else {
             this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement )
@@ -381,6 +381,7 @@ CMPVR.loadModel = function(scene, path, opts, afterFun)
 	CMPVR.loadFBXModel(scene, path, opts, afterFun);
     }
     else if (path.endsWith(".obj")) {
+	//CMPVR.loadOBJModel0(scene, path, opts, afterFun);
 	CMPVR.loadOBJModel(scene, path, opts, afterFun);
     }
     else if (path.endsWith(".dae")) {
