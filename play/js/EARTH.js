@@ -14,7 +14,8 @@ EARTH.latLonToVector3 = function(lat, lon, radius, height) {
     return new THREE.Vector3(x,y,z);
 }
 
-EARTH.Earth = function(group, radius, opts)
+//EARTH.Earth = function(group, radius, opts)
+EARTH.Planet = function(group, radius, opts)
 {
     radius = radius || 200;
 
@@ -26,7 +27,8 @@ EARTH.Earth = function(group, radius, opts)
         this.loaded = false;
 	this.group = group;
         var loader = new THREE.TextureLoader();
-        loader.load( 'textures/land_ocean_ice_cloud_2048.jpg', function ( texture ) {
+	var texPath = opts.texture || 'textures/land_ocean_ice_cloud_2048.jpg';
+        loader.load( texPath, function ( texture ) {
             var geometry = new THREE.SphereGeometry( radius, 30, 30 );
             var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
             this.mesh = new THREE.Mesh( geometry, material );
@@ -82,3 +84,4 @@ EARTH.Earth = function(group, radius, opts)
     this.init();
 };
 
+EARTH.Earth = EARTH.Planet;

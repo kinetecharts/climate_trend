@@ -27,7 +27,8 @@ STARS.Stars = function(group, radius, opts)
 	this.group = group;
         var loader = new THREE.TextureLoader();
         //loader.load( 'textures/land_ocean_ice_cloud_2048.jpg', function ( texture ) {
-        loader.load( 'textures/Stars_Tycho2_plus_Milkyway_3000.png', function ( texture ) {
+        //loader.load( 'textures/Stars_Tycho2_plus_Milkyway_3000.png', function ( texture ) {
+        loader.load( 'textures/Sky_8k.jpg', function ( texture ) {
             var geometry = new THREE.SphereGeometry( radius, 30, 30 );
             var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5, side: THREE.DoubleSide } );
             this.mesh = new THREE.Mesh( geometry, material );
