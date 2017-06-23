@@ -28,7 +28,8 @@ var paramsDefault = {
         format: 'webm-mediarecorder',
         timeLimit: null,
         startTime: null,
-        display: false
+        display: false,
+        reset: false
     }
 }
 
@@ -87,27 +88,34 @@ var capturer;
 
 $('#config').on('show.bs.modal', function() {
     var form = $('#recording-form');
+    form.find('[name=width]').val(params.capturer.width);
+    form.find('[name=height]').val(params.capturer.height);
     form.find('[name=framerate]').val(params.capturer.framerate);
     form.find('[name=format]').val(params.capturer.format);
     form.find('[name=timeLimit]').val(params.capturer.timeLimit);
     form.find('[name=startTime]').val(params.capturer.startTime);
     form.find('[name=display]').prop('checked', params.capturer.display);
+    form.find('[name=reset]').prop('checked', params.capturer.reset);
 });
 
 $('#start-recording').click(function() {
     var form = $('#recording-form');
+    params.capturer.width = parseInt(form.find('[name=width]').val()) || paramsDefault.capturer.width;
+    params.capturer.height = parseInt(form.find('[name=height]').val()) || paramsDefault.capturer.height;    
     params.capturer.framerate = parseInt(form.find('[name=framerate]').val()) || paramsDefault.capturer.framerate;
     params.capturer.format = form.find('[name=format]').val();
     params.capturer.timeLimit = parseInt(form.find('[name=timeLimit]').val()) || 0;
     params.capturer.startTime = parseInt(form.find('[name=startTime]').val()) || 0;
     params.capturer.display = form.find('[name=display]').prop('checked');
+    params.capturer.reset = form.find('[name=reset]').prop('checked');
 
     var options = {
         framerate: params.capturer.framerate,
         format: params.capturer.format,
         timeLimit: params.capturer.timeLimit,
         timeStart: params.capturer.timeStart,
-        display: params.capturer.display
+        display: params.capturer.display,
+        reset: params.capturer.reset
     };
 
     // force resize
@@ -123,6 +131,10 @@ $('#start-recording').click(function() {
         pixelRatio: 1
     });
     $(three.renderer.domElement).css({width: w, height: h});
+
+    if (params.capturer.reset) {
+        resetApp();
+    }
 
     capturer = new CCapture(options);
     capturer.start();
