@@ -79,7 +79,7 @@
   <script src = "./js/PALControls.js"></script>
   <script src = "./js/PAL_PointerLockControls.js"></script>
 -->
-  <script src = "./js/CMP_FirstPersonControls.js"></script>
+  <script src = "./js/CMP_Controls.js"></script>
   <script src = "./libs/loaders/ColladaLoader.js"></script>
   <script src = "./libs/loaders/FBXLoader.js"></script>
   <script src = "./libs/loaders/BVHLoader.js"></script>
@@ -98,6 +98,7 @@
 		<script src = "./js/control.js"></script>
 		<script src = "./js/cameraControl.js"></script>
                 <script src = "./js/EARTH.js"></script>
+                <script src = "./js/STARS.js"></script>
 
 		<script type="x-shader/x-fragment" id="fragmentShaderDepth">
 			uniform sampler2D texture;
@@ -130,18 +131,20 @@
 <script>
 
 var spec = {type: ImageSource.TYPE.VIDEO,
-            url: "./video/Climate-Music-V3-Distortion_HD_540.mp4"};
+            url: "../video/Climate-Music-V3-Distortion_HD_540.mp4"};
 report("------------------------------");
 report("spec: "+JSON.stringify(spec));
 var imageSrc = new ImageSource(spec);
 report("imageSrc: "+imageSrc);
 CMPVR.MODELS = [
+//   {path: "./Cyl/Cyl.obj",
+//    scale: [0.5,0.5,0.5], position: [5,0,0], rotation: [0,0,0]},
 //   {path: "./models/dae/NOHSpace.dae",
 //    scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
    {path: "./models/PlaySpace/environment.obj",
     scale: [1.0,1.0,1.0], position: [0,0,0], rotation: [0,90,0],
     hide: "sphere"
-},
+   },
 // {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
 ];
 CMPVR.SCREEN_SPEC = {x: 5.5, y: 2.5, z: -0.1,
@@ -155,9 +158,12 @@ CMPVR.BVH_PATH = './models/bvh/MasterLiuPerformanceChar00.bvh'
 
 //MATHBOX_MASTER = true;
 MATHBOX_MASTER = false;
-var earth = null;
+var modelEarth = null;
+var realEarth = null;
+var stars = null;
 
-CMPVR.useFPC = true;
+//CMPVR.useFPC = true;
+CMPVR.useFPC = false;
 
 if (MATHBOX_MASTER) {
     startDataViz(events_normal);
@@ -168,11 +174,24 @@ else {
     CMPVR.init();
     //CMPVR.context = startMathboxContext(CMPVR.renderer, CMPVR.scene, CMPVR.camera, CMPVR.controls, events_normal);   
     var scene = CMPVR.scene;
-    var egroup = new THREE.Group();
-    scene.add(egroup);
+    var egroup0 = new THREE.Group();
+    scene.add(egroup0);
     var eradius = 1;
-    earth = new EARTH.Earth(egroup, eradius, {'name':'Full'});
-    earth.group.position.y = 2;
+    modelEarth = new EARTH.Earth(egroup0, eradius, {'name':'Full'});
+    modelEarth.group.position.y = 2;
+
+    var realEarth = new THREE.Group();
+    scene.add(realEarth);
+    var eradius = 1000;
+    realEarth = new EARTH.Earth(realEarth, eradius, {'name':'FealEarth'});
+    realEarth.group.position.x = -2000;
+
+    var starsGroup = new THREE.Group();
+    scene.add(starsGroup);
+    var sradius = 10000;
+    stars = new STARS.Stars(starsGroup, sradius, {'name':'Stars'});
+    stars.group.position.x = 0;
+    
 }
 		    
 </script>
