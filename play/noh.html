@@ -64,7 +64,10 @@
 			<span id="narrativeText">????</span><br>
 		</div>
 
+                <!--
 		<script src = "./libs/mathbox-bundle.js"></script>
+                -->
+		<script src = "./libs/mathbox-bundle.dgk.js"></script>
 		<script src = "./libs/webvr.js"></script>
 		<script src = "./libs/jquery-3.1.1.min.js"></script>
 		<script src = "./libs/jquery-ui.js"></script>
@@ -121,7 +124,7 @@
 		<script src = "./js/cameraControl.js"></script>
 
 		<script>
-			var spec = {type: ImageSource.TYPE.VIDEO, url: "./video/Climate-Music-V3-Distortion_HD_540.mp4"};
+			var spec = {type: ImageSource.TYPE.VIDEO, url: "../video/Climate-Music-V3-Distortion_HD_540.mp4"};
 			report("------------------------------");
 			report("spec: "+JSON.stringify(spec));
 			var imageSrc = new ImageSource(spec);
@@ -139,6 +142,7 @@
 			//chartPosition = [0,3,1.5]
 
 			MATHBOX_MASTER = true;
+			//MATHBOX_MASTER = false;
                         events_normal = [];
 			if (MATHBOX_MASTER) {
 			    startDataViz(events_normal);
