@@ -141,8 +141,17 @@ CMPVR.MODELS = [
 //    scale: [0.5,0.5,0.5], position: [5,0,0], rotation: [0,0,0]},
 //   {path: "./models/dae/NOHSpace.dae",
 //    scale: [.03,.03,.03], position: [0,0,0], rotation: [0,90,0]},
-   {path: "./models/PlaySpace/environment.obj",
-    scale: [1.0,1.0,1.0], position: [0,0,0], rotation: [0,90,0],
+     {name:'capsule',
+    path: "./models/PlaySpace/environment.obj",
+    //path: "./models/PlaySpace/environment2.obj",
+    //path: "./models/PlaySpace/environment Copy.obj",
+    //path: "./models/PlaySpace2/magical-room.dae",
+    scale: [1.0,1.0,1.0],
+    //scale: [0.5,0.5,0.5],
+    //scale: [0.01,0.01,0.01],
+    //scale: [0.02,0.02,0.02],
+    //scale: [0.1,0.1,0.1],
+    position: [0,0,0], rotation: [0,90,0],
     hide: "sphere"
    },
 // {path: "./models/bmw/model.dae", scale: [.02,.02,.02], position: [5,-2.5,4], rotation: [0,90,0]},
@@ -165,6 +174,18 @@ var stars = null;
 //CMPVR.useFPC = true;
 CMPVR.useFPC = false;
 
+function addPlanet(scene, name, radius, x, y, z, tex)
+{
+    var group = new THREE.Group();
+    scene.add(group);
+    opts = {'name': name, 'texture': tex};
+    var planet = new EARTH.Planet(group, radius, opts);
+    planet.group.position.x = x;
+    planet.group.position.y = y;
+    planet.group.position.z = z;
+    return planet;
+}
+
 if (MATHBOX_MASTER) {
     startDataViz(events_normal);
     //CMPVR.load(three, mathbox);
@@ -179,12 +200,12 @@ else {
     var eradius = 1;
     modelEarth = new EARTH.Earth(egroup0, eradius, {'name':'Full'});
     modelEarth.group.position.y = 2;
+    //modelEarth.group.position.y = 20;
 
-    var realEarth = new THREE.Group();
-    scene.add(realEarth);
-    var eradius = 1000;
-    realEarth = new EARTH.Earth(realEarth, eradius, {'name':'FealEarth'});
-    realEarth.group.position.x = -2000;
+    earth =       addPlanet(scene, 'Earth',   1000, -2000, 0, 0);
+    var mars =    addPlanet(scene, 'Mars',    200,   2000, 0, 2000,  './textures/Mars_4k.jpg');
+    var jupiter = addPlanet(scene, 'Jupiter', 300,   1500, 0, -1500, './textures/Jupiter_Map.jpg');
+    var nepture = addPlanet(scene, 'Nepture', 100,  -1000, 0, -1000, './textures/Neptune.jpg');
 
     var starsGroup = new THREE.Group();
     scene.add(starsGroup);
