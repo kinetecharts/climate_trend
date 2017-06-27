@@ -22,11 +22,12 @@ var paramsDefault = {
     },
 
     capturer: {
+        name: 'climate-trend',
         width: 3840,
         height: 2160,
         framerate: 30,
         format: 'png',
-        timeLimit: 300,
+        timeLimit: 1200,
         startTime: 0,
         autoSaveTime: 60,
         display: true,
@@ -57,6 +58,7 @@ $('#config-save').click(function() {
 
 $('#config-reset').click(function() {
     editor.set(paramsDefault);
+    editor.expandAll();
     updateParams(paramsDefault);
 });
 
@@ -89,6 +91,7 @@ var capturer;
 
 $('#config').on('show.bs.modal', function() {
     var form = $('#recording-form');
+    form.find('[name=name]').val(params.capturer.name);
     form.find('[name=width]').val(params.capturer.width);
     form.find('[name=height]').val(params.capturer.height);
     form.find('[name=framerate]').val(params.capturer.framerate);
@@ -102,6 +105,7 @@ $('#config').on('show.bs.modal', function() {
 
 $('#start-recording').click(function() {
     var form = $('#recording-form');
+    params.capturer.name = form.find('[name=name]').val();
     params.capturer.width = parseInt(form.find('[name=width]').val()) || paramsDefault.capturer.width;
     params.capturer.height = parseInt(form.find('[name=height]').val()) || paramsDefault.capturer.height;    
     params.capturer.framerate = parseInt(form.find('[name=framerate]').val()) || paramsDefault.capturer.framerate;
@@ -114,6 +118,7 @@ $('#start-recording').click(function() {
 
     var options = {
         motionBlurFrames: 0,
+        name: params.capturer.name,
         framerate: params.capturer.framerate,
         format: params.capturer.format,
         timeLimit: params.capturer.timeLimit,
@@ -156,6 +161,32 @@ $('#start-recording').click(function() {
 function renderCapture() {
     if (capturer && three) {
         requestAnimationFrame(renderCapture);
+        renderPanel();
         capturer.capture(three.renderer.domElement);
     }
+}
+
+function renderPanel() {
+    if (!three) {
+        return;
+    }
+
+    var canvas = three.renderer.domElement;
+    var ctx = canvas.getContext("2d");
+    var data = "data:image/svg+xml," +
+            "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>" +
+                "<foreignObject width='100%' height='100%'>" +
+                // $('#panel')[0].innerHTML +
+                "<div xmlns='http://www.w3.org/1999/xhtml' style='font-size:12px'>" +
+                    "<ul> <li style='color:red'> hello </li>  <li style='color:green'>thomas</li> </ul> "  +   
+                "</div>" +
+                "</foreignObject>" +
+            "</svg>";
+
+    var img = new Image();
+    img.src = data;
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    }
+
 }
