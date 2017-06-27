@@ -285,9 +285,10 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
 	} );
 	var s = 0.002 * 2.5;
 	if (opts.scale) {
-	    dae.scale.x = opts.scale[0];
-	    dae.scale.y = opts.scale[1];
-	    dae.scale.z = opts.scale[2];
+	    var s = scaleVec(opts.scale);
+	    dae.scale.x = s[0];
+	    dae.scale.y = s[1];
+	    dae.scale.z = s[2];
 	}
 	dae.position.x = 2;
 	dae.position.z = -5.5;
@@ -550,6 +551,13 @@ CMPVR.findScreen = function(obj)
    */
 }
 
+function scaleVec(s)
+{
+    if (typeof s == "number")
+	return [s,s,s];
+    return s;
+}
+
 /*
 This goes through the loaded model and finds objects that were put there
 to help us locate positions or assign some behaviors.
@@ -558,7 +566,7 @@ CMPVR.processHooks = function(obj, opts)
 {
     CMPVR.findAnchor(obj);
     CMPVR.findScreen(obj);
-    console.log("************** "+JSON.stringify(opts));
+    console.log("********* processHooks "+JSON.stringify(opts));
     if (!opts)
 	return;
     if (opts.name) {
@@ -566,10 +574,12 @@ CMPVR.processHooks = function(obj, opts)
 	CMPVR.OBJS[opts.name] = obj;
     }
     if (opts.scale) {
-	console.log("set scale: "+opts.scale);
-	obj.scale.x = opts.scale[0];
-	obj.scale.y = opts.scale[1];
-	obj.scale.z = opts.scale[2];
+	var s = scaleVec(opts.scale);
+	console.log("set scale: "+s);
+	console.log("s: "+s);
+	obj.scale.x = s[0];
+	obj.scale.y = s[1];
+	obj.scale.z = s[2];
     }
     if (opts && opts.hide) {
 	var idToHide = opts.hide;
