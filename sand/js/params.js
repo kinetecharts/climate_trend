@@ -25,11 +25,12 @@ var paramsDefault = {
         width: 3840,
         height: 2160,
         framerate: 30,
-        format: 'webm-mediarecorder',
-        timeLimit: null,
-        startTime: null,
-        display: false,
-        reset: false
+        format: 'png',
+        timeLimit: 300,
+        startTime: 0,
+        autoSaveTime: 60,
+        display: true,
+        reset: true
     }
 }
 
@@ -94,6 +95,7 @@ $('#config').on('show.bs.modal', function() {
     form.find('[name=format]').val(params.capturer.format);
     form.find('[name=timeLimit]').val(params.capturer.timeLimit);
     form.find('[name=startTime]').val(params.capturer.startTime);
+    form.find('[name=autoSaveTime]').val(params.capturer.autoSaveTime);
     form.find('[name=display]').prop('checked', params.capturer.display);
     form.find('[name=reset]').prop('checked', params.capturer.reset);
 });
@@ -106,17 +108,30 @@ $('#start-recording').click(function() {
     params.capturer.format = form.find('[name=format]').val();
     params.capturer.timeLimit = parseInt(form.find('[name=timeLimit]').val()) || 0;
     params.capturer.startTime = parseInt(form.find('[name=startTime]').val()) || 0;
+    params.capturer.autoSaveTime = parseInt(form.find('[name=autoSaveTime]').val()) || 0;
     params.capturer.display = form.find('[name=display]').prop('checked');
     params.capturer.reset = form.find('[name=reset]').prop('checked');
 
     var options = {
+        motionBlurFrames: 0,
         framerate: params.capturer.framerate,
         format: params.capturer.format,
         timeLimit: params.capturer.timeLimit,
+        autoSaveTime: params.capturer.autoSaveTime,
         timeStart: params.capturer.timeStart,
         display: params.capturer.display,
         reset: params.capturer.reset
     };
+
+    clearEvents();
+
+    capturer = new CCapture(options);
+    capturer.start();
+
+    if (params.capturer.reset) {
+        resetApp();
+    }
+
 
     // force resize
     var w = params.capturer.width;
@@ -132,19 +147,15 @@ $('#start-recording').click(function() {
     });
     $(three.renderer.domElement).css({width: w, height: h});
 
-    if (params.capturer.reset) {
-        resetApp();
-    }
+    // three.off('update', renderCapture);
+    // three.on('update', renderCapture);
 
-    capturer = new CCapture(options);
-    capturer.start();
-
-    three.off('update', renderCapture);
-    three.on('update', renderCapture);
+    renderCapture();
 });
 
 function renderCapture() {
     if (capturer && three) {
+        requestAnimationFrame(renderCapture);
         capturer.capture(three.renderer.domElement);
     }
 }

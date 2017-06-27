@@ -15,7 +15,7 @@
 		<script src="../lib/lodash.min.js"></script>
 		<script src="../lib/q.js"></script>
 		<script src="../lib/papaparse.min.js"></script>
-		<script src="../lib/Tween.min.js"></script>
+		<script src="../lib/tween.js"></script>
 		<script src="../lib/bootstrap.js"></script>
 		<script src="../lib/jsoneditor.js"></script>
 		<script src="../lib/CCapture.all.min.js"></script>
@@ -220,6 +220,13 @@
 						</div>
 					</div>
 					<div class="form-group">
+						<label>Auto-Save Time</label>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="" name="autoSaveTime">
+							<span class="input-group-addon">secs</span>
+						</div>
+					</div>
+					<div class="form-group">
 						<label>
 							<input type="checkbox" name="display">
 							Show Debug View
@@ -227,7 +234,7 @@
 					</div>
 					<div class="form-group">
 						<label>
-							<input type="checkbox" name="display">
+							<input type="checkbox" name="reset">
 							Reset mathbox
 						</label>
 					</div>

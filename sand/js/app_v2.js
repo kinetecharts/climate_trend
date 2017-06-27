@@ -99,7 +99,6 @@ Q.all(dataFiles.map(f=>{return loadData(f)}))
 	.then(d=>{
 		//draw(d)
 		resetApp();
-		runEvents(events_normal)
 	})
 	.fail(err=>{
 		console.log(err)
@@ -237,16 +236,22 @@ var drawGrid = (view, origin)=>{
 }
 
 function resetApp() {
+	stopHistory();
 	$(document.body).css({'backgroundColor': params.colors.bg});
 	$('canvas').remove();
 
     (params.showPanel) ? $('#panel').show() : $('#panel').hide();
     (params.showVideo) ? $('#bgvideo').show() : $('#bgvideo').hide();
 
-	if (window.three && three.Loop && three.Loop.running) {
+	// if (window.three && three.Loop && three.Loop.running) {
+	try {
 		three.Loop.stop();
+	} catch(e) {
+
 	}
+	// }
 	draw(window._data);
+	runEvents(events_normal);
 }
 
 var draw=(datas)=>{
