@@ -185,6 +185,7 @@ var MB = null;
 var SCENE = null;
 var CAMERA = null;
 var DAE = null;
+var MESH = null;
 var SCREEN = null;
 var SOBJ = null;
 var SK_SCREEN = null;
@@ -286,6 +287,17 @@ CMPVR.loadColladaModel = function(scene, path, opts, afterFun)
 	    CMPVR.OBJS[opts.name] = dae;
 	}
 	dae.traverse( function ( child ) {
+/*
+	    if ( child instanceof THREE.Mesh ) {
+		report(".....----->>>> got mesh: "+child);
+		MESH = child;
+		report("mergeVertices");
+		//MESH.geometry.mergeVertices();
+		report("computeFaceNormals");
+		MESH.geometry.computeFaceNormals();
+		MESH.geometry.computeVertexNormals();
+	    }
+*/
 	    if ( child instanceof THREE.SkinnedMesh ) {
 		var animation = new THREE.Animation( child, child.geometry.animation );
 		animation.play();
